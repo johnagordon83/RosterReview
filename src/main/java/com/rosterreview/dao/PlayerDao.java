@@ -24,8 +24,8 @@ public class PlayerDao {
      * {@Link DataSource}.
      *
      * @param id  The id corresponding to the requested player.
-     * @return      A Player containing profile information or
-     *               <code>null</code> if a player matching the id argument
+     * @return    A Player containing profile information or
+     *            <code>null</code> if a player matching the id argument
      *            could not be found.
      */
     public Player getPlayer(String id) {
