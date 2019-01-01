@@ -1,0 +1,10 @@
+# ECLIPSE
+.settings/
+.project
+.classpath
+
+# TARGET DIR
+target/
+
+# LOCAL DATASOURCE PROPERTIES
+datasource.properties
