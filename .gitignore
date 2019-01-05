@@ -8,3 +8,6 @@ target/
 
 # LOCAL DATASOURCE PROPERTIES
 datasource.properties
+
+# LOCAL LOGGING CONFIGURATION
+log4j2.xml

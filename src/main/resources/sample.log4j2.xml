@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TO USE: CREATE A LOCAL COPY OF THIS FILE AND NAME IT log4j2.xml -->
+<Configuration>
+    <Properties>
+        <Property name="basePath">${sys:catalina.home}\\</Property>
+    </Properties>
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+          <PatternLayout pattern="[%d{YYYY-MM-dd hh:mm:ss}][%p][%c{1}:%L] %m%n" />
+        </Console>
+        <!-- RollingFile Appender -->
+        <RollingFile name="RollingFile" fileName="${basePath}logs\\rosterreview.log"
+                 filePattern="${basePath}logs\\$${date:yyyy-MM}\\rosterreview-%d{YYYY-MM}-%i.log.gz">
+              <PatternLayout pattern="[%d{YYYY-MM-dd hh:mm:ss}][%p][%c{1}:%L] %m%n" />
+              <Policies>
+                  <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                  <SizeBasedTriggeringPolicy size="50 MB" />
+              </Policies>
+              <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!-- Log everything from Roster Review -->
+        <Logger name="com.rosterreview" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+        <!-- Log everything from spring -->
+        <Logger name="org.springframework" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+            <Appender-ref ref="RollingFile" />
+        </Logger>
+        <!-- Log everything from hibernate -->
+        <Logger name="org.hibernate" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+        <!-- Log SQL statements -->
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+        <!-- Log JDBC bind parameters -->
+        <Logger name="org.hibernate.type.descriptor.sql" level="trace" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Root>
+    </Loggers>
+</Configuration>
