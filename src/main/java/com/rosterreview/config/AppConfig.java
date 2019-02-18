@@ -3,6 +3,8 @@ package com.rosterreview.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -10,6 +12,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @ComponentScan("com.rosterreview")
+@PropertySource(value = { "classpath:rosterreview.properties" })
+@EnableScheduling
 @EnableWebMvc
 public class AppConfig extends WebMvcConfigurerAdapter {
 
@@ -17,7 +21,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
      * Configures an {@link InternalResourceViewResolver}
      * <p>
      * Views (.jsp) should be stored in <code>/WEB-INF/views/</code>
-     * 
+     *
      * @return  The configured InternalResourceViewResolver
      */
     @Bean
