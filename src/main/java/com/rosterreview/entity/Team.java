@@ -28,7 +28,7 @@ public class Team implements Serializable {
 
     @Id
     @Column(name="season")
-    protected Short season;
+    protected Integer season;
 
     @Column(name="league")
     protected String league;
@@ -50,7 +50,7 @@ public class Team implements Serializable {
 
     Team() {}
 
-    public Team(String franchiseId, Short season, String league, String location, String name, String abbrev, String pfrId,
+    public Team(String franchiseId, Integer season, String league, String location, String name, String abbrev, String pfrId,
             String pfrAbbrev) {
         this.franchiseId = franchiseId;
         this.season = season;
@@ -79,14 +79,14 @@ public class Team implements Serializable {
     /**
      * @return The season (year) this team was active.
      */
-    public Short getSeason() {
+    public Integer getSeason() {
         return season;
     }
 
     /**
      * @return The season (year) this team was active.
      */
-    public void setSeason(Short season) {
+    public void setSeason(Integer season) {
         this.season = season;
     }
 
@@ -135,7 +135,7 @@ public class Team implements Serializable {
     /**
      * Get the abbreviation used to denote this team.
      * <p>
-     * Abbreviations are typically three letter shortened
+     * Abbreviations are typically three letter intened
      * versions of the host location's name, but be influenced
      * by other sources such as the team's name to prevent use of
      * an abbreviation by multiple franchises.
@@ -149,7 +149,7 @@ public class Team implements Serializable {
     /**
      * Set the abbreviation used to denote this team.
      * <p>
-     * Abbreviations are typically three letter shortened
+     * Abbreviations are typically three letter intened
      * versions of the host location's name, but other sources
      * such as the team's name may be used to prevent use of
      * an abbreviation by multiple franchises.

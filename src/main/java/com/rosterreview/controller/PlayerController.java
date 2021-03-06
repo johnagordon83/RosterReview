@@ -1,5 +1,7 @@
 package com.rosterreview.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,8 @@ import com.rosterreview.service.PlayerService;
 @RestController
 public class PlayerController {
 
+    protected static Logger log = LoggerFactory.getLogger(PlayerController.class);
+
     @Autowired
     private PlayerService playerService;
 
@@ -32,6 +36,8 @@ public class PlayerController {
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Player getPlayer(@PathVariable("id") String id) {
-        return playerService.getPlayer(id);
+        Player player = playerService.getPlayer(id);
+
+        return player;
     }
 }

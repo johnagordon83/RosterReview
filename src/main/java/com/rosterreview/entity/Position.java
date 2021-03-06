@@ -1,5 +1,10 @@
 package com.rosterreview.entity;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  *  An enum defining recognized football positions played by {@link Player Player(s)}.
  */
@@ -9,145 +14,181 @@ public enum Position {
     /**
      * Quarterback
      */
-    QB,
+    QB("QB"),
 
     /**
      * Running Back
      * <p>
-     * Used to generically classify players that have played multiple runningback
+     * Should be used to generically classify players that have played multiple running back
      * positions including halfback, tailback, fullback, wingback, etc.
      */
-    RB,
+    RB("RB",  "WB", "B"),
 
     /**
      * Halfback
      */
-    HB,
+    HB("HB", "TB", "RH", "LH"),
 
     /**
      * Fullback
      */
-    FB,
-
-    /** Wide Receiver */
-    WR,
+    FB("FB", "BB"),
 
     /**
      * Tight End
      */
-    TE,
+    TE("TE"),
+
+    /**
+     * Wide Receiver
+     */
+    WR("WR", "FL", "SE", "E", "RE", "LE"),
 
     /**
      * Offensive Line
      * <p>
-     * Used to generically classify players that have played multiple
+     * Should be used to generically classify players that have played multiple
      * offensive line positions such as offensive tackle, guard, or center.
      */
-    OL,
+    OL("OL"),
 
     /**
      * Offensive Tackle
      */
-    T,
+    T("T", "RT", "LT"),
 
     /**
      * Offensive Guard
      */
-    G,
+    G("G", "RG", "LG"),
 
     /**
      * Center
      */
-    C,
+    C("C"),
 
     /**
      * Defensive Line
      * <p>
-     * Used to generically classify players that have played multiple
+     * Should be used to generically classify players that have played multiple
      * defensive line positions such as defensive tackle, nose tackle,
      * or defensive end.
      */
-    DL,
+    DL("DL"),
 
     /**
      * Defensive End
      */
-    DE,
+    DE("DE", "RDE", "LDE"),
 
     /**
      * Defensive Tackle
      */
-    DT,
+    DT("DT", "RDT", "LDT", "DG"),
 
     /**
      * Nose Tackle
      */
-    NT,
+    NT("NT", "MG"),
 
     /**
      * Linebacker
      * <p>
-     * Used to generically classify players that have played multiple
+     * Should be used to generically classify players that have played multiple
      * linebacker positions such as outside, inside, or middle linebacker.
      */
-    LB,
+    LB("LB", "RLB", "LLB"),
 
     /**
      * Outside Linebacker
      */
-    OLB,
+    OLB("OLB", "ROLB", "LOLB"),
+
+    /**
+     * Middle Linebacker
+     */
+    MLB("MLB"),
 
     /**
      * Inside Linebacker
      * <p>
-     * Used to generically classify players that have played either
+     * Should be used to generically classify players that have played either
      * inside or middle linebacker.
      */
-    ILB,
+    ILB("ILB", "LILB", "RILB"),
 
     /**
      * Defensive Back
      * <p>
-     * Used to generically classify players that have played multiple
-     * secondary positions such as corner, free safety or strong safety.
+     * Should be used to generically classify players that have played multiple
+     * secondary positions such as corner, or safety.
      */
-    DB,
+    DB("DB"),
 
     /**
      * Cornerback
      */
-    CB,
+    CB("CB", "LCB", "RCB", "DH", "LDH", "RDH"),
 
     /**
      * Safety
      * <p>
-     * Used to generically classify players that have played both
+     * Should be used to generically classify players that have played both
      * free safety and strong safety.
      */
-    S,
+    S("S", "LS", "RS"),
 
     /**
      * Free Safety
      */
-    FS,
+    FS("FS"),
 
     /**
      * Strong Safety
      */
-    SS,
+    SS("SS"),
+
+    /**
+     * Kick Returner
+     */
+    KR("KR"),
+
+    /**
+     * Punt Returner
+     */
+    PR("PR"),
 
     /**
      * Kicker
      */
-    K,
+    K("K"),
 
     /**
      * Punter
      */
-    P,
+    P("P");
 
-    /**
-     * Long Snapper
-     */
-    LS
+    private static final Map<String, Position> ALIAS_MAP = new HashMap<>();
+
+    private List<String> aliases;
+
+    static {
+        for (Position position : Position.values()) {
+            for (String alias : position.aliases) {
+                ALIAS_MAP.put(alias, position);
+            }
+        }
+    }
+
+    private Position(String... aliases) {
+        this.aliases = Arrays.asList(aliases);
+    }
+
+    public static Position getPositionByAlias(String alias) {
+        Position position = ALIAS_MAP.get(alias);
+        if (position == null) {
+            throw new IllegalArgumentException("No defined Position exists with alias '" + alias + "'");
+        }
+        return position;
+    }
 }

@@ -39,9 +39,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * </ul>
  */
 
-@PropertySource(value = { "classpath:datasource.properties" })
 @Configuration
 @EnableTransactionManagement
+@PropertySource(value = { "classpath:datasource.properties" })
 public class DataSourceConfig {
 
     @Autowired
@@ -53,8 +53,8 @@ public class DataSourceConfig {
      * @return  The configured HibernateTemplate.
      */
     @Bean
-    public HibernateTemplate hibernateTemplate() {
-        return new HibernateTemplate(sessionFactory());
+    public HibernateTemplate getHibernateTemplate() {
+        return new HibernateTemplate(getSessionFactory());
     }
 
     /**
@@ -63,9 +63,9 @@ public class DataSourceConfig {
      * @return  The configured HibernateTransactionManager.
      */
     @Bean
-    public HibernateTransactionManager transactionManager() {
+    public HibernateTransactionManager getTransactionManager() {
         HibernateTransactionManager txManager = new HibernateTransactionManager();
-        txManager.setSessionFactory(sessionFactory());
+        txManager.setSessionFactory(getSessionFactory());
         return txManager;
     }
 
@@ -95,14 +95,14 @@ public class DataSourceConfig {
      * @return  SessionFactory
      */
     @Bean
-    SessionFactory sessionFactory() {
+    SessionFactory getSessionFactory() {
         return new LocalSessionFactoryBuilder(dataSource())
                 .scanPackages("com.rosterreview.entity")
-                .addProperties(hibernateProperties())
+                .addProperties(getHibernateProperties())
                 .buildSessionFactory();
     }
 
-    private Properties hibernateProperties() {
+    private Properties getHibernateProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
         properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));

@@ -1,0 +1,22 @@
+{
+  "id":"danielp.01",
+  "pfrId":"DaniP.00",
+  "nickname":"P.J.",
+  "firstName":"P.J.",
+  "middleName":"",
+  "lastName":"Daniels",
+  "suffix":"",
+  "positions":[
+    {"playerId":"danielp.01","position":"RB"}
+  ],
+  "height":null,
+  "weight":null,
+  "birthDate":[1982,12,21],
+  "college":null,
+  "draftPicks":[
+    {"playerId":"danielp.01","franchiseId":"ravens01","year":2006,"team":{"franchiseId":"ravens01","season":2006,"league":"NFL","location":"Baltimore","name":"Ravens","abbrev":"BAL","pfrId":"rav","pfrAbbrev":"BAL"},"league":"NFL","round":4,"slot":132,"supplemental":false}
+  ],
+  "statistics":[
+  ],
+  "hofYear":null
+}

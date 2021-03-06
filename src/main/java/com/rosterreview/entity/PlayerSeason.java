@@ -5,16 +5,21 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * An {@link Entity} class describing the statistics generated during a single season
@@ -22,12 +27,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name="player_season")
 public class PlayerSeason implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonIgnore
     @Id
     @Column(name="player_id")
     protected String playerId;
@@ -38,9 +44,9 @@ public class PlayerSeason implements Serializable {
 
     @Id
     @Column(name="season")
-    protected Short season;
+    protected Integer season;
 
-    @OneToOne
+    @OneToOne()
     @Fetch(FetchMode.JOIN)
     @JoinColumns({
         @JoinColumn(name="franchise_id", referencedColumnName="franchise_id", insertable=false, updatable=false),
@@ -49,397 +55,398 @@ public class PlayerSeason implements Serializable {
     protected Team team;
 
     @Column(name="age")
-    protected Short age;
+    protected Integer age;
 
     @Column(name="position")
-    protected String position;
+    @Enumerated(EnumType.STRING)
+    protected Position position;
 
     @Column(name="jersey_number")
-    protected Short jerseyNumber;
+    protected Integer jerseyNumber;
 
-    @Column(name="games_played")
-    protected Short gamesPlayed;
+    @Column(name="games_played", nullable=false)
+    protected Integer gamesPlayed = 0;
 
-    @Column(name="games_started")
-    protected Short gamesStarted;
+    @Column(name="games_started", nullable=false)
+    protected Integer gamesStarted = 0;
 
-    @Column(name="pass_comp")
-    protected Short passComp;
+    @Column(name="pass_comp", nullable=false)
+    protected Integer passComp = 0;
 
-    @Column(name="pass_att")
-    protected Short passAtt;
+    @Column(name="pass_att", nullable=false)
+    protected Integer passAtt = 0;
 
-    @Column(name="pass_yds")
-    protected Short passYds;
+    @Column(name="pass_yds", nullable=false)
+    protected Integer passYds = 0;
 
-    @Column(name="pass_tds")
-    protected Short passTds;
+    @Column(name="pass_tds", nullable=false)
+    protected Integer passTds = 0;
 
-    @Column(name="pass_ints")
-    protected Short passInts;
+    @Column(name="pass_ints", nullable=false)
+    protected Integer passInts = 0;
 
-    @Column(name="pass_long")
-    protected Short passLong;
+    @Column(name="pass_long", nullable=false)
+    protected Integer passLong = 0;
 
-    @Column(name="passer_rating")
-    protected Double passerRating;
+    @Column(name="passer_rating", nullable=false)
+    protected Double passerRating = 0.0;
 
-    @Column(name="sacked")
-    protected Short sacked;
+    @Column(name="sacked", nullable=false)
+    protected Integer sacked = 0;
 
-    @Column(name="sacked_yds")
-    protected Short sackedYds;
+    @Column(name="sacked_yds", nullable=false)
+    protected Integer sackedYds = 0;
 
-    @Column(name="rush_att")
-    protected Short rushAtt;
+    @Column(name="rush_att", nullable=false)
+    protected Integer rushAtt = 0;
 
-    @Column(name="rush_yds")
-    protected Short rushYds;
+    @Column(name="rush_yds", nullable=false)
+    protected Integer rushYds = 0;
 
-    @Column(name="rush_tds")
-    protected Short rushTds;
+    @Column(name="rush_tds", nullable=false)
+    protected Integer rushTds = 0;
 
     @Column(name="rush_long")
-    protected Short rushLong;
+    protected Integer rushLong = 0;
 
-    @Column(name="targets")
-    protected Short targets;
+    @Column(name="targets", nullable=false)
+    protected Integer targets = 0;
 
-    @Column(name="rec")
-    protected Short receptions;
+    @Column(name="rec", nullable=false)
+    protected Integer receptions = 0;
 
-    @Column(name="rec_yds")
-    protected Short recYds;
+    @Column(name="rec_yds", nullable=false)
+    protected Integer recYds = 0;
 
-    @Column(name="rec_tds")
-    protected Short recTds;
+    @Column(name="rec_tds", nullable=false)
+    protected Integer recTds = 0;
 
-    @Column(name="rec_long")
-    protected Short recLong;
+    @Column(name="rec_long", nullable=false)
+    protected Integer recLong = 0;
 
-    @Column(name="fumbles")
-    protected Short fumbles;
+    @Column(name="fumbles", nullable=false)
+    protected Integer fumbles = 0;
 
-    @Column(name="interceptions")
-    protected Short interceptions;
+    @Column(name="interceptions", nullable=false)
+    protected Integer interceptions = 0;
 
-    @Column(name="int_yds")
-    protected Short intYds;
+    @Column(name="int_yds", nullable=false)
+    protected Integer intYds = 0;
 
-    @Column(name="int_tds")
-    protected Short intTds;
+    @Column(name="int_tds", nullable=false)
+    protected Integer intTds = 0;
 
-    @Column(name="int_long")
-    protected Short intLong;
+    @Column(name="int_long", nullable=false)
+    protected Integer intLong = 0;
 
-    @Column(name="pass_def")
-    protected Short passDef;
+    @Column(name="pass_def", nullable=false)
+    protected Integer passDef = 0;
 
-    @Column(name="fum_forced")
-    protected Short fumForced;
+    @Column(name="fum_forced", nullable=false)
+    protected Integer fumForced = 0;
 
-    @Column(name="fum_rec")
-    protected Short fumRec;
+    @Column(name="fum_rec", nullable=false)
+    protected Integer fumRec = 0;
 
-    @Column(name="fum_rec_yds")
-    protected Short fumRecYds;
+    @Column(name="fum_rec_yds", nullable=false)
+    protected Integer fumRecYds = 0;
 
-    @Column(name="fum_rec_tds")
-    protected Short fumRecTds;
+    @Column(name="fum_rec_tds", nullable=false)
+    protected Integer fumRecTds = 0;
 
-    @Column(name="sacks")
-    protected Short sacks;
+    @Column(name="sacks", nullable=false)
+    protected Double sacks = 0.0;
 
-    @Column(name="tackles")
-    protected Short tackles;
+    @Column(name="tackles", nullable=false)
+    protected Integer tackles = 0;
 
-    @Column(name="assists")
-    protected Short assists;
+    @Column(name="assists", nullable=false)
+    protected Integer assists = 0;
 
-    @Column(name="safeties")
-    protected Short safeties;
+    @Column(name="safeties", nullable=false)
+    protected Integer safeties = 0;
 
-    @Column(name="fga_teens")
-    protected Short fgaTeens;
+    @Column(name="fga_teens", nullable=false)
+    protected Integer fgaTeens = 0;
 
-    @Column(name="fgm_teens")
-    protected Short fgmTeens;
+    @Column(name="fgm_teens", nullable=false)
+    protected Integer fgmTeens = 0;
 
-    @Column(name="fga_twenties")
-    protected Short fgaTwenties;
+    @Column(name="fga_twenties", nullable=false)
+    protected Integer fgaTwenties = 0;
 
-    @Column(name="fgm_twenties")
-    protected Short fgmTwenties;
+    @Column(name="fgm_twenties", nullable=false)
+    protected Integer fgmTwenties = 0;
 
-    @Column(name="fga_thirties")
-    protected Short fgaThirties;
+    @Column(name="fga_thirties", nullable=false)
+    protected Integer fgaThirties = 0;
 
-    @Column(name="fgm_thirties")
-    protected Short fgmThirties;
+    @Column(name="fgm_thirties", nullable=false)
+    protected Integer fgmThirties = 0;
 
-    @Column(name="fga_fourties")
-    protected Short fgaFourties;
+    @Column(name="fga_fourties", nullable=false)
+    protected Integer fgaFourties = 0;
 
-    @Column(name="fgm_fourties")
-    protected Short fgmFourties;
+    @Column(name="fgm_fourties", nullable=false)
+    protected Integer fgmFourties = 0;
 
-    @Column(name="fga_fifty_plus")
-    protected Short fgaFiftyPlus;
+    @Column(name="fga_fifty_plus", nullable=false)
+    protected Integer fgaFiftyPlus = 0;
 
-    @Column(name="fgm_fifty_plus")
-    protected Short fgmFiftyPlus;
+    @Column(name="fgm_fifty_plus", nullable=false)
+    protected Integer fgmFiftyPlus = 0;
 
-    @Column(name="fga_total")
-    protected Short fgaTotal;
+    @Column(name="fga_total", nullable=false)
+    protected Integer fgaTotal = 0;
 
-    @Column(name="fgm_total")
-    protected Short fgmTotal;
+    @Column(name="fgm_total", nullable=false)
+    protected Integer fgmTotal = 0;
 
-    @Column(name="fg_long")
-    protected Short fgLong;
+    @Column(name="fg_long", nullable=false)
+    protected Integer fgLong = 0;
 
-    @Column(name="xpa")
-    protected Short xpa;
+    @Column(name="xpa", nullable=false)
+    protected Integer xpa = 0;
 
-    @Column(name="xpm")
-    protected Short xpm;
+    @Column(name="xpm", nullable=false)
+    protected Integer xpm = 0;
 
-    @Column(name="punts")
-    protected Short punts;
+    @Column(name="punts", nullable=false)
+    protected Integer punts = 0;
 
-    @Column(name="punt_yds")
-    protected Short puntYds;
+    @Column(name="punt_yds", nullable=false)
+    protected Integer puntYds = 0;
 
-    @Column(name="punt_long")
-    protected Short puntLong;
+    @Column(name="punt_long", nullable=false)
+    protected Integer puntLong = 0;
 
-    @Column(name="punt_blocked")
-    protected Short puntBlocked;
+    @Column(name="punt_blocked", nullable=false)
+    protected Integer puntBlocked = 0;
 
-    @Column(name="punt_ret")
-    protected Short puntRet;
+    @Column(name="punt_ret", nullable=false)
+    protected Integer puntRet = 0;
 
-    @Column(name="punt_ret_yds")
-    protected Short puntRetYds;
+    @Column(name="punt_ret_yds", nullable=false)
+    protected Integer puntRetYds = 0;
 
-    @Column(name="punt_ret_tds")
-    protected Short puntRetTds;
+    @Column(name="punt_ret_tds", nullable=false)
+    protected Integer puntRetTds = 0;
 
-    @Column(name="punt_ret_long")
-    protected Short puntRetLong;
+    @Column(name="punt_ret_long", nullable=false)
+    protected Integer puntRetLong = 0;
 
-    @Column(name="kick_ret")
-    protected Short kickRet;
+    @Column(name="kick_ret", nullable=false)
+    protected Integer kickRet = 0;
 
-    @Column(name="kick_ret_yds")
-    protected Short kickRetYds;
+    @Column(name="kick_ret_yds", nullable=false)
+    protected Integer kickRetYds = 0;
 
-    @Column(name="kick_ret_tds")
-    protected Short kickRetTds;
+    @Column(name="kick_ret_tds", nullable=false)
+    protected Integer kickRetTds = 0;
 
-    @Column(name="kick_ret_long")
-    protected Short kickRetLong;
+    @Column(name="kick_ret_long", nullable=false)
+    protected Integer kickRetLong = 0;
 
-    @Column(name="other_tds")
-    protected Short otherTds;
+    @Column(name="other_tds", nullable=false)
+    protected Integer otherTds = 0;
 
-    @Column(name="all_tds")
-    protected Short allTds;
+    @Column(name="all_tds", nullable=false)
+    protected Integer allTds = 0;
 
-    @Column(name="two_point_conv")
-    protected Short twoPointConv;
+    @Column(name="two_point_conv", nullable=false)
+    protected Integer twoPointConv = 0;
 
-    @Column(name="playoff_games_played")
-    protected Short playoffGamesPlayed;
+    @Column(name="postseason_games_played", nullable=false)
+    protected Integer postseasonGamesPlayed = 0;
 
-    @Column(name="playoff_games_started")
-    protected Short playoffGamesStarted;
+    @Column(name="postseason_games_started", nullable=false)
+    protected Integer postseasonGamesStarted = 0;
 
-    @Column(name="playoff_pass_comp")
-    protected Short playoffPassComp;
+    @Column(name="postseason_pass_comp", nullable=false)
+    protected Integer postseasonPassComp = 0;
 
-    @Column(name="playoff_pass_att")
-    protected Short playoffPassAtt;
+    @Column(name="postseason_pass_att", nullable=false)
+    protected Integer postseasonPassAtt = 0;
 
-    @Column(name="playoff_pass_yds")
-    protected Short playoffPassYds;
+    @Column(name="postseason_pass_yds", nullable=false)
+    protected Integer postseasonPassYds = 0;
 
-    @Column(name="playoff_pass_tds")
-    protected Short playoffPassTds;
+    @Column(name="postseason_pass_tds", nullable=false)
+    protected Integer postseasonPassTds = 0;
 
-    @Column(name="playoff_pass_ints")
-    protected Short playoffPassInts;
+    @Column(name="postseason_pass_ints", nullable=false)
+    protected Integer postseasonPassInts = 0;
 
-    @Column(name="playoff_pass_long")
-    protected Short playoffPassLong;
+    @Column(name="postseason_pass_long", nullable=false)
+    protected Integer postseasonPassLong = 0;
 
-    @Column(name="playoff_passer_rating")
-    protected Double playoffPasserRating;
+    @Column(name="postseason_passer_rating", nullable=false)
+    protected Double postseasonPasserRating = 0.0;
 
-    @Column(name="playoff_sacked")
-    protected Short playoffSacked;
+    @Column(name="postseason_sacked", nullable=false)
+    protected Integer postseasonSacked = 0;
 
-    @Column(name="playoff_sacked_yds")
-    protected Short playoffSackedYds;
+    @Column(name="postseason_sacked_yds", nullable=false)
+    protected Integer postseasonSackedYds = 0;
 
-    @Column(name="playoff_rush_att")
-    protected Short playoffRushAtt;
+    @Column(name="postseason_rush_att", nullable=false)
+    protected Integer postseasonRushAtt = 0;
 
-    @Column(name="playoff_rush_yds")
-    protected Short playoffRushYds;
+    @Column(name="postseason_rush_yds", nullable=false)
+    protected Integer postseasonRushYds = 0;
 
-    @Column(name="playoff_rush_tds")
-    protected Short playoffRushTds;
+    @Column(name="postseason_rush_tds", nullable=false)
+    protected Integer postseasonRushTds = 0;
 
-    @Column(name="playoff_rush_long")
-    protected Short playoffRushLong;
+    @Column(name="postseason_rush_long", nullable=false)
+    protected Integer postseasonRushLong = 0;
 
-    @Column(name="playoff_targets")
-    protected Short playoffTargets;
+    @Column(name="postseason_targets", nullable=false)
+    protected Integer postseasonTargets = 0;
 
-    @Column(name="playoff_rec")
-    protected Short playoffReceptions;
+    @Column(name="postseason_rec", nullable=false)
+    protected Integer postseasonReceptions = 0;
 
-    @Column(name="playoff_rec_yds")
-    protected Short playoffRecYds;
+    @Column(name="postseason_rec_yds", nullable=false)
+    protected Integer postseasonRecYds = 0;
 
-    @Column(name="playoff_rec_tds")
-    protected Short playoffRecTds;
+    @Column(name="postseason_rec_tds", nullable=false)
+    protected Integer postseasonRecTds = 0;
 
-    @Column(name="playoff_rec_long")
-    protected Short playoffRecLong;
+    @Column(name="postseason_rec_long", nullable=false)
+    protected Integer postseasonRecLong = 0;
 
-    @Column(name="playoff_fumbles")
-    protected Short playoffFumbles;
+    @Column(name="postseason_fumbles", nullable=false)
+    protected Integer postseasonFumbles = 0;
 
-    @Column(name="playoff_interceptions")
-    protected Short playoffInterceptions;
+    @Column(name="postseason_interceptions", nullable=false)
+    protected Integer postseasonInterceptions = 0;
 
-    @Column(name="playoff_int_yds")
-    protected Short playoffIntYds;
+    @Column(name="postseason_int_yds", nullable=false)
+    protected Integer postseasonIntYds = 0;
 
-    @Column(name="playoff_int_tds")
-    protected Short playoffIntTds;
+    @Column(name="postseason_int_tds", nullable=false)
+    protected Integer postseasonIntTds = 0;
 
-    @Column(name="playoff_int_long")
-    protected Short playoffIntLong;
+    @Column(name="postseason_int_long", nullable=false)
+    protected Integer postseasonIntLong = 0;
 
-    @Column(name="playoff_pass_def")
-    protected Short playoffPassDef;
+    @Column(name="postseason_pass_def", nullable=false)
+    protected Integer postseasonPassDef = 0;
 
-    @Column(name="playoff_fum_forced")
-    protected Short playoffFumForced;
+    @Column(name="postseason_fum_forced", nullable=false)
+    protected Integer postseasonFumForced = 0;
 
-    @Column(name="playoff_fum_rec")
-    protected Short playoffFumRec;
+    @Column(name="postseason_fum_rec", nullable=false)
+    protected Integer postseasonFumRec = 0;
 
-    @Column(name="playoff_fum_rec_yds")
-    protected Short playoffFumRecYds;
+    @Column(name="postseason_fum_rec_yds", nullable=false)
+    protected Integer postseasonFumRecYds = 0;
 
-    @Column(name="playoff_fum_rec_tds")
-    protected Short playoffFumRecTds;
+    @Column(name="postseason_fum_rec_tds", nullable=false)
+    protected Integer postseasonFumRecTds = 0;
 
-    @Column(name="playoff_sacks")
-    protected Short playoffSacks;
+    @Column(name="postseason_sacks", nullable=false)
+    protected Double postseasonSacks = 0.0;
 
-    @Column(name="playoff_tackles")
-    protected Short playoffTackles;
+    @Column(name="postseason_tackles", nullable=false)
+    protected Integer postseasonTackles = 0;
 
-    @Column(name="playoff_assists")
-    protected Short playoffAssists;
+    @Column(name="postseason_assists", nullable=false)
+    protected Integer postseasonAssists = 0;
 
-    @Column(name="playoff_safeties")
-    protected Short playoffSafeties;
+    @Column(name="postseason_safeties", nullable=false)
+    protected Integer postseasonSafeties = 0;
 
-    @Column(name="playoff_fga_teens")
-    protected Short playoffFgaTeens;
+    @Column(name="postseason_fga_teens", nullable=false)
+    protected Integer postseasonFgaTeens = 0;
 
-    @Column(name="playoff_fgm_teens")
-    protected Short playoffFgmTeens;
+    @Column(name="postseason_fgm_teens", nullable=false)
+    protected Integer postseasonFgmTeens = 0;
 
-    @Column(name="playoff_fga_twenties")
-    protected Short playoffFgaTwenties;
+    @Column(name="postseason_fga_twenties", nullable=false)
+    protected Integer postseasonFgaTwenties = 0;
 
-    @Column(name="playoff_fgm_twenties")
-    protected Short playoffFgmTwenties;
+    @Column(name="postseason_fgm_twenties", nullable=false)
+    protected Integer postseasonFgmTwenties = 0;
 
-    @Column(name="playoff_fga_thirties")
-    protected Short playoffFgaThirties;
+    @Column(name="postseason_fga_thirties", nullable=false)
+    protected Integer postseasonFgaThirties = 0;
 
-    @Column(name="playoff_fgm_thirties")
-    protected Short playoffFgmThirties;
+    @Column(name="postseason_fgm_thirties", nullable=false)
+    protected Integer postseasonFgmThirties = 0;
 
-    @Column(name="playoff_fga_fourties")
-    protected Short playoffFgaFourties;
+    @Column(name="postseason_fga_fourties", nullable=false)
+    protected Integer postseasonFgaFourties = 0;
 
-    @Column(name="playoff_fgm_fourties")
-    protected Short playoffFgmFourties;
+    @Column(name="postseason_fgm_fourties", nullable=false)
+    protected Integer postseasonFgmFourties = 0;
 
-    @Column(name="playoff_fga_fifty_plus")
-    protected Short playoffFgaFiftyPlus;
+    @Column(name="postseason_fga_fifty_plus", nullable=false)
+    protected Integer postseasonFgaFiftyPlus = 0;
 
-    @Column(name="playoff_fgm_fifty_plus")
-    protected Short playoffFgmFiftyPlus;
+    @Column(name="postseason_fgm_fifty_plus", nullable=false)
+    protected Integer postseasonFgmFiftyPlus = 0;
 
-    @Column(name="playoff_fga_total")
-    protected Short playoffFgaTotal;
+    @Column(name="postseason_fga_total", nullable=false)
+    protected Integer postseasonFgaTotal = 0;
 
-    @Column(name="playoff_fgm_total")
-    protected Short playoffFgmTotal;
+    @Column(name="postseason_fgm_total", nullable=false)
+    protected Integer postseasonFgmTotal = 0;
 
-    @Column(name="playoff_fg_long")
-    protected Short playoffFgLong;
+    @Column(name="postseason_fg_long", nullable=false)
+    protected Integer postseasonFgLong = 0;
 
-    @Column(name="playoff_xpa")
-    protected Short playoffXpa;
+    @Column(name="postseason_xpa", nullable=false)
+    protected Integer postseasonXpa = 0;
 
-    @Column(name="playoff_xpm")
-    protected Short playoffXpm;
+    @Column(name="postseason_xpm", nullable=false)
+    protected Integer postseasonXpm = 0;
 
-    @Column(name="playoff_punts")
-    protected Short playoffPunts;
+    @Column(name="postseason_punts", nullable=false)
+    protected Integer postseasonPunts = 0;
 
-    @Column(name="playoff_punt_yds")
-    protected Short playoffPuntYds;
+    @Column(name="postseason_punt_yds", nullable=false)
+    protected Integer postseasonPuntYds = 0;
 
-    @Column(name="playoff_punt_long")
-    protected Short playoffPuntLong;
+    @Column(name="postseason_punt_long", nullable=false)
+    protected Integer postseasonPuntLong = 0;
 
-    @Column(name="playoff_punt_blocked")
-    protected Short playoffPuntBlocked;
+    @Column(name="postseason_punt_blocked", nullable=false)
+    protected Integer postseasonPuntBlocked = 0;
 
-    @Column(name="playoff_punt_ret")
-    protected Short playoffPuntRet;
+    @Column(name="postseason_punt_ret", nullable=false)
+    protected Integer postseasonPuntRet = 0;
 
-    @Column(name="playoff_punt_ret_yds")
-    protected Short playoffPuntRetYds;
+    @Column(name="postseason_punt_ret_yds", nullable=false)
+    protected Integer postseasonPuntRetYds = 0;
 
-    @Column(name="playoff_punt_ret_tds")
-    protected Short playoffPuntRetTds;
+    @Column(name="postseason_punt_ret_tds", nullable=false)
+    protected Integer postseasonPuntRetTds = 0;
 
-    @Column(name="playoff_punt_ret_long")
-    protected Short playoffPuntRetLong;
+    @Column(name="postseason_punt_ret_long", nullable=false)
+    protected Integer postseasonPuntRetLong = 0;
 
-    @Column(name="playoff_kick_ret")
-    protected Short playoffKickRet;
+    @Column(name="postseason_kick_ret", nullable=false)
+    protected Integer postseasonKickRet = 0;
 
-    @Column(name="playoff_kick_ret_yds")
-    protected Short playoffKickRetYds;
+    @Column(name="postseason_kick_ret_yds", nullable=false)
+    protected Integer postseasonKickRetYds = 0;
 
-    @Column(name="playoff_kick_ret_tds")
-    protected Short playoffKickRetTds;
+    @Column(name="postseason_kick_ret_tds", nullable=false)
+    protected Integer postseasonKickRetTds = 0;
 
-    @Column(name="playoff_kick_ret_long")
-    protected Short playoffKickRetLong;
+    @Column(name="postseason_kick_ret_long", nullable=false)
+    protected Integer postseasonKickRetLong = 0;
 
-    @Column(name="playoff_other_tds")
-    protected Short playoffOtherTds;
+    @Column(name="postseason_other_tds", nullable=false)
+    protected Integer postseasonOtherTds = 0;
 
-    @Column(name="playoff_all_tds")
-    protected Short playoffAllTds;
+    @Column(name="postseason_all_tds", nullable=false)
+    protected Integer postseasonAllTds = 0;
 
-    @Column(name="playoff_two_point_conv")
-    protected Short playoffTwoPointConv;
+    @Column(name="postseason_two_point_conv", nullable=false)
+    protected Integer postseasonTwoPointConv = 0;
 
     @Column(name="probowl")
     protected Boolean probowl;
@@ -447,35 +454,35 @@ public class PlayerSeason implements Serializable {
     @Column(name="all_pro")
     protected Boolean allPro;
 
-    @Column(name="avg_value")
-    protected Short avgValue;
+    @Column(name="avg_value", nullable=false)
+    protected Integer avgValue = 0;
 
-    PlayerSeason() {}
+    public PlayerSeason() {}
 
-    public PlayerSeason(String playerId, String franchiseId, Short season, Short age, String position, Short jerseyNumber,
-            Short gamesPlayed, Short gamesStarted, Short passComp, Short passAtt, Short passYds, Short passTds, Short passInts,
-            Short passLong, Double passerRating, Short sacked, Short sackedYds, Short rushAtt, Short rushYds, Short rushTds,
-            Short rushLong, Short targets, Short receptions, Short recYds, Short recTds, Short recLong, Short fumbles,
-            Short interceptions, Short intYds, Short intTds, Short intLong, Short passDef, Short fumForced, Short fumRec, Short fumRecYds,
-            Short fumRecTds, Short sacks, Short tackles, Short assists, Short safeties, Short fgaTeens, Short fgmTeens, Short fgaTwenties,
-            Short fgmTwenties, Short fgaThirties, Short fgmThirties, Short fgaFourties, Short fgmFourties, Short fgaFiftyPlus,
-            Short fgmFiftyPlus, Short fgaTotal,    Short fgmTotal, Short fgLong, Short xpa, Short xpm, Short punts, Short puntYds,
-            Short puntLong, Short puntBlocked,     Short puntRet, Short puntRetYds, Short puntRetTds, Short puntRetLong, Short kickRet,
-            Short kickRetYds, Short kickRetTds, Short kickRetLong, Short otherTds, Short allTds, Short twoPointConv,
-            Short playoffGamesPlayed, Short playoffGamesStarted, Short playoffPassComp, Short playoffPassAtt, Short playoffPassYds,
-            Short playoffPassTds, Short playoffPassInts, Short playoffPassLong, Double playoffPasserRating, Short playoffSacked,
-            Short playoffSackedYds, Short playoffRushAtt, Short playoffRushYds, Short playoffRushTds, Short playoffRushLong,
-            Short playoffTargets, Short playoffReceptions, Short playoffRecYds, Short playoffRecTds, Short playoffRecLong,
-            Short playoffFumbles, Short playoffInterceptions, Short playoffIntYds, Short playoffIntTds, Short playoffIntLong,
-            Short playoffPassDef, Short playoffFumForced, Short playoffFumRec, Short playoffFumRecYds, Short playoffFumRecTds,
-            Short playoffSacks, Short playoffTackles, Short playoffAssists, Short playoffSafeties, Short playoffFgaTeens,
-            Short playoffFgmTeens, Short playoffFgaTwenties, Short playoffFgmTwenties, Short playoffFgaThirties, Short playoffFgmThirties,
-            Short playoffFgaFourties, Short playoffFgmFourties, Short playoffFgaFiftyPlus, Short playoffFgmFiftyPlus,
-            Short playoffFgaTotal, Short playoffFgmTotal, Short playoffFgLong, Short playoffXpa, Short playoffXpm, Short playoffPunts,
-            Short playoffPuntYds, Short playoffPuntLong, Short playoffPuntBlocked, Short playoffPuntRet, Short playoffPuntRetYds,
-            Short playoffPuntRetTds, Short playoffPuntRetLong, Short playoffKickRet, Short playoffKickRetYds, Short playoffKickRetTds,
-            Short playoffKickRetLong, Short playoffOtherTds, Short playoffAllTds, Short playoffTwoPointConv, Boolean probowl,
-            Boolean allPro, Short avgValue) {
+    public PlayerSeason(String playerId, String franchiseId, Integer season, Integer age, Position position, Integer jerseyNumber,
+            Integer gamesPlayed, Integer gamesStarted, Integer passComp, Integer passAtt, Integer passYds, Integer passTds, Integer passInts,
+            Integer passLong, Double passerRating, Integer sacked, Integer sackedYds, Integer rushAtt, Integer rushYds, Integer rushTds,
+            Integer rushLong, Integer targets, Integer receptions, Integer recYds, Integer recTds, Integer recLong, Integer fumbles,
+            Integer interceptions, Integer intYds, Integer intTds, Integer intLong, Integer passDef, Integer fumForced, Integer fumRec, Integer fumRecYds,
+            Integer fumRecTds, Double sacks, Integer tackles, Integer assists, Integer safeties, Integer fgaTeens, Integer fgmTeens, Integer fgaTwenties,
+            Integer fgmTwenties, Integer fgaThirties, Integer fgmThirties, Integer fgaFourties, Integer fgmFourties, Integer fgaFiftyPlus,
+            Integer fgmFiftyPlus, Integer fgaTotal, Integer fgmTotal, Integer fgLong, Integer xpa, Integer xpm, Integer punts, Integer puntYds,
+            Integer puntLong, Integer puntBlocked, Integer puntRet, Integer puntRetYds, Integer puntRetTds, Integer puntRetLong, Integer kickRet,
+            Integer kickRetYds, Integer kickRetTds, Integer kickRetLong, Integer otherTds, Integer allTds, Integer twoPointConv,
+            Integer postseasonGamesPlayed, Integer postseasonGamesStarted, Integer postseasonPassComp, Integer postseasonPassAtt, Integer postseasonPassYds,
+            Integer postseasonPassTds, Integer postseasonPassInts, Integer postseasonPassLong, Double postseasonPasserRating, Integer postseasonSacked,
+            Integer postseasonSackedYds, Integer postseasonRushAtt, Integer postseasonRushYds, Integer postseasonRushTds, Integer postseasonRushLong,
+            Integer postseasonTargets, Integer postseasonReceptions, Integer postseasonRecYds, Integer postseasonRecTds, Integer postseasonRecLong,
+            Integer postseasonFumbles, Integer postseasonInterceptions, Integer postseasonIntYds, Integer postseasonIntTds, Integer postseasonIntLong,
+            Integer postseasonPassDef, Integer postseasonFumForced, Integer postseasonFumRec, Integer postseasonFumRecYds, Integer postseasonFumRecTds,
+            Double postseasonSacks, Integer postseasonTackles, Integer postseasonAssists, Integer postseasonSafeties, Integer postseasonFgaTeens,
+            Integer postseasonFgmTeens, Integer postseasonFgaTwenties, Integer postseasonFgmTwenties, Integer postseasonFgaThirties, Integer postseasonFgmThirties,
+            Integer postseasonFgaFourties, Integer postseasonFgmFourties, Integer postseasonFgaFiftyPlus, Integer postseasonFgmFiftyPlus,
+            Integer postseasonFgaTotal, Integer postseasonFgmTotal, Integer postseasonFgLong, Integer postseasonXpa, Integer postseasonXpm, Integer postseasonPunts,
+            Integer postseasonPuntYds, Integer postseasonPuntLong, Integer postseasonPuntBlocked, Integer postseasonPuntRet, Integer postseasonPuntRetYds,
+            Integer postseasonPuntRetTds, Integer postseasonPuntRetLong, Integer postseasonKickRet, Integer postseasonKickRetYds, Integer postseasonKickRetTds,
+            Integer postseasonKickRetLong, Integer postseasonOtherTds, Integer postseasonAllTds, Integer postseasonTwoPointConv, Boolean probowl,
+            Boolean allPro, Integer avgValue) {
         this.playerId = playerId;
         this.franchiseId = franchiseId;
         this.season = season;
@@ -546,70 +553,70 @@ public class PlayerSeason implements Serializable {
         this.otherTds = otherTds;
         this.allTds = allTds;
         this.twoPointConv = twoPointConv;
-        this.playoffGamesPlayed = playoffGamesPlayed;
-        this.playoffGamesStarted = playoffGamesStarted;
-        this.playoffPassComp = playoffPassComp;
-        this.playoffPassAtt = playoffPassAtt;
-        this.playoffPassYds = playoffPassYds;
-        this.playoffPassTds = playoffPassTds;
-        this.playoffPassInts = playoffPassInts;
-        this.playoffPassLong = playoffPassLong;
-        this.playoffPasserRating = playoffPasserRating;
-        this.playoffSacked = playoffSacked;
-        this.playoffSackedYds = playoffSackedYds;
-        this.playoffRushAtt = playoffRushAtt;
-        this.playoffRushYds = playoffRushYds;
-        this.playoffRushTds = playoffRushTds;
-        this.playoffRushLong = playoffRushLong;
-        this.playoffTargets = playoffTargets;
-        this.playoffReceptions = playoffReceptions;
-        this.playoffRecYds = playoffRecYds;
-        this.playoffRecTds = playoffRecTds;
-        this.playoffRecLong = playoffRecLong;
-        this.playoffFumbles = playoffFumbles;
-        this.playoffInterceptions = playoffInterceptions;
-        this.playoffIntYds = playoffIntYds;
-        this.playoffIntTds = playoffIntTds;
-        this.playoffIntLong = playoffIntLong;
-        this.playoffPassDef = playoffPassDef;
-        this.playoffFumForced = playoffFumForced;
-        this.playoffFumRec = playoffFumRec;
-        this.playoffFumRecYds = playoffFumRecYds;
-        this.playoffFumRecTds = playoffFumRecTds;
-        this.playoffSacks = playoffSacks;
-        this.playoffTackles = playoffTackles;
-        this.playoffAssists = playoffAssists;
-        this.playoffSafeties = playoffSafeties;
-        this.playoffFgaTeens = playoffFgaTeens;
-        this.playoffFgmTeens = playoffFgmTeens;
-        this.playoffFgaTwenties = playoffFgaTwenties;
-        this.playoffFgmTwenties = playoffFgmTwenties;
-        this.playoffFgaThirties = playoffFgaThirties;
-        this.playoffFgmThirties = playoffFgmThirties;
-        this.playoffFgaFourties = playoffFgaFourties;
-        this.playoffFgmFourties = playoffFgmFourties;
-        this.playoffFgaFiftyPlus = playoffFgaFiftyPlus;
-        this.playoffFgmFiftyPlus = playoffFgmFiftyPlus;
-        this.playoffFgaTotal = playoffFgaTotal;
-        this.playoffFgmTotal = playoffFgmTotal;
-        this.playoffFgLong = playoffFgLong;
-        this.playoffXpa = playoffXpa;
-        this.playoffXpm = playoffXpm;
-        this.playoffPunts = playoffPunts;
-        this.playoffPuntYds = playoffPuntYds;
-        this.playoffPuntLong = playoffPuntLong;
-        this.playoffPuntBlocked = playoffPuntBlocked;
-        this.playoffPuntRet = playoffPuntRet;
-        this.playoffPuntRetYds = playoffPuntRetYds;
-        this.playoffPuntRetTds = playoffPuntRetTds;
-        this.playoffPuntRetLong = playoffPuntRetLong;
-        this.playoffKickRet = playoffKickRet;
-        this.playoffKickRetYds = playoffKickRetYds;
-        this.playoffKickRetTds = playoffKickRetTds;
-        this.playoffKickRetLong = playoffKickRetLong;
-        this.playoffOtherTds = playoffOtherTds;
-        this.playoffAllTds = playoffAllTds;
-        this.playoffTwoPointConv = playoffTwoPointConv;
+        this.postseasonGamesPlayed = postseasonGamesPlayed;
+        this.postseasonGamesStarted = postseasonGamesStarted;
+        this.postseasonPassComp = postseasonPassComp;
+        this.postseasonPassAtt = postseasonPassAtt;
+        this.postseasonPassYds = postseasonPassYds;
+        this.postseasonPassTds = postseasonPassTds;
+        this.postseasonPassInts = postseasonPassInts;
+        this.postseasonPassLong = postseasonPassLong;
+        this.postseasonPasserRating = postseasonPasserRating;
+        this.postseasonSacked = postseasonSacked;
+        this.postseasonSackedYds = postseasonSackedYds;
+        this.postseasonRushAtt = postseasonRushAtt;
+        this.postseasonRushYds = postseasonRushYds;
+        this.postseasonRushTds = postseasonRushTds;
+        this.postseasonRushLong = postseasonRushLong;
+        this.postseasonTargets = postseasonTargets;
+        this.postseasonReceptions = postseasonReceptions;
+        this.postseasonRecYds = postseasonRecYds;
+        this.postseasonRecTds = postseasonRecTds;
+        this.postseasonRecLong = postseasonRecLong;
+        this.postseasonFumbles = postseasonFumbles;
+        this.postseasonInterceptions = postseasonInterceptions;
+        this.postseasonIntYds = postseasonIntYds;
+        this.postseasonIntTds = postseasonIntTds;
+        this.postseasonIntLong = postseasonIntLong;
+        this.postseasonPassDef = postseasonPassDef;
+        this.postseasonFumForced = postseasonFumForced;
+        this.postseasonFumRec = postseasonFumRec;
+        this.postseasonFumRecYds = postseasonFumRecYds;
+        this.postseasonFumRecTds = postseasonFumRecTds;
+        this.postseasonSacks = postseasonSacks;
+        this.postseasonTackles = postseasonTackles;
+        this.postseasonAssists = postseasonAssists;
+        this.postseasonSafeties = postseasonSafeties;
+        this.postseasonFgaTeens = postseasonFgaTeens;
+        this.postseasonFgmTeens = postseasonFgmTeens;
+        this.postseasonFgaTwenties = postseasonFgaTwenties;
+        this.postseasonFgmTwenties = postseasonFgmTwenties;
+        this.postseasonFgaThirties = postseasonFgaThirties;
+        this.postseasonFgmThirties = postseasonFgmThirties;
+        this.postseasonFgaFourties = postseasonFgaFourties;
+        this.postseasonFgmFourties = postseasonFgmFourties;
+        this.postseasonFgaFiftyPlus = postseasonFgaFiftyPlus;
+        this.postseasonFgmFiftyPlus = postseasonFgmFiftyPlus;
+        this.postseasonFgaTotal = postseasonFgaTotal;
+        this.postseasonFgmTotal = postseasonFgmTotal;
+        this.postseasonFgLong = postseasonFgLong;
+        this.postseasonXpa = postseasonXpa;
+        this.postseasonXpm = postseasonXpm;
+        this.postseasonPunts = postseasonPunts;
+        this.postseasonPuntYds = postseasonPuntYds;
+        this.postseasonPuntLong = postseasonPuntLong;
+        this.postseasonPuntBlocked = postseasonPuntBlocked;
+        this.postseasonPuntRet = postseasonPuntRet;
+        this.postseasonPuntRetYds = postseasonPuntRetYds;
+        this.postseasonPuntRetTds = postseasonPuntRetTds;
+        this.postseasonPuntRetLong = postseasonPuntRetLong;
+        this.postseasonKickRet = postseasonKickRet;
+        this.postseasonKickRetYds = postseasonKickRetYds;
+        this.postseasonKickRetTds = postseasonKickRetTds;
+        this.postseasonKickRetLong = postseasonKickRetLong;
+        this.postseasonOtherTds = postseasonOtherTds;
+        this.postseasonAllTds = postseasonAllTds;
+        this.postseasonTwoPointConv = postseasonTwoPointConv;
         this.probowl = probowl;
         this.allPro = allPro;
         this.avgValue = avgValue;
@@ -618,6 +625,7 @@ public class PlayerSeason implements Serializable {
     /**
      * @return The unique identifier of the player.
      */
+    @JsonIgnore
     public String getPlayerId() {
         return playerId;
     }
@@ -625,6 +633,7 @@ public class PlayerSeason implements Serializable {
     /**
      * @param playerId  The unique identifier of the player.
      */
+    @JsonProperty
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
     }
@@ -648,14 +657,14 @@ public class PlayerSeason implements Serializable {
     /**
      * @return The season (year) these statistics were generated.
      */
-    public Short getSeason() {
+    public Integer getSeason() {
         return season;
     }
 
     /**
      * @param season  The season (year) these statistics were generated.
      */
-    public void setSeason(Short season) {
+    public void setSeason(Integer season) {
         this.season = season;
     }
 
@@ -676,154 +685,154 @@ public class PlayerSeason implements Serializable {
     /**
      * @return The age of the player during this season.
      */
-    public Short getAge() {
+    public Integer getAge() {
         return age;
     }
 
     /**
      * @param age  The age of the player during this season.
      */
-    public void setAge(Short age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
     /**
      * @return The primary position the player played this season.
      */
-    public String getPosition() {
+     public Position getPosition() {
         return position;
     }
 
     /**
      * @param position  The primary position the player played this season.
      */
-    public void setPosition(String position) {
+    public void setPosition(Position position) {
         this.position = position;
     }
 
     /**
      * @return The jersey number worn by the player this season.
      */
-    public Short getJerseyNumber() {
+    public Integer getJerseyNumber() {
         return jerseyNumber;
     }
 
     /**
      * @param jerseyNumber  The jersey number worn by the player this season.
      */
-    public void setJerseyNumber(Short jerseyNumber) {
+    public void setJerseyNumber(Integer jerseyNumber) {
         this.jerseyNumber = jerseyNumber;
     }
 
     /**
      * @return The number of games the player appeared in this season.
      */
-    public Short getGamesPlayed() {
+    public Integer getGamesPlayed() {
         return gamesPlayed;
     }
 
     /**
      * @param gamesPlayed  The number of games the player appeared in this season.
      */
-    public void setGamesPlayed(Short gamesPlayed) {
+    public void setGamesPlayed(Integer gamesPlayed) {
         this.gamesPlayed = gamesPlayed;
     }
 
     /**
      * @return The number of games the player started this season.
      */
-    public Short getGamesStarted() {
+    public Integer getGamesStarted() {
         return gamesStarted;
     }
 
     /**
      * @param gamesStarted  The number of games the player started this season.
      */
-    public void setGamesStarted(Short gamesStarted) {
+    public void setGamesStarted(Integer gamesStarted) {
         this.gamesStarted = gamesStarted;
     }
 
     /**
      * @return The number of passes completed by the player this season.
      */
-    public Short getPassComp() {
+    public Integer getPassComp() {
         return passComp;
     }
 
     /**
      * @param passComp  The number of passes completed by the player this season.
      */
-    public void setPassComp(Short passComp) {
+    public void setPassComp(Integer passComp) {
         this.passComp = passComp;
     }
 
     /**
      * @return The number of passes attempted by the player this season.
      */
-    public Short getPassAtt() {
+    public Integer getPassAtt() {
         return passAtt;
     }
 
     /**
      * @param passAtt  The number of passes attempted by the player this season.
      */
-    public void setPassAtt(Short passAtt) {
+    public void setPassAtt(Integer passAtt) {
         this.passAtt = passAtt;
     }
 
     /**
      * @return The number of passing yards thrown by the player this season.
      */
-    public Short getPassYds() {
+    public Integer getPassYds() {
         return passYds;
     }
 
     /**
      * @param passYds  The number of passing yards thrown by the player this season.
      */
-    public void setPassYds(Short passYds) {
+    public void setPassYds(Integer passYds) {
         this.passYds = passYds;
     }
 
     /**
      * @return The number of passing touchdowns thrown by the player this season.
      */
-    public Short getPassTds() {
+    public Integer getPassTds() {
         return passTds;
     }
 
     /**
      * @param passTds  The number of passing touchdowns thrown by the player this season.
      */
-    public void setPassTds(Short passTds) {
+    public void setPassTds(Integer passTds) {
         this.passTds = passTds;
     }
 
     /**
      * @return The number of interceptions thrown by the player this season.
      */
-    public Short getPassInts() {
+    public Integer getPassInts() {
         return passInts;
     }
 
     /**
      * @param passInts  The number of interceptions thrown by the player this season.
      */
-    public void setPassInts(Short passInts) {
+    public void setPassInts(Integer passInts) {
         this.passInts = passInts;
     }
 
     /**
      * @return The longest pass (yds) thrown by the player this season.
      */
-    public Short getPassLong() {
+    public Integer getPassLong() {
         return passLong;
     }
 
     /**
      * @param passLong  The longest pass (yds) thrown by the player this season.
      */
-    public void setPassLong(Short passLong) {
+    public void setPassLong(Integer passLong) {
         this.passLong = passLong;
     }
 
@@ -844,189 +853,189 @@ public class PlayerSeason implements Serializable {
     /**
      * @return The number of times the player was sacked this season.
      */
-    public Short getSacked() {
+    public Integer getSacked() {
         return sacked;
     }
 
     /**
      * @param sacked  The number of times the player was sacked this season.
      */
-    public void setSacked(Short sacked) {
+    public void setSacked(Integer sacked) {
         this.sacked = sacked;
     }
 
     /**
      * @return The number yards lost when the player was sacked this season.
      */
-    public Short getSackedYds() {
+    public Integer getSackedYds() {
         return sackedYds;
     }
 
     /**
      * @param sacked  The number yards lost when the player was sacked this season.
      */
-    public void setSackedYds(Short sackedYds) {
+    public void setSackedYds(Integer sackedYds) {
         this.sackedYds = sackedYds;
     }
 
     /**
      * @return The number of rushes attempted by the player this season.
      */
-    public Short getRushAtt() {
+    public Integer getRushAtt() {
         return rushAtt;
     }
 
     /**
      * @param rushAtt  The number of rushes attempted by the player this season.
      */
-    public void setRushAtt(Short rushAtt) {
+    public void setRushAtt(Integer rushAtt) {
         this.rushAtt = rushAtt;
     }
 
     /**
      * @return The number of rushing yards gained by the player this season.
      */
-    public Short getRushYds() {
+    public Integer getRushYds() {
         return rushYds;
     }
 
     /**
      * @param rushYds  The number of rushing yards gained by the player this season.
      */
-    public void setRushYds(Short rushYds) {
+    public void setRushYds(Integer rushYds) {
         this.rushYds = rushYds;
     }
 
     /**
      * @return The number of rushing touchdowns scored by the player this season.
      */
-    public Short getRushTds() {
+    public Integer getRushTds() {
         return rushTds;
     }
 
     /**
      * @param rushTds  The number of rushing touchdowns scored by the player this season.
      */
-    public void setRushTds(Short rushTds) {
+    public void setRushTds(Integer rushTds) {
         this.rushTds = rushTds;
     }
 
     /**
      * @return The longest rush made by the player this season.
      */
-    public Short getRushLong() {
+    public Integer getRushLong() {
         return rushLong;
     }
 
     /**
      * @param rushLong  The longest rush made by the player this season.
      */
-    public void setRushLong(Short rushLong) {
+    public void setRushLong(Integer rushLong) {
         this.rushLong = rushLong;
     }
 
     /**
      * @return The number of passes thrown to the player this season.
      */
-    public Short getTargets() {
+    public Integer getTargets() {
         return targets;
     }
 
     /**
      * @param targets  The number of passes thrown to the player this season.
      */
-    public void setTargets(Short targets) {
+    public void setTargets(Integer targets) {
         this.targets = targets;
     }
 
     /**
      * @return The number of passes caught by the player this season.
      */
-    public Short getReceptions() {
+    public Integer getReceptions() {
         return receptions;
     }
 
     /**
      * @param receptions  The number of passes caught by the player this season.
      */
-    public void setReceptions(Short receptions) {
+    public void setReceptions(Integer receptions) {
         this.receptions = receptions;
     }
 
     /**
      * @return The number of receiving yards gained by the player this season.
      */
-    public Short getRecYds() {
+    public Integer getRecYds() {
         return recYds;
     }
 
     /**
      * @param recYds  The number of receiving yards gained by the player this season.
      */
-    public void setRecYds(Short recYds) {
+    public void setRecYds(Integer recYds) {
         this.recYds = recYds;
     }
 
     /**
      * @return The number of receiving touchdowns scored by the player this season.
      */
-    public Short getRecTds() {
+    public Integer getRecTds() {
         return recTds;
     }
 
     /**
      * @param recTds  The number of receiving touchdowns scored by the player this season.
      */
-    public void setRecTds(Short recTds) {
+    public void setRecTds(Integer recTds) {
         this.recTds = recTds;
     }
 
     /**
      * @return The longest reception (yds) made by the player this season.
      */
-    public Short getRecLong() {
+    public Integer getRecLong() {
         return recLong;
     }
 
     /**
      * @param recLong  The longest reception (yds) made by the player this season.
      */
-    public void setRecLong(Short recLong) {
+    public void setRecLong(Integer recLong) {
         this.recLong = recLong;
     }
 
     /**
      * @return The number of times the player has fumbled this season.
      */
-    public Short getFumbles() {
+    public Integer getFumbles() {
         return fumbles;
     }
 
     /**
      * @param fumbles  The number of times the player has fumbled this season.
      */
-    public void setFumbles(Short fumbles) {
+    public void setFumbles(Integer fumbles) {
         this.fumbles = fumbles;
     }
 
     /**
      * @return The number of passes intercepted by the player this season.
      */
-    public Short getInterceptions() {
+    public Integer getInterceptions() {
         return interceptions;
     }
 
     /**
      * @param interceptions  The number of passes intercepted by the player this season.
      */
-    public void setInterceptions(Short interceptions) {
+    public void setInterceptions(Integer interceptions) {
         this.interceptions = interceptions;
     }
 
     /**
      * @return The number of interception return yards gained by the player this season.
      */
-    public Short getIntYds() {
+    public Integer getIntYds() {
         return intYds;
     }
 
@@ -1034,7 +1043,7 @@ public class PlayerSeason implements Serializable {
      * @param intYds  The number of interception return yards gained by the player this
      *                season.
      */
-    public void setIntYds(Short intYds) {
+    public void setIntYds(Integer intYds) {
         this.intYds = intYds;
     }
 
@@ -1042,7 +1051,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of touchdowns scored by the player on interception returns
      *         this season.
      */
-    public Short getIntTds() {
+    public Integer getIntTds() {
         return intTds;
     }
 
@@ -1050,14 +1059,14 @@ public class PlayerSeason implements Serializable {
      * @param intTds  The number of touchdowns scored by the player on interception returns
      *                this season.
      */
-    public void setIntTds(Short intTds) {
+    public void setIntTds(Integer intTds) {
         this.intTds = intTds;
     }
 
     /**
      * @return The longest return (yds) of an interception made by the player this season.
      */
-    public Short getIntLong() {
+    public Integer getIntLong() {
         return intLong;
     }
 
@@ -1065,56 +1074,56 @@ public class PlayerSeason implements Serializable {
      * @param intLong  The longest return (yds) of an interception made by the player
      *                 this season.
      */
-    public void setIntLong(Short intLong) {
+    public void setIntLong(Integer intLong) {
         this.intLong = intLong;
     }
 
     /**
      * @return The number of passes defended by the player this season.
      */
-    public Short getPassDef() {
+    public Integer getPassDef() {
         return passDef;
     }
 
     /**
      * @param passDef  The number of passes defended by the player this season.
      */
-    public void setPassDef(Short passDef) {
+    public void setPassDef(Integer passDef) {
         this.passDef = passDef;
     }
 
     /**
      * @return The number of fumbles forced by the player this season.
      */
-    public Short getFumForced() {
+    public Integer getFumForced() {
         return fumForced;
     }
 
     /**
      * @param fumForced  The number of fumbles forced by the player this season.
      */
-    public void setFumForced(Short fumForced) {
+    public void setFumForced(Integer fumForced) {
         this.fumForced = fumForced;
     }
 
     /**
      * @return The number of fumbles recovered by the player this season.
      */
-    public Short getFumRec() {
+    public Integer getFumRec() {
         return fumRec;
     }
 
     /**
      * @param fumRec  The number of fumbles recovered by the player this season.
      */
-    public void setFumRec(Short fumRec) {
+    public void setFumRec(Integer fumRec) {
         this.fumRec = fumRec;
     }
 
     /**
      * @return The number of fumble return yards gained by the player this season.
      */
-    public Short getFumRecYds() {
+    public Integer getFumRecYds() {
         return fumRecYds;
     }
 
@@ -1122,7 +1131,7 @@ public class PlayerSeason implements Serializable {
      * @param fumRecYds  The number of fumble return yards gained by the player
      *                   this season.
      */
-    public void setFumRecYds(Short fumRecYds) {
+    public void setFumRecYds(Integer fumRecYds) {
         this.fumRecYds = fumRecYds;
     }
 
@@ -1130,7 +1139,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of touchdowns scored by the player on fumble returns
      *         this season.
      */
-    public Short getFumRecTds() {
+    public Integer getFumRecTds() {
         return fumRecTds;
     }
 
@@ -1138,70 +1147,70 @@ public class PlayerSeason implements Serializable {
      * @param fumRecTds  The number of touchdowns scored by the player on fumble
      *                   returns this season.
      */
-    public void setFumRecTds(Short fumRecTds) {
+    public void setFumRecTds(Integer fumRecTds) {
         this.fumRecTds = fumRecTds;
     }
 
     /**
      * @return The number of quarterback sacks made by the player this season.
      */
-    public Short getSacks() {
+    public Double getSacks() {
         return sacks;
     }
 
     /**
      * @param sacks  The number of quarterback sacks made by the player this season.
      */
-    public void setSacks(Short sacks) {
+    public void setSacks(Double sacks) {
         this.sacks = sacks;
     }
 
     /**
      * @return The number of solo tackles made by the player this season.
      */
-    public Short getTackles() {
+    public Integer getTackles() {
         return tackles;
     }
 
     /**
      * @param tackles  The number of solo tackles made by the player this season.
      */
-    public void setTackles(Short tackles) {
+    public void setTackles(Integer tackles) {
         this.tackles = tackles;
     }
 
     /**
      * @return The number of tackle assists made by the player this season.
      */
-    public Short getAssists() {
+    public Integer getAssists() {
         return assists;
     }
 
     /**
      * @param assists  The number of tackle assists made by the player this season.
      */
-    public void setAssists(Short assists) {
+    public void setAssists(Integer assists) {
         this.assists = assists;
     }
 
     /**
      * @return The number of safeties made by the player this season.
      */
-    public Short getSafeties() {
+    public Integer getSafeties() {
         return safeties;
     }
 
     /**
      * @param safeties  The number of safeties made by the player this season.
      */
-    public void setSafeties(Short safeties) {
+    public void setSafeties(Integer safeties) {
         this.safeties = safeties;
     }
 
     /**
      * @return The number of 17-19 yard field goals attempted by the player this season.
      */
-    public Short getFgaTeens() {
+    public Integer getFgaTeens() {
         return fgaTeens;
     }
 
@@ -1209,7 +1218,7 @@ public class PlayerSeason implements Serializable {
      * @param fgaTeens  The number of 17-19 yard field goals attempted by the player
      *                  this season.
      */
-    public void setFgaTeens(Short fgaTeens) {
+    public void setFgaTeens(Integer fgaTeens) {
         this.fgaTeens = fgaTeens;
     }
 
@@ -1217,7 +1226,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of successful 17-19 yard field goal attempts made by the
      *         player this season.
      */
-    public Short getFgmTeens() {
+    public Integer getFgmTeens() {
         return fgmTeens;
     }
 
@@ -1225,14 +1234,14 @@ public class PlayerSeason implements Serializable {
      * @param fgmTeens  The number of successful 17-19 yard field goal attempts made
      *                  by the player this season.
      */
-    public void setFgmTeens(Short fgmTeens) {
+    public void setFgmTeens(Integer fgmTeens) {
         this.fgmTeens = fgmTeens;
     }
 
     /**
      * @return The number of 20-29 yard field goals attempted by the player this season.
      */
-    public Short getFgaTwenties() {
+    public Integer getFgaTwenties() {
         return fgaTwenties;
     }
 
@@ -1240,7 +1249,7 @@ public class PlayerSeason implements Serializable {
      * @param fgaTwenties  The number of 20-29 yard field goals attempted by the player
      *                     this season.
      */
-    public void setFgaTwenties(Short fgaTwenties) {
+    public void setFgaTwenties(Integer fgaTwenties) {
         this.fgaTwenties = fgaTwenties;
     }
 
@@ -1248,7 +1257,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of successful 20-29 yard field goal attempts made by the player
      *         this season.
      */
-    public Short getFgmTwenties() {
+    public Integer getFgmTwenties() {
         return fgmTwenties;
     }
 
@@ -1256,14 +1265,14 @@ public class PlayerSeason implements Serializable {
      * @param fgmTwenties  The number of successful 20-29 yard field goal attempts made by
      *                     the player this season.
      */
-    public void setFgmTwenties(Short fgmTwenties) {
+    public void setFgmTwenties(Integer fgmTwenties) {
         this.fgmTwenties = fgmTwenties;
     }
 
     /**
      * @return The number of 30-39 yard field goals attempted by the player this season.
      */
-    public Short getFgaThirties() {
+    public Integer getFgaThirties() {
         return fgaThirties;
     }
 
@@ -1271,7 +1280,7 @@ public class PlayerSeason implements Serializable {
      * @param fgaThirties  The number of 30-39 yard field goals attempted by the player
      *                     this season.
      */
-    public void setFgaThirties(Short fgaThirties) {
+    public void setFgaThirties(Integer fgaThirties) {
         this.fgaThirties = fgaThirties;
     }
 
@@ -1279,7 +1288,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of successful 30-39 yard field goal attempts made by the player
      *         this season.
      */
-    public Short getFgmThirties() {
+    public Integer getFgmThirties() {
         return fgmThirties;
     }
 
@@ -1287,14 +1296,14 @@ public class PlayerSeason implements Serializable {
      * @param fgmThirties  The number of successful 30-39 yard field goal attempts made by
      *                     the player this season.
      */
-    public void setFgmThirties(Short fgmThirties) {
+    public void setFgmThirties(Integer fgmThirties) {
         this.fgmThirties = fgmThirties;
     }
 
     /**
      * @return The number of 40-49 yard field goals attempted by the player this season.
      */
-    public Short getFgaFourties() {
+    public Integer getFgaFourties() {
         return fgaFourties;
     }
 
@@ -1302,7 +1311,7 @@ public class PlayerSeason implements Serializable {
      * @param fgaFourties  The number of 40-49 yard field goals attempted by the player
      *                     this season.
      */
-    public void setFgaFourties(Short fgaFourties) {
+    public void setFgaFourties(Integer fgaFourties) {
         this.fgaFourties = fgaFourties;
     }
 
@@ -1310,7 +1319,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of successful 40-49 yard field goal attempts made by the player
      *         this season.
      */
-    public Short getFgmFourties() {
+    public Integer getFgmFourties() {
         return fgmFourties;
     }
 
@@ -1318,14 +1327,14 @@ public class PlayerSeason implements Serializable {
      * @param fgmFourties  The number of successful 40-49 yard field goal attempts made by
      *                     the player this season.
      */
-    public void setFgmFourties(Short fgmFourties) {
+    public void setFgmFourties(Integer fgmFourties) {
         this.fgmFourties = fgmFourties;
     }
 
     /**
      * @return The number of 50+ yard field goals attempted by the player this season.
      */
-    public Short getFgaFiftyPlus() {
+    public Integer getFgaFiftyPlus() {
         return fgaFiftyPlus;
     }
 
@@ -1333,7 +1342,7 @@ public class PlayerSeason implements Serializable {
      * @param fgaFiftyPlus  The number of 50+ yard field goals attempted by the player
      *                      this season.
      */
-    public void setFgaFiftyPlus(Short fgaFiftyPlus) {
+    public void setFgaFiftyPlus(Integer fgaFiftyPlus) {
         this.fgaFiftyPlus = fgaFiftyPlus;
     }
 
@@ -1341,7 +1350,7 @@ public class PlayerSeason implements Serializable {
      * @return The number of successful 50+ yard field goal attempts made by the player
      *         this season.
      */
-    public Short getFgmFiftyPlus() {
+    public Integer getFgmFiftyPlus() {
         return fgmFiftyPlus;
     }
 
@@ -1349,14 +1358,14 @@ public class PlayerSeason implements Serializable {
      * @param fgmFiftyPlus  The number of successful 50+ yard field goal attempts made
      *                      by the player this season.
      */
-    public void setFgmFiftyPlus(Short fgmFiftyPlus) {
+    public void setFgmFiftyPlus(Integer fgmFiftyPlus) {
         this.fgmFiftyPlus = fgmFiftyPlus;
     }
 
     /**
      * @return The total number of field goals attempted by the player this season.
      */
-    public Short getFgaTotal() {
+    public Integer getFgaTotal() {
         return fgaTotal;
     }
 
@@ -1364,7 +1373,7 @@ public class PlayerSeason implements Serializable {
      * @param fgaTotal  The total number of field goals attempted by the player this
      *                  season.
      */
-    public void setFgaTotal(Short fgaTotal) {
+    public void setFgaTotal(Integer fgaTotal) {
         this.fgaTotal = fgaTotal;
     }
 
@@ -1372,7 +1381,7 @@ public class PlayerSeason implements Serializable {
      * @return The total number of successful field goal attempts made by the player
      *         this season.
      */
-    public Short getFgmTotal() {
+    public Integer getFgmTotal() {
         return fgmTotal;
     }
 
@@ -1380,7 +1389,7 @@ public class PlayerSeason implements Serializable {
      * @param fgmTotal  The total number of successful field goal attempts made by the
      *                  player this season.
      */
-    public void setFgmTotal(Short fgmTotal) {
+    public void setFgmTotal(Integer fgmTotal) {
         this.fgmTotal = fgmTotal;
     }
 
@@ -1388,7 +1397,7 @@ public class PlayerSeason implements Serializable {
      * @return The longest successful field goal (yds) attempt made by the player
      *         this season.
      */
-    public Short getFgLong() {
+    public Integer getFgLong() {
         return fgLong;
     }
 
@@ -1396,21 +1405,21 @@ public class PlayerSeason implements Serializable {
      * @param fgLong  The longest successful field goal (yds) attempt made by the
      *                player this season.
      */
-    public void setFgLong(Short fgLong) {
+    public void setFgLong(Integer fgLong) {
         this.fgLong = fgLong;
     }
 
     /**
      * @return The total number of extra points attempted by the player this season.
      */
-    public Short getXpa() {
+    public Integer getXpa() {
         return xpa;
     }
 
     /**
      * @param xpa  The total number of extra points attempted by the player this season.
      */
-    public void setXpa(Short xpa) {
+    public void setXpa(Integer xpa) {
         this.xpa = xpa;
     }
 
@@ -1418,7 +1427,7 @@ public class PlayerSeason implements Serializable {
      * @return The total number of successful extra point attempts made by the player
      *         this season.
      */
-    public Short getXpm() {
+    public Integer getXpm() {
         return xpm;
     }
 
@@ -1426,154 +1435,154 @@ public class PlayerSeason implements Serializable {
      * @param xpm  The total number of successful extra point attempts made by the player
      *             this season.
      */
-    public void setXpm(Short xpm) {
+    public void setXpm(Integer xpm) {
         this.xpm = xpm;
     }
 
     /**
      * @return The total number of punts made by the player this season.
      */
-    public Short getPunts() {
+    public Integer getPunts() {
         return punts;
     }
 
     /**
      * @param punts  The total number of punts made by the player this season.
      */
-    public void setPunts(Short punts) {
+    public void setPunts(Integer punts) {
         this.punts = punts;
     }
 
     /**
      * @return The total number of punt yards made by the player this season.
      */
-    public Short getPuntYds() {
+    public Integer getPuntYds() {
         return puntYds;
     }
 
     /**
      * @param puntYds  The total number of punt yards made by the player this season.
      */
-    public void setPuntYds(Short puntYds) {
+    public void setPuntYds(Integer puntYds) {
         this.puntYds = puntYds;
     }
 
     /**
      * @return The longest punt (yds) made by the player this season.
      */
-    public Short getPuntLong() {
+    public Integer getPuntLong() {
         return puntLong;
     }
 
     /**
      * @param puntLong  The longest punt (yds) made by the player this season.
      */
-    public void setPuntLong(Short puntLong) {
+    public void setPuntLong(Integer puntLong) {
         this.puntLong = puntLong;
     }
 
     /**
      * @return The number of the player's punts that were blocked this season.
      */
-    public Short getPuntBlocked() {
+    public Integer getPuntBlocked() {
         return puntBlocked;
     }
 
     /**
      * @param puntBlocked  The number of the player's punts that were blocked this season.
      */
-    public void setPuntBlocked(Short puntBlocked) {
+    public void setPuntBlocked(Integer puntBlocked) {
         this.puntBlocked = puntBlocked;
     }
 
     /**
      * @return The number of punts returned by the player this season.
      */
-    public Short getPuntRet() {
+    public Integer getPuntRet() {
         return puntRet;
     }
 
     /**
      * @param puntRet  The number of punts returned by the player this season.
      */
-    public void setPuntRet(Short puntRet) {
+    public void setPuntRet(Integer puntRet) {
         this.puntRet = puntRet;
     }
 
     /**
      * @return The number of punt return yards gained by the player this season.
      */
-    public Short getPuntRetYds() {
+    public Integer getPuntRetYds() {
         return puntRetYds;
     }
 
     /**
      * @param puntRetYds  The number of punt return yards gained by the player this season.
      */
-    public void setPuntRetYds(Short puntRetYds) {
+    public void setPuntRetYds(Integer puntRetYds) {
         this.puntRetYds = puntRetYds;
     }
 
     /**
      * @return The number of punts returned for touchdowns by the player this season.
      */
-    public Short getPuntRetTds() {
+    public Integer getPuntRetTds() {
         return puntRetTds;
     }
 
     /**
      * @param puntRetTds  The number of punts returned for touchdowns by the player this season.
      */
-    public void setPuntRetTds(Short puntRetTds) {
+    public void setPuntRetTds(Integer puntRetTds) {
         this.puntRetTds = puntRetTds;
     }
 
     /**
      * @return The longest punt return (yds) made by the player this season.
      */
-    public Short getPuntRetLong() {
+    public Integer getPuntRetLong() {
         return puntRetLong;
     }
 
     /**
      * @param puntRetLong  The longest punt return (yds) made by the player this season.
      */
-    public void setPuntRetLong(Short puntRetLong) {
+    public void setPuntRetLong(Integer puntRetLong) {
         this.puntRetLong = puntRetLong;
     }
 
     /**
      * @return The number of kickoffs returned by the player this season.
      */
-    public Short getKickRet() {
+    public Integer getKickRet() {
         return kickRet;
     }
 
     /**
      * @param kickRet  The number of kickoffs returned by the player this season.
      */
-    public void setKickRet(Short kickRet) {
+    public void setKickRet(Integer kickRet) {
         this.kickRet = kickRet;
     }
 
     /**
      * @return The number of kickoff return yards gained by the player this season.
      */
-    public Short getKickRetYds() {
+    public Integer getKickRetYds() {
         return kickRetYds;
     }
 
     /**
      * @param kickRetYds  The number of kickoff return yards gained by the player this season.
      */
-    public void setKickRetYds(Short kickRetYds) {
+    public void setKickRetYds(Integer kickRetYds) {
         this.kickRetYds = kickRetYds;
     }
 
     /**
      * @return The number of kickoffs returned for touchdowns by the player this season.
      */
-    public Short getKickRetTds() {
+    public Integer getKickRetTds() {
         return kickRetTds;
     }
 
@@ -1581,28 +1590,28 @@ public class PlayerSeason implements Serializable {
      * @param kickRetTds  The number of kickoffs returned for touchdowns by the player
      *                    this season.
      */
-    public void setKickRetTds(Short kickRetTds) {
+    public void setKickRetTds(Integer kickRetTds) {
         this.kickRetTds = kickRetTds;
     }
 
     /**
      * @return The longest kick return (yds) made by the player this season.
      */
-    public Short getKickRetLong() {
+    public Integer getKickRetLong() {
         return kickRetLong;
     }
 
     /**
      * @param kickRetLong  The longest kick return (yds) made by the player this season.
      */
-    public void setKickRetLong(Short kickRetLong) {
+    public void setKickRetLong(Integer kickRetLong) {
         this.kickRetLong = kickRetLong;
     }
 
     /**
      * @return The total number of touchdowns scored via other means by the player this season.
      */
-    public Short getOtherTds() {
+    public Integer getOtherTds() {
         return otherTds;
     }
 
@@ -1610,28 +1619,28 @@ public class PlayerSeason implements Serializable {
      * @param otherTds  The total number of touchdowns scored via other means by the player
      *                  this season.
      */
-    public void setOtherTds(Short otherTds) {
+    public void setOtherTds(Integer otherTds) {
         this.otherTds = otherTds;
     }
 
     /**
      * @return The total number of touchdowns scored by the player this season.
      */
-    public Short getAllTds() {
+    public Integer getAllTds() {
         return allTds;
     }
 
     /**
      * @param allTds  The total number of touchdowns scored by the player this season.
      */
-    public void setAllTds(Short allTds) {
+    public void setAllTds(Integer allTds) {
         this.allTds = allTds;
     }
 
     /**
      * @return The total number of two point conversions scored by the player this season.
      */
-    public Short getTwoPointConv() {
+    public Integer getTwoPointConv() {
         return twoPointConv;
     }
 
@@ -1639,960 +1648,960 @@ public class PlayerSeason implements Serializable {
      * @param twoPointConv  The total number of two point conversions scored by the player
      *                      this season.
      */
-    public void setTwoPointConv(Short twoPointConv) {
+    public void setTwoPointConv(Integer twoPointConv) {
         this.twoPointConv = twoPointConv;
     }
 
     /**
-     * @return The number of games the player appeared in this post-season.
+     * @return The number of games the player appeared in this postseason.
      */
-    public Short getPlayoffGamesPlayed() {
-        return playoffGamesPlayed;
+    public Integer getPostseasonGamesPlayed() {
+        return postseasonGamesPlayed;
     }
 
     /**
-     * @param gamesPlayed  The number of games the player appeared in this post-season.
+     * @param gamesPlayed  The number of games the player appeared in this postseason.
      */
-    public void setPlayoffGamesPlayed(Short playoffGamesPlayed) {
-        this.playoffGamesPlayed = playoffGamesPlayed;
+    public void setPostseasonGamesPlayed(Integer postseasonGamesPlayed) {
+        this.postseasonGamesPlayed = postseasonGamesPlayed;
     }
 
     /**
-     * @return The number of games the player started this post-season.
+     * @return The number of games the player started this postseason.
      */
-    public Short getPlayoffGamesStarted() {
-        return playoffGamesStarted;
+    public Integer getPostseasonGamesStarted() {
+        return postseasonGamesStarted;
     }
 
     /**
-     * @param playoffGamesStarted  The number of games the player started this
-     *                             post-season.
+     * @param postseasonGamesStarted  The number of games the player started this
+     *                                postseason.
      */
-    public void setPlayoffGamesStarted(Short playoffGamesStarted) {
-        this.playoffGamesStarted = playoffGamesStarted;
+    public void setPostseasonGamesStarted(Integer postseasonGamesStarted) {
+        this.postseasonGamesStarted = postseasonGamesStarted;
     }
 
     /**
-     * @return The number of passes completed by the player this post-season.
+     * @return The number of passes completed by the player this postseason.
      */
-    public Short getPlayoffPassComp() {
-        return playoffPassComp;
+    public Integer getPostseasonPassComp() {
+        return postseasonPassComp;
     }
 
     /**
-     * @param playoffPassComp  The number of passes completed by the player this
-     *                         post-season.
+     * @param postseasonPassComp  The number of passes completed by the player this
+     *                            postseason.
      */
-    public void setPlayoffPassComp(Short playoffPassComp) {
-        this.playoffPassComp = playoffPassComp;
+    public void setPostseasonPassComp(Integer postseasonPassComp) {
+        this.postseasonPassComp = postseasonPassComp;
     }
 
     /**
-     * @return The number of passes attempted by the player this post-season.
+     * @return The number of passes attempted by the player this postseason.
      */
-    public Short getPlayoffPassAtt() {
-        return playoffPassAtt;
+    public Integer getPostseasonPassAtt() {
+        return postseasonPassAtt;
     }
 
     /**
-     * @param playoffPassAtt  The number of passes attempted by the player this
-     *                        post-season.
+     * @param postseasonPassAtt  The number of passes attempted by the player this
+     *                           postseason.
      */
-    public void setPlayoffPassAtt(Short playoffPassAtt) {
-        this.playoffPassAtt = playoffPassAtt;
+    public void setPostseasonPassAtt(Integer postseasonPassAtt) {
+        this.postseasonPassAtt = postseasonPassAtt;
     }
 
     /**
-     * @return The number of passing yards thrown by the player this post-season.
+     * @return The number of passing yards thrown by the player this postseason.
      */
-    public Short getPlayoffPassYds() {
-        return playoffPassYds;
+    public Integer getPostseasonPassYds() {
+        return postseasonPassYds;
     }
 
     /**
-     * @param playoffPassYds  The number of passing yards thrown by the player this
-     *                        post-season.
+     * @param postseasonPassYds  The number of passing yards thrown by the player this
+     *                           postseason.
      */
-    public void setPlayoffPassYds(Short playoffPassYds) {
-        this.playoffPassYds = playoffPassYds;
+    public void setPostseasonPassYds(Integer postseasonPassYds) {
+        this.postseasonPassYds = postseasonPassYds;
     }
 
     /**
-     * @return The number of passing touchdowns thrown by the player this post-season.
+     * @return The number of passing touchdowns thrown by the player this postseason.
      */
-    public Short getPlayoffPassTds() {
-        return playoffPassTds;
+    public Integer getPostseasonPassTds() {
+        return postseasonPassTds;
     }
 
     /**
-     * @param playoffPassTds  The number of passing touchdowns thrown by the player
-     *                        this post-season.
+     * @param postseasonPassTds  The number of passing touchdowns thrown by the player
+     *                           this postseason.
      */
-    public void setPlayoffPassTds(Short playoffPassTds) {
-        this.playoffPassTds = playoffPassTds;
+    public void setPostseasonPassTds(Integer postseasonPassTds) {
+        this.postseasonPassTds = postseasonPassTds;
     }
 
     /**
-     * @return The number of interceptions thrown by the player this post-season.
+     * @return The number of interceptions thrown by the player this postseason.
      */
-    public Short getPlayoffPassInts() {
-        return playoffPassInts;
+    public Integer getPostseasonPassInts() {
+        return postseasonPassInts;
     }
 
     /**
-     * @param playoffPassInts  The number of interceptions thrown by the player this
-     *                         post-season.
+     * @param postseasonPassInts  The number of interceptions thrown by the player this
+     *                            postseason.
      */
-    public void setPlayoffPassInts(Short playoffPassInts) {
-        this.playoffPassInts = playoffPassInts;
+    public void setPostseasonPassInts(Integer postseasonPassInts) {
+        this.postseasonPassInts = postseasonPassInts;
     }
 
     /**
-     * @return The longest pass (yds) thrown by the player this post-season.
+     * @return The longest pass (yds) thrown by the player this postseason.
      */
-    public Short getPlayoffPassLong() {
-        return playoffPassLong;
+    public Integer getPostseasonPassLong() {
+        return postseasonPassLong;
     }
 
     /**
-     * @param passLong  The longest pass (yds) thrown by the player this post-season.
+     * @param passLong  The longest pass (yds) thrown by the player this postseason.
      */
-    public void setPlayoffPassLong(Short playoffPassLong) {
-        this.playoffPassLong = playoffPassLong;
+    public void setPostseasonPassLong(Integer postseasonPassLong) {
+        this.postseasonPassLong = postseasonPassLong;
     }
 
     /**
-     * @return The player's passer rating for this post-season.
+     * @return The player's passer rating for this postseason.
      */
-    public Double getPlayoffPasserRating() {
-        return playoffPasserRating;
+    public Double getPostseasonPasserRating() {
+        return postseasonPasserRating;
     }
 
     /**
-     * @param playoffPasserRating  The player's passer rating for this post-season.
+     * @param postseasonPasserRating  The player's passer rating for this postseason.
      */
-    public void setPlayoffPassRating(Double playoffPasserRating) {
-        this.playoffPasserRating = playoffPasserRating;
+    public void setPostseasonPassRating(Double postseasonPasserRating) {
+        this.postseasonPasserRating = postseasonPasserRating;
     }
 
     /**
-     * @return The number of times the player was sacked this post-season.
+     * @return The number of times the player was sacked this postseason.
      */
-    public Short getPlayoffSacked() {
-        return playoffSacked;
+    public Integer getPostseasonSacked() {
+        return postseasonSacked;
     }
 
     /**
-     * @param playoffSacked  The number of times the player was sacked this post-season.
+     * @param postseasonSacked  The number of times the player was sacked this postseason.
      */
-    public void setPlayoffSacked(Short playoffSacked) {
-        this.playoffSacked = playoffSacked;
+    public void setPostseasonSacked(Integer postseasonSacked) {
+        this.postseasonSacked = postseasonSacked;
     }
 
     /**
-     * @return The number yards lost when the player was sacked this post-season.
+     * @return The number yards lost when the player was sacked this postseason.
      */
-    public Short getPlayoffSackedYds() {
-        return playoffSackedYds;
+    public Integer getPostseasonSackedYds() {
+        return postseasonSackedYds;
     }
 
     /**
-     * @param playoffSackedYds  The number yards lost when the player was sacked
-     *                          this post-season.
+     * @param postseasonSackedYds  The number yards lost when the player was sacked
+     *                             this postseason.
      */
-    public void setPlayoffSackedYds(Short playoffSackedYds) {
-        this.playoffSackedYds = playoffSackedYds;
+    public void setPostseasonSackedYds(Integer postseasonSackedYds) {
+        this.postseasonSackedYds = postseasonSackedYds;
     }
 
     /**
-     * @return The number of rushes attempted by the player this post-season.
+     * @return The number of rushes attempted by the player this postseason.
      */
-    public Short getPlayoffRushAtt() {
-        return playoffRushAtt;
+    public Integer getPostseasonRushAtt() {
+        return postseasonRushAtt;
     }
 
     /**
-     * @param playoffRushAtt  The number of rushes attempted by the player this
-     *                        post-season.
+     * @param postseasonRushAtt  The number of rushes attempted by the player this
+     *                           postseason.
      */
-    public void setPlayoffRushAtt(Short playoffRushAtt) {
-        this.playoffRushAtt = playoffRushAtt;
+    public void setPostseasonRushAtt(Integer postseasonRushAtt) {
+        this.postseasonRushAtt = postseasonRushAtt;
     }
 
     /**
-     * @return The number of rushing yards gained by the player this post-season.
+     * @return The number of rushing yards gained by the player this postseason.
      */
-    public Short getPlayoffRushYds() {
-        return playoffRushYds;
+    public Integer getPostseasonRushYds() {
+        return postseasonRushYds;
     }
 
     /**
-     * @param playoffRushYds  The number of rushing yards gained by the player this
-     *                        post-season.
+     * @param postseasonRushYds  The number of rushing yards gained by the player this
+     *                           postseason.
      */
-    public void setPlayoffRushYds(Short playoffRushYds) {
-        this.playoffRushYds = playoffRushYds;
+    public void setPostseasonRushYds(Integer postseasonRushYds) {
+        this.postseasonRushYds = postseasonRushYds;
     }
 
     /**
-     * @return The number of rushing touchdowns scored by the player this post-season.
+     * @return The number of rushing touchdowns scored by the player this postseason.
      */
-    public Short getPlayoffRushTds() {
-        return playoffRushTds;
+    public Integer getPostseasonRushTds() {
+        return postseasonRushTds;
     }
 
     /**
-     * @param playoffRushTds  The number of rushing touchdowns scored by the player
-     *                        this post-season.
+     * @param postseasonRushTds  The number of rushing touchdowns scored by the player
+     *                           this postseason.
      */
-    public void setPlayoffRushTds(Short playoffRushTds) {
-        this.playoffRushTds = playoffRushTds;
+    public void setPostseasonRushTds(Integer postseasonRushTds) {
+        this.postseasonRushTds = postseasonRushTds;
     }
 
     /**
-     * @return The longest rush made by the player this post-season.
+     * @return The longest rush made by the player this postseason.
      */
-    public Short getPlayoffRushLong() {
-        return playoffRushLong;
+    public Integer getPostseasonRushLong() {
+        return postseasonRushLong;
     }
 
     /**
-     * @param playoffRushLong  The longest rush made by the player this post-season.
+     * @param postseasonRushLong  The longest rush made by the player this postseason.
      */
-    public void setPlayoffRushLong(Short playoffRushLong) {
-        this.playoffRushLong = playoffRushLong;
+    public void setPostseasonRushLong(Integer postseasonRushLong) {
+        this.postseasonRushLong = postseasonRushLong;
     }
 
     /**
-     * @return The number of passes thrown to the player this post-season.
+     * @return The number of passes thrown to the player this postseason.
      */
-    public Short getPlayoffTargets() {
-        return playoffTargets;
+    public Integer getPostseasonTargets() {
+        return postseasonTargets;
     }
 
     /**
-     * @param playoffTargets  The number of passes thrown to the player this post-season.
+     * @param postseasonTargets  The number of passes thrown to the player this postseason.
      */
-    public void setPlayoffTargets(Short playoffTargets) {
-        this.playoffTargets = playoffTargets;
+    public void setPostseasonTargets(Integer postseasonTargets) {
+        this.postseasonTargets = postseasonTargets;
     }
 
     /**
-     * @return The number of passes caught by the player this post-season.
+     * @return The number of passes caught by the player this postseason.
      */
-    public Short getPlayoffReceptions() {
-        return playoffReceptions;
+    public Integer getPostseasonReceptions() {
+        return postseasonReceptions;
     }
 
     /**
-     * @param playoffReceptions  The number of passes caught by the player this post-season.
+     * @param postseasonReceptions  The number of passes caught by the player this postseason.
      */
-    public void setPlayoffReceptions(Short playoffReceptions) {
-        this.playoffReceptions = playoffReceptions;
+    public void setPostseasonReceptions(Integer postseasonReceptions) {
+        this.postseasonReceptions = postseasonReceptions;
     }
 
     /**
-     * @return The number of receiving yards gained by the player this post-season.
+     * @return The number of receiving yards gained by the player this postseason.
      */
-    public Short getPlayoffRecYds() {
-        return playoffRecYds;
+    public Integer getPostseasonRecYds() {
+        return postseasonRecYds;
     }
 
     /**
-     * @param playoffRecYds  The number of receiving yards gained by the player
-     *                       this post-season.
+     * @param postseasonRecYds  The number of receiving yards gained by the player
+     *                          this postseason.
      */
-    public void setPlayoffRecYds(Short playoffRecYds) {
-        this.playoffRecYds = playoffRecYds;
+    public void setPostseasonRecYds(Integer postseasonRecYds) {
+        this.postseasonRecYds = postseasonRecYds;
     }
 
     /**
-     * @return The number of receiving touchdowns scored by the player this post-season.
+     * @return The number of receiving touchdowns scored by the player this postseason.
      */
-    public Short getPlayoffRecTds() {
-        return playoffRecTds;
+    public Integer getPostseasonRecTds() {
+        return postseasonRecTds;
     }
 
     /**
-     * @param playoffRecTds  The number of receiving touchdowns scored by the player
-     *                       this post-season.
+     * @param postseasonRecTds  The number of receiving touchdowns scored by the player
+     *                          this postseason.
      */
-    public void setPlayoffRecTds(Short playoffRecTds) {
-        this.playoffRecTds = playoffRecTds;
+    public void setPostseasonRecTds(Integer postseasonRecTds) {
+        this.postseasonRecTds = postseasonRecTds;
     }
 
     /**
-     * @return The longest reception (yds) made by the player this post-season.
+     * @return The longest reception (yds) made by the player this postseason.
      */
-    public Short getPlayoffRecLong() {
-        return playoffRecLong;
+    public Integer getPostseasonRecLong() {
+        return postseasonRecLong;
     }
 
     /**
-     * @param playoffRecLong  The longest reception (yds) made by the player this
-     *                        post-season.
+     * @param postseasonRecLong  The longest reception (yds) made by the player this
+     *                           postseason.
      */
-    public void setPlayoffRecLong(Short playoffRecLong) {
-        this.playoffRecLong = playoffRecLong;
+    public void setPostseasonRecLong(Integer postseasonRecLong) {
+        this.postseasonRecLong = postseasonRecLong;
     }
 
     /**
-     * @return The number of times the player has fumbled this post-season.
+     * @return The number of times the player has fumbled this postseason.
      */
-    public Short getPlayoffFumbles() {
-        return playoffFumbles;
+    public Integer getPostseasonFumbles() {
+        return postseasonFumbles;
     }
 
     /**
-     * @param playoffFumbles  The number of times the player has fumbled this post-season.
+     * @param postseasonFumbles  The number of times the player has fumbled this postseason.
      */
-    public void setPlayoffFumbles(Short playoffFumbles) {
-        this.playoffFumbles = playoffFumbles;
+    public void setPostseasonFumbles(Integer postseasonFumbles) {
+        this.postseasonFumbles = postseasonFumbles;
     }
 
     /**
-     * @return The number of passes intercepted by the player this post-season.
+     * @return The number of passes intercepted by the player this postseason.
      */
-    public Short getPlayoffInterceptions() {
-        return playoffInterceptions;
+    public Integer getPostseasonInterceptions() {
+        return postseasonInterceptions;
     }
 
     /**
-     * @param playoffInterceptions  The number of passes intercepted by the player this
-     *                              post-season.
+     * @param postseasonInterceptions  The number of passes intercepted by the player this
+     *                                 postseason.
      */
-    public void setPlayoffInterceptions(Short playoffInterceptions) {
-        this.playoffInterceptions = playoffInterceptions;
+    public void setPostseasonInterceptions(Integer postseasonInterceptions) {
+        this.postseasonInterceptions = postseasonInterceptions;
     }
 
     /**
-     * @return The number of interception return yards gained by the player this post-season.
+     * @return The number of interception return yards gained by the player this postseason.
      */
-    public Short getPlayoffIntYds() {
-        return playoffIntYds;
+    public Integer getPostseasonIntYds() {
+        return postseasonIntYds;
     }
 
     /**
-     * @param playoffIntYds  The number of interception return yards gained by the player this
-     *                       post-season.
+     * @param postseasonIntYds  The number of interception return yards gained by the player this
+     *                          postseason.
      */
-    public void setPlayoffIntYds(Short playoffIntYds) {
-        this.playoffIntYds = playoffIntYds;
+    public void setPostseasonIntYds(Integer postseasonIntYds) {
+        this.postseasonIntYds = postseasonIntYds;
     }
 
     /**
      * @return The number of touchdowns scored by the player on interception returns
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffIntTds() {
-        return playoffIntTds;
+    public Integer getPostseasonIntTds() {
+        return postseasonIntTds;
     }
 
     /**
-     * @param playoffIntTds  The number of touchdowns scored by the player on interception returns
-     *                       this post-season.
+     * @param postseasonIntTds  The number of touchdowns scored by the player on interception returns
+     *                          this postseason.
      */
-    public void setPlayoffIntTds(Short playoffIntTds) {
-        this.playoffIntTds = playoffIntTds;
+    public void setPostseasonIntTds(Integer postseasonIntTds) {
+        this.postseasonIntTds = postseasonIntTds;
     }
 
     /**
-     * @return The longest return (yds) of an interception made by the player this post-season.
+     * @return The longest return (yds) of an interception made by the player this postseason.
      */
-    public Short getPlayoffIntLong() {
-        return playoffIntLong;
+    public Integer getPostseasonIntLong() {
+        return postseasonIntLong;
     }
 
     /**
-     * @param playoffIntLong  The longest return (yds) of an interception made by the player
-     *                        this post-season.
+     * @param postseasonIntLong  The longest return (yds) of an interception made by the player
+     *                           this postseason.
      */
-    public void setPlayoffIntLong(Short playoffIntLong) {
-        this.playoffIntLong = playoffIntLong;
+    public void setPostseasonIntLong(Integer postseasonIntLong) {
+        this.postseasonIntLong = postseasonIntLong;
     }
 
     /**
-     * @return The number of passes defended by the player this post-season.
+     * @return The number of passes defended by the player this postseason.
      */
-    public Short getPlayoffPassDef() {
-        return playoffPassDef;
+    public Integer getPostseasonPassDef() {
+        return postseasonPassDef;
     }
 
     /**
-     * @param playoffPassDef  The number of passes defended by the player this post-season.
+     * @param postseasonPassDef  The number of passes defended by the player this postseason.
      */
-    public void setPlayoffPassDef(Short playoffPassDef) {
-        this.playoffPassDef = playoffPassDef;
+    public void setPostseasonPassDef(Integer postseasonPassDef) {
+        this.postseasonPassDef = postseasonPassDef;
     }
 
     /**
-     * @return The number of fumbles forced by the player this post-season.
+     * @return The number of fumbles forced by the player this postseason.
      */
-    public Short getPlayoffFumForced() {
-        return playoffFumForced;
+    public Integer getPostseasonFumForced() {
+        return postseasonFumForced;
     }
 
     /**
-     * @param playoffFumForced  The number of fumbles forced by the player this post-season.
+     * @param postseasonFumForced  The number of fumbles forced by the player this postseason.
      */
-    public void setPlayoffFumForced(Short playoffFumForced) {
-        this.playoffFumForced = playoffFumForced;
+    public void setPostseasonFumForced(Integer postseasonFumForced) {
+        this.postseasonFumForced = postseasonFumForced;
     }
 
     /**
-     * @return The number of fumbles recovered by the player this post-season.
+     * @return The number of fumbles recovered by the player this postseason.
      */
-    public Short getPlayoffFumRec() {
-        return playoffFumRec;
+    public Integer getPostseasonFumRec() {
+        return postseasonFumRec;
     }
 
     /**
-     * @param playoffFumRec  The number of fumbles recovered by the player this post-season.
+     * @param postseasonFumRec  The number of fumbles recovered by the player this postseason.
      */
-    public void setPlayoffFumRec(Short playoffFumRec) {
-        this.playoffFumRec = playoffFumRec;
+    public void setPostseasonFumRec(Integer postseasonFumRec) {
+        this.postseasonFumRec = postseasonFumRec;
     }
 
     /**
-     * @return The number of fumble return yards gained by the player this post-season.
+     * @return The number of fumble return yards gained by the player this postseason.
      */
-    public Short getPlayoffFumRecYds() {
-        return playoffFumRecYds;
+    public Integer getPostseasonFumRecYds() {
+        return postseasonFumRecYds;
     }
 
     /**
-     * @param playoffFumRecYds  The number of fumble return yards gained by the player
-     *                          this post-season.
+     * @param postseasonFumRecYds  The number of fumble return yards gained by the player
+     *                             this postseason.
      */
-    public void setPlayoffFumRecYds(Short playoffFumRecYds) {
-        this.playoffFumRecYds = playoffFumRecYds;
+    public void setPostseasonFumRecYds(Integer postseasonFumRecYds) {
+        this.postseasonFumRecYds = postseasonFumRecYds;
     }
 
     /**
      * @return The number of touchdowns scored by the player on fumble returns
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffFumRecTds() {
-        return playoffFumRecTds;
+    public Integer getPostseasonFumRecTds() {
+        return postseasonFumRecTds;
     }
 
     /**
-     * @param playoffFumRecTds  The number of touchdowns scored by the player on fumble
-     *                          returns this post-season.
+     * @param postseasonFumRecTds  The number of touchdowns scored by the player on fumble
+     *                             returns this postseason.
      */
-    public void setPlayoffFumRecTds(Short playoffFumRecTds) {
-        this.playoffFumRecTds = playoffFumRecTds;
+    public void setPostseasonFumRecTds(Integer postseasonFumRecTds) {
+        this.postseasonFumRecTds = postseasonFumRecTds;
     }
 
     /**
-     * @return The number of quarterback sacks made by the player this post-season.
+     * @return The number of quarterback sacks made by the player this postseason.
      */
-    public Short getPlayoffSacks() {
-        return playoffSacks;
+    public Double getPostseasonSacks() {
+        return postseasonSacks;
     }
 
     /**
-     * @param playoffSacks  The number of quarterback sacks made by the player this
-     *                      post-season.
+     * @param postseasonSacks  The number of quarterback sacks made by the player this
+     *                         postseason.
      */
-    public void setPlayoffSacks(Short playoffSacks) {
-        this.playoffSacks = playoffSacks;
+    public void setPostseasonSacks(Double postseasonSacks) {
+        this.postseasonSacks = postseasonSacks;
     }
 
     /**
-     * @return The number of solo tackles made by the player this post-season.
+     * @return The number of solo tackles made by the player this postseason.
      */
-    public Short getPlayoffTackles() {
-        return playoffTackles;
+    public Integer getPostseasonTackles() {
+        return postseasonTackles;
     }
 
     /**
-     * @param playoffTackles  The number of solo tackles made by the player this post-season.
+     * @param postseasonTackles  The number of solo tackles made by the player this postseason.
      */
-    public void setPlayoffTackles(Short playoffTackles) {
-        this.playoffTackles = playoffTackles;
+    public void setPostseasonTackles(Integer postseasonTackles) {
+        this.postseasonTackles = postseasonTackles;
     }
 
     /**
-     * @return The number of tackle assists made by the player this post-season.
+     * @return The number of tackle assists made by the player this postseason.
      */
-    public Short getPlayoffAssists() {
-        return playoffAssists;
+    public Integer getPostseasonAssists() {
+        return postseasonAssists;
     }
 
     /**
-     * @param playoffAssists  The number of tackle assists made by the player this post-season.
+     * @param postseasonAssists  The number of tackle assists made by the player this postseason.
      */
-    public void setPlayoffAssists(Short playoffAssists) {
-        this.playoffAssists = playoffAssists;
+    public void setPostseasonAssists(Integer postseasonAssists) {
+        this.postseasonAssists = postseasonAssists;
     }
 
     /**
-     * @return The number of safeties made by the player this post-season.
+     * @return The number of safeties made by the player this postseason.
      */
-    public Short getPlayoffSafeties() {
-        return playoffSafeties;
+    public Integer getPostseasonSafeties() {
+        return postseasonSafeties;
     }
 
     /**
-     * @param playoffSafeties  The number of safeties made by the player this post-season.
+     * @param postseasonSafeties  The number of safeties made by the player this postseason.
      */
-    public void setPlayoffSafeties(Short playoffSafeties) {
-        this.playoffSafeties = playoffSafeties;
+    public void setPostseasonSafeties(Integer postseasonSafeties) {
+        this.postseasonSafeties = postseasonSafeties;
     }
 
     /**
-     * @return The number of 17-19 yard field goals attempted by the player this post-season.
+     * @return The number of 17-19 yard field goals attempted by the player this postseason.
      */
-    public Short getPlayoffFgaTeens() {
-        return playoffFgaTeens;
+    public Integer getPostseasonFgaTeens() {
+        return postseasonFgaTeens;
     }
 
     /**
-     * @param playoffFgaTeens  The number of 17-19 yard field goals attempted by the player
-     *                         this post-season.
+     * @param postseasonFgaTeens  The number of 17-19 yard field goals attempted by the player
+     *                            this postseason.
      */
-    public void setPlayoffFgaTeens(Short playoffFgaTeens) {
-        this.playoffFgaTeens = playoffFgaTeens;
+    public void setPostseasonFgaTeens(Integer postseasonFgaTeens) {
+        this.postseasonFgaTeens = postseasonFgaTeens;
     }
 
     /**
      * @return The number of successful 17-19 yard field goal attempts made by the player
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffFgmTeens() {
-        return playoffFgmTeens;
+    public Integer getPostseasonFgmTeens() {
+        return postseasonFgmTeens;
     }
 
     /**
-     * @param playoffFgmTeens  The number of successful 17-19 yard field goal attempts made
-     *                         by the player this post-season.
+     * @param postseasonFgmTeens  The number of successful 17-19 yard field goal attempts made
+     *                            by the player this postseason.
      */
-    public void setPlayoffFgmTeens(Short playoffFgmTeens) {
-        this.playoffFgmTeens = playoffFgmTeens;
+    public void setPostseasonFgmTeens(Integer postseasonFgmTeens) {
+        this.postseasonFgmTeens = postseasonFgmTeens;
     }
 
     /**
-     * @return The number of 20-29 yard field goals attempted by the player this post-season.
+     * @return The number of 20-29 yard field goals attempted by the player this postseason.
      */
-    public Short getPlayoffFgaTwenties() {
-        return playoffFgaTwenties;
+    public Integer getPostseasonFgaTwenties() {
+        return postseasonFgaTwenties;
     }
 
     /**
-     * @param playoffFgaTwenties  The number of 20-29 yard field goals attempted by the player
-     *                            this post-season.
+     * @param postseasonFgaTwenties  The number of 20-29 yard field goals attempted by the player
+     *                               this postseason.
      */
-    public void setPlayoffFgaTwenties(Short playoffFgaTwenties) {
-        this.playoffFgaTwenties = playoffFgaTwenties;
+    public void setPostseasonFgaTwenties(Integer postseasonFgaTwenties) {
+        this.postseasonFgaTwenties = postseasonFgaTwenties;
     }
 
     /**
      * @return The number of successful 20-29 yard field goal attempts made by the player
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffFgmTwenties() {
-        return playoffFgmTwenties;
+    public Integer getPostseasonFgmTwenties() {
+        return postseasonFgmTwenties;
     }
 
     /**
-     * @param playoffFgmTwenties  The number of successful 20-29 yard field goal attempts
-     *                            made by the player this post-season.
+     * @param postseasonFgmTwenties  The number of successful 20-29 yard field goal attempts
+     *                               made by the player this postseason.
      */
-    public void setPlayoffFgmTwenties(Short playoffFgmTwenties) {
-        this.playoffFgmTwenties = playoffFgmTwenties;
+    public void setPostseasonFgmTwenties(Integer postseasonFgmTwenties) {
+        this.postseasonFgmTwenties = postseasonFgmTwenties;
     }
 
     /**
-     * @return The number of 30-39 yard field goals attempted by the player this post-season.
+     * @return The number of 30-39 yard field goals attempted by the player this postseason.
      */
-    public Short getPlayoffFgaThirties() {
-        return playoffFgaThirties;
+    public Integer getPostseasonFgaThirties() {
+        return postseasonFgaThirties;
     }
 
     /**
-     * @param playoffFgaThirties  The number of 30-39 yard field goals attempted by the player
-     *                            this post-season.
+     * @param postseasonFgaThirties  The number of 30-39 yard field goals attempted by the player
+     *                               this postseason.
      */
-    public void setPlayoffFgaThirties(Short playoffFgaThirties) {
-        this.playoffFgaThirties = playoffFgaThirties;
+    public void setPostseasonFgaThirties(Integer postseasonFgaThirties) {
+        this.postseasonFgaThirties = postseasonFgaThirties;
     }
 
     /**
      * @return The number of successful 30-39 yard field goal attempts made by the player
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffFgmThirties() {
-        return playoffFgmThirties;
+    public Integer getPostseasonFgmThirties() {
+        return postseasonFgmThirties;
     }
 
     /**
-     * @param playoffFgmThirties  The number of successful 30-39 yard field goal attempts
-     *                            made by the player this post-season.
+     * @param postseasonFgmThirties  The number of successful 30-39 yard field goal attempts
+     *                               made by the player this postseason.
      */
-    public void setPlayoffFgmThirties(Short playoffFgmThirties) {
-        this.playoffFgmThirties = playoffFgmThirties;
+    public void setPostseasonFgmThirties(Integer postseasonFgmThirties) {
+        this.postseasonFgmThirties = postseasonFgmThirties;
     }
 
     /**
-     * @return The number of 40-49 yard field goals attempted by the player this post-season.
+     * @return The number of 40-49 yard field goals attempted by the player this postseason.
      */
-    public Short getPlayoffFgaFourties() {
-        return playoffFgaFourties;
+    public Integer getPostseasonFgaFourties() {
+        return postseasonFgaFourties;
     }
 
     /**
-     * @param playoffFgaFourties  The number of 40-49 yard field goals attempted by the player
-     *                            this post-season.
+     * @param postseasonFgaFourties  The number of 40-49 yard field goals attempted by the player
+     *                               this postseason.
      */
-    public void setPlayoffFgaFourties(Short playoffFgaFourties) {
-        this.playoffFgaFourties = playoffFgaFourties;
+    public void setPostseasonFgaFourties(Integer postseasonFgaFourties) {
+        this.postseasonFgaFourties = postseasonFgaFourties;
     }
 
     /**
      * @return The number of successful 40-49 yard field goal attempts made by the player
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffFgmFourties() {
-        return playoffFgmFourties;
+    public Integer getPostseasonFgmFourties() {
+        return postseasonFgmFourties;
     }
 
     /**
-     * @param playoffFgmFourties  The number of successful 40-49 yard field goal attempts made
-     *                            by the player this post-season.
+     * @param postseasonFgmFourties  The number of successful 40-49 yard field goal attempts made
+     *                               by the player this postseason.
      */
-    public void setPlayoffFgmFourties(Short playoffFgmFourties) {
-        this.playoffFgmFourties = playoffFgmFourties;
+    public void setPostseasonFgmFourties(Integer postseasonFgmFourties) {
+        this.postseasonFgmFourties = postseasonFgmFourties;
     }
 
     /**
-     * @return The number of 50+ yard field goals attempted by the player this post-season.
+     * @return The number of 50+ yard field goals attempted by the player this postseason.
      */
-    public Short getPlayoffFgaFiftyPlus() {
-        return playoffFgaFiftyPlus;
+    public Integer getPostseasonFgaFiftyPlus() {
+        return postseasonFgaFiftyPlus;
     }
 
     /**
-     * @param playoffFgaFiftyPlus  The number of 50+ yard field goals attempted by the player
-     *                             this post-season.
+     * @param postseasonFgaFiftyPlus  The number of 50+ yard field goals attempted by the player
+     *                                this postseason.
      */
-    public void setPlayoffFgaFiftyPlus(Short playoffFgaFiftyPlus) {
-        this.playoffFgaFiftyPlus = playoffFgaFiftyPlus;
+    public void setPostseasonFgaFiftyPlus(Integer postseasonFgaFiftyPlus) {
+        this.postseasonFgaFiftyPlus = postseasonFgaFiftyPlus;
     }
 
     /**
      * @return The number of successful 50+ yard field goal attempts made by the player this
-     *         post-season.
+     *         postseason.
      */
-    public Short getPlayoffFgmFiftyPlus() {
-        return playoffFgmFiftyPlus;
+    public Integer getPostseasonFgmFiftyPlus() {
+        return postseasonFgmFiftyPlus;
     }
 
     /**
-     * @param playoffFgmFiftyPlus  The number of successful 50+ yard field goal attempts made
-     *                             by the player this post-season.
+     * @param postseasonFgmFiftyPlus  The number of successful 50+ yard field goal attempts made
+     *                                by the player this postseason.
      */
-    public void setPlayoffFgmFiftyPlus(Short playoffFgmFiftyPlus) {
-        this.playoffFgmFiftyPlus = playoffFgmFiftyPlus;
+    public void setPostseasonFgmFiftyPlus(Integer postseasonFgmFiftyPlus) {
+        this.postseasonFgmFiftyPlus = postseasonFgmFiftyPlus;
     }
 
     /**
-     * @return The total number of field goals attempted by the player this post-season.
+     * @return The total number of field goals attempted by the player this postseason.
      */
-    public Short getPlayoffFgaTotal() {
-        return playoffFgaTotal;
+    public Integer getPostseasonFgaTotal() {
+        return postseasonFgaTotal;
     }
 
     /**
-     * @param playoffFgaTotal  The total number of field goals attempted by the player
-     *                         this post-season.
+     * @param postseasonFgaTotal  The total number of field goals attempted by the player
+     *                            this postseason.
      */
-    public void setPlayoffFgaTotal(Short playoffFgaTotal) {
-        this.playoffFgaTotal = playoffFgaTotal;
+    public void setPostseasonFgaTotal(Integer postseasonFgaTotal) {
+        this.postseasonFgaTotal = postseasonFgaTotal;
     }
 
     /**
      * @return The total number of successful field goal attempts made by the player this
-     *         post-season.
+     *         postseason.
      */
-    public Short getPlayoffFgmTotal() {
-        return playoffFgmTotal;
+    public Integer getPostseasonFgmTotal() {
+        return postseasonFgmTotal;
     }
 
     /**
      * @param fgmTotal  The total number of successful field goal attempts made by the player
      *                  this season.
      */
-    public void setPlayoffFgmTotal(Short playoffFgmTotal) {
-        this.playoffFgmTotal = playoffFgmTotal;
+    public void setPostseasonFgmTotal(Integer postseasonFgmTotal) {
+        this.postseasonFgmTotal = postseasonFgmTotal;
     }
 
     /**
-     * @return The longest field goal (yds) made by the player this post-season.
+     * @return The longest field goal (yds) made by the player this postseason.
      */
-    public Short getPlayoffFgLong() {
-        return playoffFgLong;
+    public Integer getPostseasonFgLong() {
+        return postseasonFgLong;
     }
 
     /**
-     * @param playoffFgLong  The longest field goal (yds) made by the player this
-     *                       post-season.
+     * @param postseasonFgLong  The longest field goal (yds) made by the player this
+     *                          postseason.
      */
-    public void setPlayoffFgLong(Short playoffFgLong) {
-        this.playoffFgLong = playoffFgLong;
+    public void setPostseasonFgLong(Integer postseasonFgLong) {
+        this.postseasonFgLong = postseasonFgLong;
     }
 
     /**
-     * @return The total number of extra points attempted by the player this post-season.
+     * @return The total number of extra points attempted by the player this postseason.
      */
-    public Short getPlayoffXpa() {
-        return playoffXpa;
+    public Integer getPostseasonXpa() {
+        return postseasonXpa;
     }
 
     /**
-     * @param playoffXpa  The total number of extra points attempted by the player this
-     *                    post-season.
+     * @param postseasonXpa  The total number of extra points attempted by the player this
+     *                       postseason.
      */
-    public void setPlayoffXpa(Short playoffXpa) {
-        this.playoffXpa = playoffXpa;
+    public void setPostseasonXpa(Integer postseasonXpa) {
+        this.postseasonXpa = postseasonXpa;
     }
 
     /**
      * @return The total number of successful extra point attempts made by the player
-     *         this post-season.
+     *         this postseason.
      */
-    public Short getPlayoffXpm() {
-        return playoffXpm;
+    public Integer getPostseasonXpm() {
+        return postseasonXpm;
     }
 
     /**
-     * @param playoffXpm  The total number of successful extra point attempts made by the
-     *                    player this post-season.
+     * @param postseasonXpm  The total number of successful extra point attempts made by the
+     *                       player this postseason.
      */
-    public void setPlayoffXpm(Short playoffXpm) {
-        this.playoffXpm = playoffXpm;
+    public void setPostseasonXpm(Integer postseasonXpm) {
+        this.postseasonXpm = postseasonXpm;
     }
 
     /**
-     * @return The total number of punts made by the player this post-season.
+     * @return The total number of punts made by the player this postseason.
      */
-    public Short getPlayoffPunts() {
-        return playoffPunts;
+    public Integer getPostseasonPunts() {
+        return postseasonPunts;
     }
 
     /**
-     * @param playoffPunts  The total number of punts made by the player this post-season.
+     * @param postseasonPunts  The total number of punts made by the player this postseason.
      */
-    public void setPlayoffPunts(Short playoffPunts) {
-        this.playoffPunts = playoffPunts;
+    public void setPostseasonPunts(Integer postseasonPunts) {
+        this.postseasonPunts = postseasonPunts;
     }
 
     /**
-     * @return The total number of punt yards made by the player this post-season.
+     * @return The total number of punt yards made by the player this postseason.
      */
-    public Short getPlayoffPuntYds() {
-        return playoffPuntYds;
+    public Integer getPostseasonPuntYds() {
+        return postseasonPuntYds;
     }
 
     /**
-     * @param playoffPuntYds  The total number of punt yards made by the player this
-     *                        post-season.
+     * @param postseasonPuntYds  The total number of punt yards made by the player this
+     *                           postseason.
      */
-    public void setPlayoffPuntYds(Short playoffPuntYds) {
-        this.playoffPuntYds = playoffPuntYds;
+    public void setPostseasonPuntYds(Integer postseasonPuntYds) {
+        this.postseasonPuntYds = postseasonPuntYds;
     }
 
     /**
-     * @return The longest punt (yds) made by the player this post-season.
+     * @return The longest punt (yds) made by the player this postseason.
      */
-    public Short getPlayoffPuntLong() {
-        return playoffPuntLong;
+    public Integer getPostseasonPuntLong() {
+        return postseasonPuntLong;
     }
 
     /**
-     * @param playoffPuntLong  The longest punt (yds) made by the player this post-season.
+     * @param postseasonPuntLong  The longest punt (yds) made by the player this postseason.
      */
-    public void setPlayoffPuntLong(Short playoffPuntLong) {
-        this.playoffPuntLong = playoffPuntLong;
+    public void setPostseasonPuntLong(Integer postseasonPuntLong) {
+        this.postseasonPuntLong = postseasonPuntLong;
     }
 
     /**
-     * @return The number of the player's punts that were blocked this post-season.
+     * @return The number of the player's punts that were blocked this postseason.
      */
-    public Short getPlayoffPuntBlocked() {
-        return playoffPuntBlocked;
+    public Integer getPostseasonPuntBlocked() {
+        return postseasonPuntBlocked;
     }
 
     /**
-     * @param playoffPuntBlocked  The number of the player's punts that were blocked this
-     *                            post-season.
+     * @param postseasonPuntBlocked  The number of the player's punts that were blocked this
+     *                               postseason.
      */
-    public void setPlayoffPuntBlocked(Short playoffPuntBlocked) {
-        this.playoffPuntBlocked = playoffPuntBlocked;
+    public void setPostseasonPuntBlocked(Integer postseasonPuntBlocked) {
+        this.postseasonPuntBlocked = postseasonPuntBlocked;
     }
 
     /**
-     * @return The number of punts returned by the player this post-season.
+     * @return The number of punts returned by the player this postseason.
      */
-    public Short getPlayoffPuntRet() {
-        return playoffPuntRet;
+    public Integer getPostseasonPuntRet() {
+        return postseasonPuntRet;
     }
 
     /**
-     * @param playoffPuntRet  The number of punts returned by the player this post-season.
+     * @param postseasonPuntRet  The number of punts returned by the player this postseason.
      */
-    public void setPlayoffPuntRet(Short playoffPuntRet) {
-        this.playoffPuntRet = playoffPuntRet;
+    public void setPostseasonPuntRet(Integer postseasonPuntRet) {
+        this.postseasonPuntRet = postseasonPuntRet;
     }
 
     /**
-     * @return The number of punt return yards gained by the player this post-season.
+     * @return The number of punt return yards gained by the player this postseason.
      */
-    public Short getPlayoffPuntRetYds() {
-        return playoffPuntRetYds;
+    public Integer getPostseasonPuntRetYds() {
+        return postseasonPuntRetYds;
     }
 
     /**
-     * @param playoffPuntRetYds  The number of punt return yards gained by the player this
-     *                           post-season.
+     * @param postseasonPuntRetYds  The number of punt return yards gained by the player this
+     *                              postseason.
      */
-    public void setPlayoffPuntRetYds(Short playoffPuntRetYds) {
-        this.playoffPuntRetYds = playoffPuntRetYds;
+    public void setPostseasonPuntRetYds(Integer postseasonPuntRetYds) {
+        this.postseasonPuntRetYds = postseasonPuntRetYds;
     }
 
     /**
-     * @return The number of punts returned for touchdowns by the player this post-season.
+     * @return The number of punts returned for touchdowns by the player this postseason.
      */
-    public Short getPlayoffPuntRetTds() {
-        return playoffPuntRetTds;
+    public Integer getPostseasonPuntRetTds() {
+        return postseasonPuntRetTds;
     }
 
     /**
-     * @param playoffPuntRetTds  The number of punts returned for touchdowns by the player
-     *                           this post-season.
+     * @param postseasonPuntRetTds  The number of punts returned for touchdowns by the player
+     *                              this postseason.
      */
-    public void setPlayoffPuntRetTds(Short playoffPuntRetTds) {
-        this.playoffPuntRetTds = playoffPuntRetTds;
+    public void setPostseasonPuntRetTds(Integer postseasonPuntRetTds) {
+        this.postseasonPuntRetTds = postseasonPuntRetTds;
     }
 
     /**
-     * @return The longest punt return (yds) made by the player this post-season.
+     * @return The longest punt return (yds) made by the player this postseason.
      */
-    public Short getPlayoffPuntRetLong() {
-        return playoffPuntRetLong;
+    public Integer getPostseasonPuntRetLong() {
+        return postseasonPuntRetLong;
     }
 
     /**
-     * @param playoffPuntRetLong  The longest punt return (yds) made by the player this
-     *                            post-season.
+     * @param postseasonPuntRetLong  The longest punt return (yds) made by the player this
+     *                               postseason.
      */
-    public void setPlayoffPuntRetLong(Short playoffPuntRetLong) {
-        this.playoffPuntRetLong = playoffPuntRetLong;
+    public void setPostseasonPuntRetLong(Integer postseasonPuntRetLong) {
+        this.postseasonPuntRetLong = postseasonPuntRetLong;
     }
 
     /**
-     * @return The number of kickoffs returned by the player this post-season.
+     * @return The number of kickoffs returned by the player this postseason.
      */
-    public Short getPlayoffKickRet() {
-        return playoffKickRet;
+    public Integer getPostseasonKickRet() {
+        return postseasonKickRet;
     }
 
     /**
-     * @param playoffKickRet  The number of kickoffs returned by the player this post-season.
+     * @param postseasonKickRet  The number of kickoffs returned by the player this postseason.
      */
-    public void setPlayoffKickRet(Short playoffKickRet) {
-        this.playoffKickRet = playoffKickRet;
+    public void setPostseasonKickRet(Integer postseasonKickRet) {
+        this.postseasonKickRet = postseasonKickRet;
     }
 
     /**
-     * @return The number of kickoff return yards gained by the player this post-season.
+     * @return The number of kickoff return yards gained by the player this postseason.
      */
-    public Short getPlayoffKickRetYds() {
-        return playoffKickRetYds;
+    public Integer getPostseasonKickRetYds() {
+        return postseasonKickRetYds;
     }
 
     /**
-     * @param playoffKickRetYds  The number of kickoff return yards gained by the player
-     *                           this post-season.
+     * @param postseasonKickRetYds  The number of kickoff return yards gained by the player
+     *                              this postseason.
      */
-    public void setPlayoffKickRetYds(Short playoffKickRetYds) {
-        this.playoffKickRetYds = playoffKickRetYds;
+    public void setPostseasonKickRetYds(Integer postseasonKickRetYds) {
+        this.postseasonKickRetYds = postseasonKickRetYds;
     }
 
     /**
-     * @return The number of kickoffs returned for touchdowns by the player this post-season.
+     * @return The number of kickoffs returned for touchdowns by the player this postseason.
      */
-    public Short getPlayoffKickRetTds() {
-        return playoffKickRetTds;
+    public Integer getPostseasonKickRetTds() {
+        return postseasonKickRetTds;
     }
 
     /**
-     * @param playoffKickRetTds  The number of kickoffs returned for touchdowns by the player
-     *                           this post-season.
+     * @param postseasonKickRetTds  The number of kickoffs returned for touchdowns by the player
+     *                              this postseason.
      */
-    public void setPlayoffKickRetTds(Short playoffKickRetTds) {
-        this.playoffKickRetTds = playoffKickRetTds;
+    public void setPostseasonKickRetTds(Integer postseasonKickRetTds) {
+        this.postseasonKickRetTds = postseasonKickRetTds;
     }
 
     /**
-     * @return The longest kick return (yds) made by the player this post-season.
+     * @return The longest kick return (yds) made by the player this postseason.
      */
-    public Short getPlayoffKickRetLong() {
-        return playoffKickRetLong;
+    public Integer getPostseasonKickRetLong() {
+        return postseasonKickRetLong;
     }
 
     /**
-     * @param playoffKickRetLong  The longest kick return (yds) made by the player this post-season.
+     * @param postseasonKickRetLong  The longest kick return (yds) made by the player this postseason.
      */
-    public void setPlayoffKickRetLong(Short playoffKickRetLong) {
-        this.playoffKickRetLong = playoffKickRetLong;
+    public void setPostseasonKickRetLong(Integer postseasonKickRetLong) {
+        this.postseasonKickRetLong = postseasonKickRetLong;
     }
 
     /**
      * @return The total number of touchdowns scored via other means by the player this
-     *         post-season.
+     *         postseason.
      */
-    public Short getPlayoffOtherTds() {
-        return playoffOtherTds;
+    public Integer getPostseasonOtherTds() {
+        return postseasonOtherTds;
     }
 
     /**
-     * @param playoffOtherTds  The total number of touchdowns scored via other means by the
-     *                         player this post-season.
+     * @param postseasonOtherTds  The total number of touchdowns scored via other means by the
+     *                            player this postseason.
      */
-    public void setPlayoffOtherTds(Short playoffOtherTds) {
-        this.playoffOtherTds = playoffOtherTds;
+    public void setPostseasonOtherTds(Integer postseasonOtherTds) {
+        this.postseasonOtherTds = postseasonOtherTds;
     }
 
     /**
-     * @return The total number of touchdowns scored by the player during this post-season.
+     * @return The total number of touchdowns scored by the player during this postseason.
      */
-    public Short getPlayoffAllTds() {
-        return playoffAllTds;
+    public Integer getPostseasonAllTds() {
+        return postseasonAllTds;
     }
 
     /**
-     * @param playoffAllTds  The total number of touchdowns scored by the player during this
-     *                       post-season.
+     * @param postseasonAllTds  The total number of touchdowns scored by the player during this
+     *                          postseason.
      */
-    public void setPlayoffAllTds(Short playoffAllTds) {
-        this.playoffAllTds = playoffAllTds;
+    public void setPostseasonAllTds(Integer postseasonAllTds) {
+        this.postseasonAllTds = postseasonAllTds;
     }
 
     /**
      * @return The total number of two point conversions scored by the player during this
-     *         post-season.
+     *         postseason.
      */
-    public Short getPlayoffTwoPointConv() {
-        return playoffTwoPointConv;
+    public Integer getPostseasonTwoPointConv() {
+        return postseasonTwoPointConv;
     }
 
     /**
-     * @param playoffTwoPointConv  The total number of two point conversions scored by the player
-     *                             during this post-season.
+     * @param postseasonTwoPointConv  The total number of two point conversions scored by the player
+     *                                during this postseason.
      */
-    public void setPlayoffTwoPointConv(Short playoffTwoPointConv) {
-        this.playoffTwoPointConv = playoffTwoPointConv;
+    public void setPostseasonTwoPointConv(Integer postseasonTwoPointConv) {
+        this.postseasonTwoPointConv = postseasonTwoPointConv;
     }
 
     /**
@@ -2627,7 +2636,7 @@ public class PlayerSeason implements Serializable {
      * @return A metric calculated from the player's statistics this season which
      *         approximates the amount of value the player has produced this season.
      */
-    public Short getAvgValue() {
+    public Integer getAvgValue() {
         return avgValue;
     }
 
@@ -2636,7 +2645,7 @@ public class PlayerSeason implements Serializable {
      *                     which approximates the amount of value the player has produced
      *                     this season.
      */
-    public void setAvgValue(Short avgValue) {
+    public void setAvgValue(Integer avgValue) {
         this.avgValue = avgValue;
     }
 
@@ -2645,7 +2654,7 @@ public class PlayerSeason implements Serializable {
      * if and only if the argument is a non-null instance of PlayerSeason that has equivalent
      * values for the playerId, season, and franchiseId attributes.
      *
-     * @param obj  The object to compare this team against.
+     * @param obj  The object to compare this PlayerSeason against.
      * @return <code>true</code> if the argument is equal to this PlayerSeason object,
      *         <code>false</code> otherwise.
      */

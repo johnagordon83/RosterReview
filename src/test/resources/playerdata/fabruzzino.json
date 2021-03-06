@@ -1,0 +1,20 @@
+{
+  "id":"abruzzfr01",
+  "pfrId":"AbruFr20",
+  "nickname":"Frank",
+  "firstName":"Frank",
+  "middleName":"Marion",
+  "lastName":"Abruzzino",
+  "suffix":"Jr.",
+  "positions":[
+    {"playerId":"abruzzfr01","position":"RB"},{"playerId":"abruzzfr01","position":"LB"},
+    {"playerId":"abruzzfr01","position":"WR"},{"playerId":"abruzzfr01","position":"OL"}
+  ],
+  "height":72,
+  "weight":193,
+  "birthDate":[1908,1,22],
+  "college":"Colgate",
+  "draftPicks":[],
+  "statistics":[],
+  "hofYear":null
+}

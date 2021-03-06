@@ -14,6 +14,7 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * An {@link Entity} class defining a football position played by a specific {@link Player}.
@@ -26,7 +27,6 @@ public class PlayerPosition implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @JsonIgnore
     @Column(name="player_id")
     protected String playerId;
 
@@ -42,10 +42,12 @@ public class PlayerPosition implements Serializable {
         this.position = position;
     }
 
+    @JsonIgnore
     public String getPlayerId() {
         return playerId;
     }
 
+    @JsonProperty
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
     }

@@ -1,20 +1,22 @@
 package com.rosterreview.entity;
 
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -23,6 +25,8 @@ import org.hibernate.annotations.FetchMode;
  */
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name="player")
 public class Player {
 
@@ -48,9 +52,9 @@ public class Player {
     @Column(name="suffix")
     protected String suffix;
 
-    @OneToMany()
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name="player_id")
+    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
     protected Set<PlayerPosition> positions;
 
     @Column(name="height")
@@ -60,30 +64,29 @@ public class Player {
     protected Integer weight;
 
     @Column(name="birth_date")
-    @Temporal(TemporalType.DATE)
-    protected Calendar birthDate;
+    protected LocalDate birthDate;
 
     @Column(name="college")
     protected String college;
 
-    @OneToMany()
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name="player_id")
+    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
     protected Set<DraftPick> draftPicks;
 
-    @OneToMany()
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name="player_id")
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
+    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
     protected List<PlayerSeason> statistics;
 
     @Column(name="hof_year")
     protected Integer hofYear;
 
-    Player() {}
+    public Player() {}
 
     public Player(String id, String pfrId, String nickname, String firstName, String middleName, String lastName,
-            String suffix, Set<PlayerPosition> positions, Integer height, Integer weight, Calendar birthDate, String college,
-            Set<DraftPick> draftPicks, Integer hofYear) {
+            String suffix, Set<PlayerPosition> positions, Integer height, Integer weight, LocalDate birthDate, String college,
+            Set<DraftPick> draftPicks, List<PlayerSeason> statistics, Integer hofYear) {
 
         this.id = id;
         this.pfrId = pfrId;
@@ -98,6 +101,7 @@ public class Player {
         this.birthDate = birthDate;
         this.college = college;
         this.draftPicks = draftPicks;
+        this.statistics = statistics;
         this.hofYear = hofYear;
     }
 
@@ -219,11 +223,11 @@ public class Player {
         this.weight = weight;
     }
 
-    public Calendar getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Calendar birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 

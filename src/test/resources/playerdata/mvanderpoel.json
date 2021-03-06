@@ -1,0 +1,22 @@
+{
+  "id":"vanderjo01",
+  "pfrId":"VandMa20",
+  "nickname":"Mark",
+  "firstName":"John",
+  "middleName":"Mark",
+  "lastName":"Vander Poel",
+  "suffix":"",
+  "positions":[
+    {"playerId":"vanderjo01","position":"T"}
+  ],
+  "height":79,
+  "weight":303,
+  "birthDate":[1968,3,5],
+  "college":"Colorado",
+  "draftPicks":[
+    {"playerId":"vanderjo01","franchiseId":"colts02","year":1991,"team":{"franchiseId":"colts02","season":1991,"league":"NFL","location":"Indianapolis","name":"Colts","abbrev":"IND","pfrId":"clt","pfrAbbrev":"IND"},"league":"NFL","round":4,"slot":96,"supplemental":false}
+  ],
+  "statistics":[
+  ],
+  "hofYear":null
+}
