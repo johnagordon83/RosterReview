@@ -632,8 +632,20 @@ public class PfrDataUpdater {
                     searchPs.setPlayerId(player.getId());
                     searchPs.setFranchiseId(team.getFranchiseId());
                     searchPs.setSeason(season);
-                    PlayerSeason playerSeason = latestStats.stream()
-                            .filter(ps -> ps.equals(searchPs)).findFirst().orElse(searchPs);
+                    searchPs.setSeasonType(PlayerSeason.SeasonType.REGULAR);
+                    PlayerSeason playerSeason = latestStats.stream().filter(ps -> ps.equals(searchPs))
+                            .findFirst().orElse(searchPs);
+
+                    // Post-season data tables do not include jersey number or average value data, so
+                    // copy it from the corresponding regular season if it exists.
+                    if (playerStatistics.getId().contains("playoffs")) {
+                        Integer avgValue = playerSeason.getAvgValue() != null ? playerSeason.getAvgValue() : 0;
+                        Integer jerseyNum = playerSeason.getJerseyNumber();
+                        searchPs.setSeasonType(PlayerSeason.SeasonType.POST);
+                        playerSeason = latestStats.stream().filter(ps -> ps.equals(searchPs)).findFirst().orElse(searchPs);
+                        playerSeason.setJerseyNumber(jerseyNum);
+                        playerSeason.setAvgValue(avgValue);
+                    }
 
                     playerSeason.setAge(age);
                     playerSeason.setTeam(team);
@@ -643,42 +655,30 @@ public class PfrDataUpdater {
 
                     switch (playerStatistics.getId()) {
                         case "passing":
-                            parsePassingStatistics(playerSeason, seasonPositions, tableHeader, row);
-                            break;
                         case "passing_playoffs":
-                            parsePostseasonPassingStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parsePassingStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
                         case "rushing_and_receiving":
                         case "receiving_and_rushing":
-                            parseRushingAndReceivingStatistics(playerSeason, seasonPositions, tableHeader, row);
-                            break;
                         case "rushing_and_receiving_playoffs":
                         case "receiving_and_rushing_playoffs":
-                            parsePostseasonRushingAndReceivingStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseRushingAndReceivingStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
                         case "defense":
+                        case "defense_playoffs":
                             parseDefensiveStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
-                        case "defense_playoffs":
-                            parsePostseasonDefensiveStatistics(playerSeason, seasonPositions, tableHeader, row);
-                            break;
                         case "kicking":
+                        case "kicking_playoffs":
                             parseKickingStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
-                        case "kicking_playoffs":
-                            parsePostseasonKickingStatistics(playerSeason, seasonPositions, tableHeader, row);
-                            break;
                         case "returns":
+                        case "returns_playoffs":
                             parseReturnStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
-                        case "returns_playoffs":
-                            parsePostseasonReturnStatistics(playerSeason, seasonPositions, tableHeader, row);
-                            break;
                         case "scoring":
-                            parseScoringStatistics(playerSeason, seasonPositions, tableHeader, row);
-                            break;
                         case "scoring_playoffs":
-                            parsePostseasonScoringStatistics(playerSeason, tableHeader, row);
+                            parseScoringStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
                         default: // Do nothing, don't need data from all tables
                     }
@@ -774,6 +774,14 @@ public class PfrDataUpdater {
         return result.get(0);
     }
 
+    /**
+     *
+     * @param seasonPositions
+     * @param values
+     * @param primaryWeighting
+     * @param secondaryWeighting
+     * @param tertiaryWeighting
+     */
     private void calculatePositionWeightings(List<Position> seasonPositions, Map<Position,
             Double> values, double primaryWeighting, double secondaryWeighting, double tertiaryWeighting) {
 
@@ -839,6 +847,11 @@ public class PfrDataUpdater {
         }
     }
 
+    /**
+     *
+     * @param season
+     * @param values
+     */
     private void calculateStatisticAndJerseyNumberWeightings(PlayerSeason season, Map<Position, Double> values) {
 
         Integer passAtt = season.getPassAtt();
@@ -928,27 +941,32 @@ public class PfrDataUpdater {
             values.put(Position.OLB, values.get(Position.OLB) + jerseyVal);
         }
         if (values.get(Position.DB) != null) {
-            jerseyVal = ((jerseyNum >= 20 && jerseyNum < 50)) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
             values.put(Position.DB, values.get(Position.DB) + jerseyVal);
         }
         if (values.get(Position.CB) != null) {
-            jerseyVal = ((jerseyNum >= 20 && jerseyNum < 50)) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
             values.put(Position.CB, values.get(Position.CB) + jerseyVal);
         }
         if (values.get(Position.S) != null) {
-            jerseyVal = ((jerseyNum >= 20 && jerseyNum < 50)) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
             values.put(Position.S, values.get(Position.S) + jerseyVal);
         }
         if (values.get(Position.FS) != null) {
-            jerseyVal = ((jerseyNum >= 20 && jerseyNum < 50)) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
             values.put(Position.FS, values.get(Position.FS) + jerseyVal);
         }
         if (values.get(Position.SS) != null) {
-            jerseyVal = ((jerseyNum >= 20 && jerseyNum < 50)) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
             values.put(Position.SS, values.get(Position.SS) + jerseyVal);
         }
     }
 
+    /**
+     *
+     * @param rawData
+     * @return
+     */
     private Set<Position> parsePositions(String rawData) {
         String[] yearData = rawData.split("[///;:,]");
         Set<Position> positions = new HashSet<>();
@@ -966,6 +984,14 @@ public class PfrDataUpdater {
         return positions;
     }
 
+    /**
+     *
+     * @param playerSeason
+     * @param seasonPositions
+     * @param tableHeader
+     * @param row
+     * @throws RosterReviewException
+     */
     private void parsePassingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
 
@@ -1011,51 +1037,17 @@ public class PfrDataUpdater {
         }
     }
 
-    private void parsePostseasonPassingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
-
-        for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
-
-            switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "uniform_number": playerSeason.setJerseyNumber(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, null));
-                    break;
-                case "g": playerSeason.setPostseasonGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "gs": playerSeason.setPostseasonGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_cmp": playerSeason.setPostseasonPassComp(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_att": playerSeason.setPostseasonPassAtt(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_yds": playerSeason.setPostseasonPassYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_td": playerSeason.setPostseasonPassTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_int": playerSeason.setPostseasonPassInts(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_long": playerSeason.setPostseasonPassLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_rating": playerSeason.setPostseasonPassRating(
-                        WebScrapingUtils.parseDoubleWithDefault(cellData, 0.0));
-                    break;
-                case "pass_sacked": playerSeason.setPostseasonSacked(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_sacked_yds": playerSeason.setPostseasonSackedYds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on passing data column with index: " + j + ".");
-                default : // Do nothing.
-            }
-        }
-    }
-
-    private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
+    /**
+     *
+     * @param playerSeason
+     * @param seasonPositions
+     * @param tableHeader
+     * @param row
+     * @throws RosterReviewException
+     */
+    private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason, Map<Integer,
+            List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row)
+            throws RosterReviewException {
 
         for (int j = 3; j < row.getCells().size(); j++) {
             HtmlTableCell cell = row.getCell(j);
@@ -1101,49 +1093,14 @@ public class PfrDataUpdater {
         }
     }
 
-    private void parsePostseasonRushingAndReceivingStatistics(PlayerSeason playerSeason,
-            Map<Integer, List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row)
-            throws RosterReviewException {
-
-        for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
-
-            switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "uniform_number": playerSeason.setJerseyNumber(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, null));
-                    break;
-                case "g": playerSeason.setPostseasonGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "gs": playerSeason.setPostseasonGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rush_att": playerSeason.setPostseasonRushAtt(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rush_yds": playerSeason.setPostseasonRushYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rush_td": playerSeason.setPostseasonRushTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rush_long": playerSeason.setPostseasonRushLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fumbles": playerSeason.setPostseasonFumbles(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "targets": playerSeason.setPostseasonTargets(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rec": playerSeason.setPostseasonReceptions(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rec_yds": playerSeason.setPostseasonRecYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rec_td": playerSeason.setPostseasonRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rec_long": playerSeason.setPostseasonRecLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
-                default : // Do nothing.
-            }
-        }
-    }
-
+    /**
+     *
+     * @param playerSeason
+     * @param seasonPositions
+     * @param tableHeader
+     * @param row
+     * @throws RosterReviewException
+     */
     private void parseDefensiveStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
 
@@ -1199,65 +1156,14 @@ public class PfrDataUpdater {
         }
     }
 
-    private void parsePostseasonDefensiveStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
-
-        for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
-
-            switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "uniform_number": playerSeason.setJerseyNumber(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, null));
-                    break;
-                case "g": playerSeason.setPostseasonGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "gs": playerSeason.setPostseasonGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "def_int": playerSeason.setPostseasonInterceptions(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "def_int_yds": playerSeason.setPostseasonIntYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "def_int_td": playerSeason.setPostseasonIntTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "def_int_long": playerSeason.setPostseasonIntLong(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "pass_defended": playerSeason.setPostseasonPassDef(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fumbles_forced": playerSeason.setPostseasonFumForced(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fumbles": playerSeason.setPostseasonFumbles(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fumbles_rec": playerSeason.setPostseasonFumRec(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fumbles_rec_yds": playerSeason.setPostseasonFumRecYds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fumbles_rec_td": playerSeason.setPostseasonFumRecTds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "sacks": playerSeason.setPostseasonSacks(WebScrapingUtils.parseDoubleWithDefault(cellData, 0.0));
-                    break;
-                case "tackles_solo": playerSeason.setPostseasonTackles(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "tackles_assists": playerSeason.setPostseasonAssists(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "safety_md": playerSeason.setPostseasonSafeties(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
-                default : // Do nothing.
-            }
-        }
-    }
-
+    /**
+     *
+     * @param playerSeason
+     * @param seasonPositions
+     * @param tableHeader
+     * @param row
+     * @throws RosterReviewException
+     */
     private void parseKickingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
 
@@ -1323,67 +1229,14 @@ public class PfrDataUpdater {
         }
     }
 
-    private void parsePostseasonKickingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
-
-        for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
-
-            switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "uniform_number": playerSeason.setJerseyNumber(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, null));
-                    break;
-                case "g": playerSeason.setPostseasonGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "gs": playerSeason.setPostseasonGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga1": playerSeason.setPostseasonFgaTeens(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm1": playerSeason.setPostseasonFgmTeens(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga2": playerSeason.setPostseasonFgaTwenties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm2": playerSeason.setPostseasonFgmTwenties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga3": playerSeason.setPostseasonFgaThirties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm3": playerSeason.setPostseasonFgmThirties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga4": playerSeason.setPostseasonFgaFourties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm4": playerSeason.setPostseasonFgmFourties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga5": playerSeason.setPostseasonFgaFiftyPlus(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm5": playerSeason.setPostseasonFgmFiftyPlus(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga": playerSeason.setPostseasonFgaTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm": playerSeason.setPostseasonFgmTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fg_long": playerSeason.setPostseasonFgLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "xpa": playerSeason.setPostseasonXpa(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "xpm": playerSeason.setPostseasonXpm(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt": playerSeason.setPostseasonPunts(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_yds": playerSeason.setPostseasonPuntYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_long": playerSeason.setPostseasonPuntLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_blocked": playerSeason.setPostseasonPuntBlocked(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
-                default : // Do nothing.
-            }
-        }
-    }
-
+    /**
+     *
+     * @param playerSeason
+     * @param seasonPositions
+     * @param tableHeader
+     * @param row
+     * @throws RosterReviewException
+     */
     private void parseReturnStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
 
@@ -1425,52 +1278,14 @@ public class PfrDataUpdater {
         }
     }
 
-    private void parsePostseasonReturnStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
-
-        for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
-
-            switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
-                    break;
-                case "uniform_number": playerSeason.setJerseyNumber(WebScrapingUtils.parseIntegerWithDefault(cellData, null));
-                    break;
-                case "g": playerSeason.setPostseasonGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "gs": playerSeason.setPostseasonGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_ret": playerSeason.setPostseasonPuntRet(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_ret_yds": playerSeason.setPostseasonPuntRetYds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_ret_td": playerSeason.setPostseasonPuntRetTds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "punt_ret_long": playerSeason.setPostseasonPuntRetLong(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "kick_ret": playerSeason.setPostseasonKickRet(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "kick_ret_yds": playerSeason.setPostseasonKickRetYds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "kick_ret_td": playerSeason.setPostseasonKickRetTds(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "kick_ret_long": playerSeason.setPostseasonKickRetLong(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
-                default : // Do nothing.
-            }
-        }
-    }
-
+    /**
+     *
+     * @param playerSeason
+     * @param seasonPositions
+     * @param tableHeader
+     * @param row
+     * @throws RosterReviewException
+     */
     private void parseScoringStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
         for (int j = 3; j < row.getCells().size(); j++) {
@@ -1518,60 +1333,6 @@ public class PfrDataUpdater {
                     break;
                 case "": throw new RosterReviewException(
                      "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
-                default : // Do nothing.
-            }
-        }
-    }
-
-    /**
-     * Parse the 'Post-season Scoring' statistics table.
-     *
-     * @param playerSeason
-     * @param tableHeader  An ordered list of column titles
-     * @param row
-     */
-    private void parsePostseasonScoringStatistics(PlayerSeason playerSeason, List<HtmlTableCell> tableHeader,
-            HtmlTableRow row) {
-        for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
-
-            switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "uniform_number": playerSeason.setJerseyNumber(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, null));
-                    break;
-                case "g": playerSeason.setPostseasonGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "gs": playerSeason.setPostseasonGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rushtd": playerSeason.setPostseasonRushTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "rectd": playerSeason.setPostseasonRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "prtd": playerSeason.setPostseasonPuntRetTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "krtd": playerSeason.setPostseasonKickRetTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "frtd": playerSeason.setPostseasonFumRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "ditd": playerSeason.setPostseasonIntTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "otd": playerSeason.setPostseasonOtherTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "alltd": playerSeason.setPostseasonAllTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "two_pt_md": playerSeason.setPostseasonTwoPointConv(
-                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "xpm": playerSeason.setPostseasonXpm(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "xpa": playerSeason.setPostseasonXpa(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fgm": playerSeason.setPostseasonFgmTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "fga": playerSeason.setPostseasonFgaTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
-                    break;
-                case "safety_md": playerSeason.setPostseasonSafeties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                 default : // Do nothing.
             }
         }

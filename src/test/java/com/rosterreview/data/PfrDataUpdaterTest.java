@@ -152,7 +152,7 @@ public class PfrDataUpdaterTest {
 
         validatePlayerInfo(playerFileName, playerUrl, playerId);
     }
-
+/*
     @Test
     public void testParseJamalWilliamsData() throws IOException {
         String playerFileName = PLAYER_TEST_DATA_DIR + "jwilliams.json";
@@ -269,7 +269,7 @@ public class PfrDataUpdaterTest {
 
         validatePlayerInfo(playerFileName, playerUrl, playerId);
     }
-
+*/
     private void validatePlayerInfo(String playerFileName, String playerUrl, String playerId) throws IOException {
 
         Resource resource = new ClassPathResource(playerFileName);
@@ -402,73 +402,6 @@ public class PfrDataUpdaterTest {
             assertEquals(refSeason.getOtherTds(), season.getOtherTds());
             assertEquals(refSeason.getAllTds(), season.getAllTds());
             assertEquals(refSeason.getTwoPointConv(), season.getTwoPointConv());
-            assertEquals(refSeason.getPostseasonGamesPlayed(), season.getPostseasonGamesPlayed());
-            assertEquals(refSeason.getPostseasonGamesStarted(), season.getPostseasonGamesStarted());
-            assertEquals(refSeason.getPostseasonPassComp(), season.getPostseasonPassComp());
-            assertEquals(refSeason.getPostseasonPassAtt(), season.getPostseasonPassAtt());
-            assertEquals(refSeason.getPostseasonPassYds(), season.getPostseasonPassYds());
-            assertEquals(refSeason.getPostseasonPassTds(), season.getPostseasonPassTds());
-            assertEquals(refSeason.getPostseasonPassInts(), season.getPostseasonPassInts());
-            assertEquals(refSeason.getPostseasonPassLong(), season.getPostseasonPassLong());
-            assertEquals(refSeason.getPostseasonPasserRating(), season.getPostseasonPasserRating(), 0.0);
-            assertEquals(refSeason.getPostseasonSacked(), season.getPostseasonSacked());
-            assertEquals(refSeason.getPostseasonSackedYds(), season.getPostseasonSackedYds());
-            assertEquals(refSeason.getPostseasonRushAtt(), season.getPostseasonRushAtt());
-            assertEquals(refSeason.getPostseasonRushYds(), season.getPostseasonRushYds());
-            assertEquals(refSeason.getPostseasonRushTds(), season.getPostseasonRushTds());
-            assertEquals(refSeason.getPostseasonRushLong(), season.getPostseasonRushLong());
-            assertEquals(refSeason.getPostseasonTargets(), season.getPostseasonTargets());
-            assertEquals(refSeason.getPostseasonReceptions(), season.getPostseasonReceptions());
-            assertEquals(refSeason.getPostseasonRecYds(), season.getPostseasonRecYds());
-            assertEquals(refSeason.getPostseasonRecTds(), season.getPostseasonRecTds());
-            assertEquals(refSeason.getPostseasonRecLong(), season.getPostseasonRecLong());
-            assertEquals(refSeason.getPostseasonFumbles(), season.getPostseasonFumbles());
-            assertEquals(refSeason.getPostseasonInterceptions(), season.getPostseasonInterceptions());
-            assertEquals(refSeason.getPostseasonIntYds(), season.getPostseasonIntYds());
-            assertEquals(refSeason.getPostseasonIntTds(), season.getPostseasonIntTds());
-            assertEquals(refSeason.getPostseasonIntLong(), season.getPostseasonIntLong());
-            assertEquals(refSeason.getPostseasonPassDef(), season.getPostseasonPassDef());
-            assertEquals(refSeason.getPostseasonFumForced(), season.getPostseasonFumForced());
-            assertEquals(refSeason.getPostseasonFumRec(), season.getPostseasonFumRec());
-            assertEquals(refSeason.getPostseasonFumRecYds(), season.getPostseasonFumRecYds());
-            assertEquals(refSeason.getPostseasonFumRecTds(), season.getPostseasonFumRecTds());
-            assertEquals(refSeason.getPostseasonSacks(), season.getPostseasonSacks());
-            assertEquals(refSeason.getPostseasonTackles(), season.getPostseasonTackles());
-            assertEquals(refSeason.getPostseasonAssists(), season.getPostseasonAssists());
-            assertEquals(refSeason.getPostseasonSafeties(), season.getPostseasonSafeties());
-            assertEquals(refSeason.getPostseasonFgaTeens(), season.getPostseasonFgaTeens());
-            assertEquals(refSeason.getPostseasonFgmTeens(), season.getPostseasonFgmTeens());
-            assertEquals(refSeason.getPostseasonFgaTwenties(), season.getPostseasonFgaTwenties());
-            assertEquals(refSeason.getPostseasonFgmTwenties(), season.getPostseasonFgmTwenties());
-            assertEquals(refSeason.getPostseasonFgaThirties(), season.getPostseasonFgaThirties());
-            assertEquals(refSeason.getPostseasonFgmThirties(), season.getPostseasonFgmThirties());
-            assertEquals(refSeason.getPostseasonFgaFourties(), season.getPostseasonFgaFourties());
-            assertEquals(refSeason.getPostseasonFgmFourties(), season.getPostseasonFgmFourties());
-            assertEquals(refSeason.getPostseasonFgaFiftyPlus(), season.getPostseasonFgaFiftyPlus());
-            assertEquals(refSeason.getPostseasonFgmFiftyPlus(), season.getPostseasonFgmFiftyPlus());
-            assertEquals(refSeason.getPostseasonFgaTotal(), season.getPostseasonFgaTotal());
-            assertEquals(refSeason.getPostseasonFgmTotal(), season.getPostseasonFgmTotal());
-            assertEquals(refSeason.getPostseasonFgLong(), season.getPostseasonFgLong());
-            assertEquals(refSeason.getPostseasonXpa(), season.getPostseasonXpa());
-            assertEquals(refSeason.getPostseasonXpm(), season.getPostseasonXpm());
-            assertEquals(refSeason.getPostseasonPunts(), season.getPostseasonPunts());
-            assertEquals(refSeason.getPostseasonPuntYds(), season.getPostseasonPuntYds());
-            assertEquals(refSeason.getPostseasonPuntLong(), season.getPostseasonPuntLong());
-            assertEquals(refSeason.getPostseasonPuntBlocked(), season.getPostseasonPuntBlocked());
-            assertEquals(refSeason.getPostseasonPuntRet(), season.getPostseasonPuntRet());
-            assertEquals(refSeason.getPostseasonPuntRetYds(), season.getPostseasonPuntRetYds());
-            assertEquals(refSeason.getPostseasonPuntRetTds(), season.getPostseasonPuntRetTds());
-            assertEquals(refSeason.getPostseasonPuntRetLong(), season.getPostseasonPuntRetLong());
-            assertEquals(refSeason.getKickRet(), season.getKickRet());
-            assertEquals(refSeason.getKickRetYds(), season.getKickRetYds());
-            assertEquals(refSeason.getKickRetTds(), season.getKickRetTds());
-            assertEquals(refSeason.getKickRetLong(), season.getKickRetLong());
-            assertEquals(refSeason.getPostseasonOtherTds(), season.getPostseasonOtherTds());
-            assertEquals(refSeason.getPostseasonAllTds(), season.getPostseasonAllTds());
-            assertEquals(refSeason.getPostseasonTwoPointConv(), season.getPostseasonTwoPointConv());
-            assertEquals(refSeason.getProbowl(), season.getProbowl());
-            assertEquals(refSeason.getAllPro(), season.getAllPro());
-            assertEquals(refSeason.getAvgValue(), season.getAvgValue());
         }
     }
 
