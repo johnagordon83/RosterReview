@@ -152,7 +152,7 @@ public class PfrDataUpdaterTest {
 
         validatePlayerInfo(playerFileName, playerUrl, playerId);
     }
-/*
+
     @Test
     public void testParseJamalWilliamsData() throws IOException {
         String playerFileName = PLAYER_TEST_DATA_DIR + "jwilliams.json";
@@ -269,7 +269,7 @@ public class PfrDataUpdaterTest {
 
         validatePlayerInfo(playerFileName, playerUrl, playerId);
     }
-*/
+
     private void validatePlayerInfo(String playerFileName, String playerUrl, String playerId) throws IOException {
 
         Resource resource = new ClassPathResource(playerFileName);
