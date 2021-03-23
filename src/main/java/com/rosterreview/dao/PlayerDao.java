@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rosterreview.entity.Player;
-import com.rosterreview.entity.PlayerSeason;
 
 /**
  * A data access class for {@Link Player} data.
@@ -96,11 +95,6 @@ public class PlayerDao {
         session.persist(player);
     }
 
-    public void mergeSeason(PlayerSeason season) {
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(season);
-    }
-
     public List<String> getPlayerIdsWithMatchingPrefix(String idPrefix) {
         String hql = "SELECT p.id FROM Player p WHERE p.id like :idPrefix";
 
@@ -110,14 +104,4 @@ public class PlayerDao {
 
         return query.getResultList();
     }
-
- /*   public void clearPlayerStatistics(Player player) {
-        String hql = "DELETE FROM PlayerSeason s WHERE s.player_id = :playerId";
-
-        Session session = sessionFactory.getCurrentSession();
-        TypedQuery<String> query = session.createQuery(hql, String.class);
-        query.setParameter("idPrefix", idPrefix + '%');
-
-        query.
-    }*/
 }

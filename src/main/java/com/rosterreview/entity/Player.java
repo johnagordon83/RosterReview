@@ -1,6 +1,8 @@
 package com.rosterreview.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,6 +85,24 @@ public class Player {
     protected Integer hofYear;
 
     public Player() {}
+
+    public Player(String id) {
+        this.id = id;
+        this.pfrId = null;
+        this.nickname = null;
+        this.firstName = null;
+        this.middleName = null;
+        this.lastName = null;
+        this.suffix = null;
+        this.positions = new HashSet<PlayerPosition>();
+        this.height = null;
+        this.weight = null;
+        this.birthDate = null;
+        this.college = null;
+        this.draftPicks = new HashSet<DraftPick>();
+        this.statistics = new ArrayList<PlayerSeason>();
+        this.hofYear = null;
+    }
 
     public Player(String id, String pfrId, String nickname, String firstName, String middleName, String lastName,
             String suffix, Set<PlayerPosition> positions, Integer height, Integer weight, LocalDate birthDate, String college,

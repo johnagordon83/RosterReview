@@ -12,7 +12,7 @@ public class PersonName {
 
     private String suffix;
 
-    PersonName(String firstName, String nickname, String middleName, String lastName, String suffix) {
+    public PersonName(String firstName, String nickname, String middleName, String lastName, String suffix) {
         this.firstName = firstName;
         this.nickname = nickname;
         this.middleName = middleName;

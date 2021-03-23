@@ -14,6 +14,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.rosterreview.service.PfrDataParsingService;
 
 /**
  * Registers a scheduled event that periodically updates the data store
@@ -24,9 +25,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class DataUpdateScheduler {
 
     @Autowired
-    protected PfrDataUpdater pfrDataUpdater;
+    protected PfrDataParsingService pfrDataUpdater;
 
-    protected static Logger log = LoggerFactory.getLogger(PfrDataUpdater.class);
+    protected static Logger log = LoggerFactory.getLogger(PfrDataParsingService.class);
 
     /**
      * Schedules a recurring event that updates the data store with recent
@@ -45,13 +46,13 @@ public class DataUpdateScheduler {
 
         for (char letter = 'A'; letter <= 'Z'; letter++) {
             try {
-                String playersByLetterUrl = PfrDataUpdater.PFR_URL + "/players/" + letter;
+                String playersByLetterUrl = PfrDataParsingService.PFR_URL + "/players/" + letter;
 
                 HtmlPage page = webClient.getPage(playersByLetterUrl);
                 List<DomNode> activePlayerNodes = page.getByXPath("div[@id='div_players']/b/a");
 
                 for (DomNode node : activePlayerNodes) {
-                    String playerUrl = PfrDataUpdater.PFR_URL + ((DomElement) node).getAttribute("href");
+                    String playerUrl = PfrDataParsingService.PFR_URL + ((DomElement) node).getAttribute("href");
                     pfrDataUpdater.parseAndPersistPlayerDataFromUrl(playerUrl);
                 }
             } catch (IOException iox) {

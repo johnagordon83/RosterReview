@@ -1,4 +1,4 @@
-package com.rosterreview.data;
+package com.rosterreview.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -30,22 +31,23 @@ import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTableBody;
 import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
+import com.rosterreview.data.PersonName;
 import com.rosterreview.entity.DraftPick;
 import com.rosterreview.entity.Player;
 import com.rosterreview.entity.PlayerPosition;
 import com.rosterreview.entity.PlayerSeason;
 import com.rosterreview.entity.Position;
 import com.rosterreview.entity.Team;
-import com.rosterreview.service.PlayerService;
-import com.rosterreview.service.TeamService;
 import com.rosterreview.utils.RosterReviewException;
 import com.rosterreview.utils.WebScrapingUtils;
 
 /**
- * Scrapes player data from https://www.pro-football-reference.com.
+ * This service is responsible for updating the application data store with current player data.
+ *
+ * The service scrapes and parses the latest player data from https://www.pro-football-reference.com.
  */
 @Component
-public class PfrDataUpdater {
+public class PfrDataParsingService {
 
     @Autowired
     private PlayerService playerService;
@@ -53,7 +55,7 @@ public class PfrDataUpdater {
     @Autowired
     private TeamService teamService;
 
-    private static Logger log = LoggerFactory.getLogger(PfrDataUpdater.class);
+    private static Logger log = LoggerFactory.getLogger(PfrDataParsingService.class);
 
     public static final String PFR_URL = "https://www.pro-football-reference.com";
 
@@ -98,15 +100,11 @@ public class PfrDataUpdater {
             Player player = playerService.getPlayerByPfrId(pfrId);
 
             if (player == null) {
-                player = new Player();
-                String id = playerService.generateNewPlayerId(personName.getFirstName(), personName.getLastName());
-                player.setId(id);
-                player.setPfrId(pfrId);
-                player.setPositions(new HashSet<PlayerPosition>());
-                player.setDraftPicks(new HashSet<DraftPick>());
-                player.setStatistics(new ArrayList<PlayerSeason>());
-                playerService.persistPlayer(player);
+                player = playerService.createPlayer(personName.getFirstName(), personName.getLastName());
             }
+
+            // Set player PFR id
+            player.setPfrId(pfrId);
 
             // Set player name data
             player.setNickname(personName.getNickname());
@@ -116,10 +114,10 @@ public class PfrDataUpdater {
             player.setSuffix(personName.getSuffix());
 
             // Parse and set player's position data
-            parsePlayerPositions(player, positionRawData);
+            player.setPositions(parsePlayerPositions(player, positionRawData));
 
             // Parse and set player's draft pick data
-            parseDraftPicks(player, draftRawData);
+            player.setDraftPicks(parseDraftPicks(player, draftRawData));
 
             // Parse and set player's college data
             player.setCollege(parseCollege(collegeRawData));
@@ -137,7 +135,7 @@ public class PfrDataUpdater {
             player.setHofYear(parseHofYear(player.getId(), hofYearRawData));
 
             // Parse and set player's statistics
-            parsePlayerStatistics(page, player);
+            player.setStatistics(parsePlayerStatistics(page, player));
 
         } catch (Exception ex) {
             log.error("An exception occurred while parsing player data from url: {}.", playerUrl, ex);
@@ -147,9 +145,9 @@ public class PfrDataUpdater {
     /**
      * Parse raw player name data strings.
      *
-     * @param fullName  The raw full name string
-     * @param nickname  The raw nickname string
-     * @return A PersonName containing the parsed name data
+     * @param fullName  The raw full name string.
+     * @param nickname  The raw nickname string.
+     * @return A PersonName containing the parsed name data.
      */
     private PersonName parsePlayerName(String fullName, String nickname) {
 
@@ -174,6 +172,7 @@ public class PfrDataUpdater {
             { "I", "I.", "II", "II.", "III", "III.", "IV", "IV.",
               "JR", "JR.", "Jr", "Jr.", "Junior", "SR", "SR.", "Senior", "Sr", "Sr.",
               "V", "V.", "VI", "VI.", "VII", "VII.", "VIII", "VIII." };
+        Arrays.sort(suffixes);
 
         // Parse name suffix
         int suffixIndex = Arrays.binarySearch(suffixes, fullNameArr[fullNameIndex]);
@@ -209,7 +208,6 @@ public class PfrDataUpdater {
                 fullNameIndex--;
                 nicknameIndex--;
             }
-
             Collections.reverse(lastNameComponents);
         }
 
@@ -249,10 +247,10 @@ public class PfrDataUpdater {
     }
 
     /**
-     * Determine if argument is a recognized last name prefix
+     * Determine if the name argument is a recognized last name prefix.
      *
      * @param name The name to test
-     * @return true if the argument is a last name prefix, false otherwise
+     * @return <code>true</code> if the argument is a last name prefix, <code>false</code> otherwise.
      */
     private boolean isLastNamePrefix(String name) {
         switch (name.toLowerCase()) {
@@ -283,19 +281,19 @@ public class PfrDataUpdater {
     }
 
     /**
-     * Parse player profile position data
+     * Parse player profile position data.
      *
-     * @param player  The player whose position data should be parsed
+     * @param player  The Player whose position data should be parsed
      * @param positionRawData  The raw position data string to parse
+     * @return  A set of positions to be associated with the player's profile
      */
-    private void parsePlayerPositions(Player player, String positionRawData) {
+    private Set<PlayerPosition> parsePlayerPositions(Player player, String positionRawData) {
 
         String positionData = positionRawData.replaceFirst("Position: ", "");
         if (positionData.contains("Throws")) {
             positionData = positionData.substring(0, positionData.indexOf("Throws"));
         }
-        positionData = positionData.replaceAll(":;/,\\\\", "-");
-        positionData = positionData.trim();
+        positionData = positionData.replaceAll(":;/,\\\\", "-").trim();
 
         Set<Position> positions = new HashSet<>();
         for (String pos : positionData.split("-")) {
@@ -345,28 +343,27 @@ public class PfrDataUpdater {
         }
 
         // Add parsed positions to the player object.  If there are still more than 4, only 4 will be retained.
-        // There are no known cases where position data would be dropped in this manner
+        // There are no known cases where position data would be dropped in this manner.
         Set<PlayerPosition> playerPositions = new HashSet<>();
         Iterator<Position> iter = positions.iterator();
         while (iter.hasNext() && playerPositions.size() <= 4) {
             playerPositions.add(new PlayerPosition(player.getId(), iter.next()));
         }
 
-        player.getPositions().retainAll(playerPositions);
-        player.getPositions().addAll(playerPositions);
+        return playerPositions;
     }
 
     /**
      * Reduce the number of profile positions associated with a player by replacing specific positions with
      * their more generic counterpart.
      *
-     * This function may reduce the size of the positions set by replacing any Positions specified in
+     * This function may reduce the size of the positions set by replacing any positions specified in
      * specificPositions that are found in the positions set with a single instance of the genericPosition
      * argument.
      *
-     * @param positions  A Set of a player's profile positions
+     * @param positions  The player's profile positions
      * @param genericPosition  The position that specific positions should be generalized to
-     * @param specificPositions  A set of specific positions that should be generalized to genericPosition
+     * @param specificPositions  The specific positions that should be generalized to genericPosition
      */
      private void generalizePosition(Set<Position> positions, Position genericPosition,
              Set<Position> specificPositions) {
@@ -382,19 +379,19 @@ public class PfrDataUpdater {
     }
 
     /**
-     * Parse player draft picks
+     * Parse player draft picks.
      *
      * @param player  The player whose draft data should be parsed
      * @param draftRawData  The raw draft pick data string to be parsed
+     * @return  A set of positions associated with the player's profile
      */
-    private void parseDraftPicks(Player player, String draftRawData) {
+    private HashSet<DraftPick> parseDraftPicks(Player player, String draftRawData) {
 
-        if (StringUtils.isBlank(draftRawData)) return;
+        HashSet<DraftPick> draftPicks = new HashSet<>();
 
         try {
-            ArrayList<DraftPick> newPicks = new ArrayList<>();
             List<String> nflLocations = teamService.getNflLocations();
-            String[] draftDataArr = draftRawData.replaceFirst("Draft: ", "").split(";");
+            String[] draftDataArr = StringUtils.split(draftRawData.replaceFirst("Draft: ", ""),";");
 
             for (String draftData : draftDataArr) {
                 draftData = draftData.trim();
@@ -460,20 +457,18 @@ public class PfrDataUpdater {
                     draftPick.setSlot(slot);
                     draftPick.setSupplemental(supplemental);
                     draftPick.setTeam(team);
-                    newPicks.add(draftPick);
+                    draftPicks.add(draftPick);
                 } else {
                     log.warn("Could not identify a team that drafted a player with id: {}: "
                             + "(year: {}, league: {}, location: {}, teamName: {}).",
                             player.getId(), year, league, location, teamName);
                 }
             }
-
-            player.getDraftPicks().retainAll(newPicks);
-            player.getDraftPicks().addAll(newPicks);
-
         } catch (NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
             log.warn("Unable to parse draft data ('{}') for player with id: {}.", draftRawData, player.getId());
         }
+
+        return draftPicks;
     }
 
     /**
@@ -484,13 +479,8 @@ public class PfrDataUpdater {
      */
     private String parseCollege(String collegeRawData) {
 
-        String college = null;
-        if (StringUtils.isBlank(collegeRawData)) {
-            return college;
-        }
-
         String collegeData = collegeRawData.replaceFirst("College: ", "");
-        String[] collegeDataArr = collegeData.split(";|,");
+        String[] collegeDataArr = StringUtils.split(collegeData,";|,");
 
         // If there are multiple colleges listed, select the one with the 'College Stats' link.
         // If not link present, default to the last college listed.
@@ -502,10 +492,11 @@ public class PfrDataUpdater {
             }
         }
 
-        collegeData = collegeData.replace("none", "");
-        college = StringUtils.strip(collegeData, " \n\t\u00A0\u2007\u202F");
+        if (collegeData.equals("") || collegeData.contains("none")) {
+            return null;
+        }
 
-        return college;
+        return StringUtils.strip(collegeData, " \n\t\u00A0\u2007\u202F");
     }
 
     /**
@@ -594,23 +585,23 @@ public class PfrDataUpdater {
     /**
      * Parse a player's season statistics.
      *
-     * @param page The HtmlPage to parse
-     * @param player The Player whose data will be parsed
+     * @param page  The HtmlPage to parse
+     * @param player  The Player whose data will be parsed
      * @throws RosterReviewException
      */
-    private void parsePlayerStatistics(HtmlPage page, Player player) throws RosterReviewException {
+    private List<PlayerSeason> parsePlayerStatistics(HtmlPage page, Player player) throws RosterReviewException {
 
-        Set<PlayerSeason> latestStats = new HashSet<>();
+        List<PlayerSeason> playerStatistics = new ArrayList<>();
         HashMap<Integer, List<Position>> seasonPositions = new HashMap<>();
 
         String xpath = "//table[contains(@class, 'per_match_toggle') and contains(@class, 'stats_table')]";
         List<HtmlTable> statTables = page.getByXPath(xpath);
 
-        for (HtmlTable playerStatistics : statTables) {
+        for (HtmlTable statTable : statTables) {
             // parse the current table
-            int numHeaderRows = playerStatistics.getHeader().getRows().size();
-            List<HtmlTableCell> tableHeader = playerStatistics.getHeader().getRows().get(numHeaderRows - 1).getCells();
-            HtmlTableBody tableBody = playerStatistics.getBodies().get(0);
+            int numHeaderRows = statTable.getHeader().getRows().size();
+            List<HtmlTableCell> tableHeader = statTable.getHeader().getRows().get(numHeaderRows - 1).getCells();
+            HtmlTableBody tableBody = statTable.getBodies().get(0);
 
             // Variables for players who switched teams mid-season
             Integer season = null;
@@ -633,16 +624,17 @@ public class PfrDataUpdater {
                     searchPs.setFranchiseId(team.getFranchiseId());
                     searchPs.setSeason(season);
                     searchPs.setSeasonType(PlayerSeason.SeasonType.REGULAR);
-                    PlayerSeason playerSeason = latestStats.stream().filter(ps -> ps.equals(searchPs))
+                    PlayerSeason playerSeason = playerStatistics.stream().filter(ps -> ps.equals(searchPs))
                             .findFirst().orElse(searchPs);
 
                     // Post-season data tables do not include jersey number or average value data, so
                     // copy it from the corresponding regular season if it exists.
-                    if (playerStatistics.getId().contains("playoffs")) {
-                        Integer avgValue = playerSeason.getAvgValue() != null ? playerSeason.getAvgValue() : 0;
+                    if (statTable.getId().contains("playoffs")) {
+                        Integer avgValue = playerSeason.getAvgValue();
                         Integer jerseyNum = playerSeason.getJerseyNumber();
                         searchPs.setSeasonType(PlayerSeason.SeasonType.POST);
-                        playerSeason = latestStats.stream().filter(ps -> ps.equals(searchPs)).findFirst().orElse(searchPs);
+                        playerSeason = playerStatistics.stream().filter(ps -> ps.equals(searchPs))
+                                .findFirst().orElse(searchPs);
                         playerSeason.setJerseyNumber(jerseyNum);
                         playerSeason.setAvgValue(avgValue);
                     }
@@ -651,9 +643,9 @@ public class PfrDataUpdater {
                     playerSeason.setTeam(team);
                     playerSeason.setProbowl(yearCellContent.contains("*"));
                     playerSeason.setAllPro(yearCellContent.contains("+"));
-                    latestStats.add(playerSeason);
+                    playerStatistics.add(playerSeason);
 
-                    switch (playerStatistics.getId()) {
+                    switch (statTable.getId()) {
                         case "passing":
                         case "passing_playoffs":
                             parsePassingStatistics(playerSeason, seasonPositions, tableHeader, row);
@@ -686,289 +678,292 @@ public class PfrDataUpdater {
             }
         }
 
-        calculateSeasonPositions(seasonPositions, player.getPositions(), latestStats);
-        player.getStatistics().retainAll(latestStats);
+        // Calculate which position should be associated with each season in playerStatistics
+        calculateSeasonPositions(seasonPositions, player.getPositions(), playerStatistics);
 
-        for (PlayerSeason season : latestStats) {
-            if (player.getStatistics().contains(season)) {
-                playerService.mergeSeason(season);
-            } else {
-                player.getStatistics().add(season);
-            }
-        }
+        return playerStatistics;
     }
 
     /**
-     * Calculate the Position that should be associated with a player's season.
+     * Calculate the Position that should be associated with each season in the player's career.
      *
      * @param seasonPositions  A Map of a player's seasons to a list of the positions they played that year
-     * @param careerPositions  A Set of positions associated with a player's profile
-     * @param statistics  A Set of a players seasonal statistics
+     * @param careerPositions  The positions associated with a player's profile
+     * @param statistics  The player's seasonal statistics
      */
     private void calculateSeasonPositions(HashMap<Integer, List<Position>> seasonPositions,
-            Set<PlayerPosition> careerPositions, Set<PlayerSeason> statistics) {
+            Set<PlayerPosition> careerPositions, List<PlayerSeason> statistics) {
 
+        // Create a list of all of the season positions across all years (include duplicates)
         List<Position> allPositions = new ArrayList<>();
-        for (Map.Entry<Integer, List<Position>> entry : seasonPositions.entrySet()) {
+        for (Entry<Integer, List<Position>> entry : seasonPositions.entrySet()) {
             if (entry.getValue() != null) {
                 allPositions.addAll(entry.getValue());
             }
         }
 
+        // Set the position to associate with each season.
         for (PlayerSeason season : statistics) {
             List<Position> positions = seasonPositions.get(season.getSeason());
+            // If only one position is associated with this season choose it.
+            // Prefer not to select PR or KR however
             if (positions.size() == 1 && !(positions.get(0).equals(Position.KR) ||
                 positions.get(0).equals(Position.PR))) {
                 season.setPosition(positions.get(0));
             } else {
+                // Use career positions, and all season positions to deduce what position should
+                // be associated with this season.
                 season.setPosition(consolidate(positions, careerPositions, allPositions, season));
             }
         }
     }
 
     /**
+     * Calculate a single Position to associate with a player's season by examining the
+     * positions they played that year, positions played in all years, and positions associated
+     * with the player's career.
      *
-     *
-     * @param seasonPositions
-     * @param careerPositions
-     * @param allPositions
-     * @param season
-     * @return
+     * @param seasonPositions  A list of one or more positions associated with a season
+     * @param careerPositions  The positions associated withe the player's profile
+     * @param allPositions  The positions associated with seasons from the player's entire career
+     * @param season  The season who's position is being consolidated
+     * @return  A single Position that should be associated with a PlayerSeason
      */
     private Position consolidate(List<Position> seasonPositions, Set<PlayerPosition> careerPositions,
             List<Position> allPositions, PlayerSeason season) {
 
-        Map<Position, Double> values = new EnumMap<>(Position.class);
-        List<Position> careerPosList = careerPositions.stream().map(PlayerPosition::getPosition).collect(Collectors.toList());
+        // Assign weightings to each position associated with the season
+        Map<Position, Double> positionWeightings = new EnumMap<>(Position.class);
+        calculatePositionWeightings(seasonPositions, positionWeightings, 1.0, 0.9, 0.8);
 
-        if (seasonPositions != null) {
-            calculatePositionWeightings(seasonPositions, values, 1.0, 0.9, 0.8);
-            ArrayList<Double> valuesList = new ArrayList<>(values.values());
-            Collections.sort(valuesList);
-            Collections.reverse(valuesList);
+        // Sort the current position weightings largest to smallest (need to determine largest two)
+        ArrayList<Double> weightingValues = new ArrayList<>(positionWeightings.values());
+        Collections.sort(weightingValues, Collections.reverseOrder());
 
-            if ((seasonPositions.size() < 2) || (valuesList.size() > 1 && valuesList.get(0).equals(valuesList.get(1)))) {
-                calculatePositionWeightings(careerPosList, values, 0.5, 0.4, 0.3);
-                if (allPositions != null) {
-                    calculatePositionWeightings(allPositions, values, 0.1, 0.05, 0.025);
-                }
-            }
-        } else {
-            calculatePositionWeightings(careerPosList, values, 1.0, 0.9, 0.8);
+        /*
+         * If any of the following are true, we need to consider career positions and positions associated
+         * with other seasons to decide what position should be associated with this season.
+         *
+         * 1.) There are no positions associated with this season
+         * 2.) There is one position associated with this season, but it is either KR or PR
+         * 3.) There are two or more positions associated with this season, but there is a tie
+         *     for the highest weighted position.
+         */
+        if ((seasonPositions.size() < 2) || (weightingValues.size() > 1 &&
+                weightingValues.get(0).equals(weightingValues.get(1)))) {
+            List<Position> careerPosList = careerPositions.stream().map(PlayerPosition::getPosition).collect(Collectors.toList());
+            calculatePositionWeightings(careerPosList, positionWeightings, 0.5, 0.4, 0.3);
+            calculatePositionWeightings(allPositions, positionWeightings, 0.1, 0.05, 0.025);
         }
 
-        calculateStatisticAndJerseyNumberWeightings(season, values);
-        ArrayList<Position> result = new ArrayList<>();
-        double value = 0;
+        // Also consider the player's statistics and jersey number for calculating the season position
+        calculateStatisticAndJerseyNumberWeightings(season, positionWeightings);
 
-        for (Map.Entry<Position, Double> entry : values.entrySet()) {
-            if (values.get(entry.getKey()) > value) {
-                result.clear();
-                result.add(entry.getKey());
-                value = values.get(entry.getKey());
-            } else if (values.get(entry.getKey()) == value) {
-                result.add(entry.getKey());
-            }
-        }
+        // Identify the position with the highest calculated weighting and return it
+        Entry<Position, Double> maxEntry = Collections.max(positionWeightings.entrySet(),
+                (Entry<Position, Double> e1, Entry<Position, Double> e2) -> e1.getValue()
+                .compareTo(e2.getValue()));
 
-        return result.get(0);
+        return maxEntry.getKey();
     }
 
     /**
+     * Calculate weightings for each Position associate with the player's season.
      *
-     * @param seasonPositions
-     * @param values
-     * @param primaryWeighting
-     * @param secondaryWeighting
-     * @param tertiaryWeighting
+     * Positions specified by PFR receive the most weighting (primary).  If the PFR position
+     * is a specific position, include it's generic with a lesser weighting (secondary or tertiary).
+     *
+     * @param seasonPositions  The positions associated with a given season
+     * @param positionWeightings  A mapping of positions to their weightings
+     * @param primaryWeighting  The weighting to be assigned to the original PFR positions
+     * @param secondaryWeighting  The weighting to be applied to generic forms of specific positions
+     * @param tertiaryWeighting  The weighting to be applied to second-level generic forms of specific
+     *                           positions
      */
     private void calculatePositionWeightings(List<Position> seasonPositions, Map<Position,
-            Double> values, double primaryWeighting, double secondaryWeighting, double tertiaryWeighting) {
+            Double> positionWeightings, double primaryWeighting, double secondaryWeighting,
+            double tertiaryWeighting) {
 
         for (Position pos : seasonPositions) {
-            Double val = values.get(pos);
-            val = (val == null) ? 0.0 : val;
+            // Assign a primary weighting for positions that were listed for the given season
+            Double primaryVal = positionWeightings.getOrDefault(pos, 0.0);
             if (pos.equals(Position.KR) || pos.equals(Position.PR)) {
-                values.put(pos, val + 0.1);
+                // Assign a lower weighting for KR and PR, as these should be deemphasized.
+                positionWeightings.put(pos, primaryVal + 0.1);
             } else {
-                values.put(pos, val + primaryWeighting);
+                positionWeightings.put(pos, primaryVal + primaryWeighting);
             }
 
+            // If position is a specific position, apply a secondary or tertiary weighting for
+            // the positions more generic counterparts.
             switch (pos) {
                 case HB:
                 case FB:
-                    Double rbVal = values.get(Position.RB);
-                    rbVal = rbVal == null ? 0.0 : rbVal;
-                    values.put(Position.RB, rbVal + secondaryWeighting);
+                    Double rbVal = positionWeightings.getOrDefault(Position.RB, 0.0);
+                    positionWeightings.put(Position.RB, rbVal + secondaryWeighting);
                     break;
                 case T:
                 case G:
                 case C:
-                    Double olVal = values.get(Position.OL);
-                    olVal = olVal == null ?  0.0 : olVal;
-                    values.put(Position.OL, olVal + secondaryWeighting);
+                    Double olVal = positionWeightings.getOrDefault(Position.OL, 0.0);
+                    positionWeightings.put(Position.OL, olVal + secondaryWeighting);
                     break;
                 case DE:
                 case DT:
                 case NT:
-                    Double dlVal = values.get(Position.DL);
-                    dlVal = dlVal == null ? 0.0 : dlVal;
-                    values.put(Position.DL, dlVal + secondaryWeighting);
+                    Double dlVal = positionWeightings.getOrDefault(Position.DL, 0.0);
+                    positionWeightings.put(Position.DL, dlVal + secondaryWeighting);
                     break;
                 case OLB:
                 case ILB:
                 case MLB:
-                    Double lbVal = values.get(Position.LB);
-                    lbVal = lbVal == null ? 0.0 : lbVal;
-                    values.put(Position.LB, lbVal + secondaryWeighting);
+                    Double lbVal = positionWeightings.getOrDefault(Position.LB, 0.0);
+                    positionWeightings.put(Position.LB, lbVal + secondaryWeighting);
                     break;
                 case FS:
                 case SS:
-                    Double sVal = values.get(Position.S);
-                    sVal = sVal == null ? 0.0: sVal;
-                    values.put(Position.S, sVal + secondaryWeighting);
+                    Double sVal = positionWeightings.getOrDefault(Position.S, 0.0);
+                    positionWeightings.put(Position.S, sVal + secondaryWeighting);
 
-                    Double dbVal = values.get(Position.DB);
-                    dbVal = dbVal == null ? 0.0 : dbVal;
-                    values.put(Position.DB, dbVal + tertiaryWeighting);
+                    Double dbVal = positionWeightings.getOrDefault(Position.DB, 0.0);
+                    positionWeightings.put(Position.DB, dbVal + tertiaryWeighting);
                     break;
                 case S:
-                    Double dbVal3 = values.get(Position.DB);
-                    dbVal3 = dbVal3 == null ? 0.0 : dbVal3;
-                    values.put(Position.DB, dbVal3 + secondaryWeighting);
+                    Double dbVal2 = positionWeightings.getOrDefault(Position.DB, 0.0);
+                    positionWeightings.put(Position.DB, dbVal2 + secondaryWeighting);
                     break;
                 case CB:
-                    Double dbVal2 = values.get(Position.DB);
-                    dbVal2 = dbVal2 == null ? 0.0 : dbVal2;
-                    values.put(Position.DB, dbVal2 + secondaryWeighting);
+                    Double dbVal3 = positionWeightings.getOrDefault(Position.DB, 0.0);
+                    positionWeightings.put(Position.DB, dbVal3 + secondaryWeighting);
                     break;
-                default:
+                default: // do nothing
             }
         }
     }
 
     /**
+     * Modify Position weightings based upon the player's statistics and jersey number.
      *
-     * @param season
-     * @param values
+     * @param season  The player's season statistics
+     * @param weightings  A Mapping of positions associated with a player's season to their weightings
      */
-    private void calculateStatisticAndJerseyNumberWeightings(PlayerSeason season, Map<Position, Double> values) {
+    private void calculateStatisticAndJerseyNumberWeightings(PlayerSeason season, Map<Position, Double> weightings) {
 
         Integer passAtt = season.getPassAtt();
         Integer jerseyNum = season.getJerseyNumber();
         Integer rushAtt = season.getRushAtt();
         Integer rec = season.getReceptions();
-
-        if (passAtt >= 20) {
-            values.put(Position.QB, 1000.0);
-            return;
-        }
-
         double jerseyVal;
 
-        if (values.get(Position.QB) != null) {
+        // Any player with 20 or more pass attempts in a season should be regarded as a QB
+        if (passAtt >= 20) {
+            weightings.put(Position.QB, Double.MAX_VALUE);
+            return;
+        }
+        if (weightings.get(Position.QB) != null) {
             jerseyVal = jerseyNum < 20 ? 0.1 : 0;
-            values.put(Position.QB, values.get(Position.QB) + jerseyVal + (passAtt * 0.01));
+            weightings.put(Position.QB, weightings.get(Position.QB) + jerseyVal + (passAtt * 0.01));
         }
-        if (values.get(Position.HB) != null) {
+        if (weightings.get(Position.HB) != null) {
             jerseyVal = jerseyNum >= 20 && jerseyNum < 50 ? 0.1 : 0;
-            values.put(Position.HB, values.get(Position.HB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
+            weightings.put(Position.HB, weightings.get(Position.HB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
         }
-        if (values.get(Position.FB) != null) {
+        if (weightings.get(Position.FB) != null) {
             jerseyVal = jerseyNum >= 20 && jerseyNum < 50 ? 0.1 : 0;
-            values.put(Position.FB, values.get(Position.FB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
+            weightings.put(Position.FB, weightings.get(Position.FB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
         }
-        if (values.get(Position.RB) != null) {
+        if (weightings.get(Position.RB) != null) {
             jerseyVal = jerseyNum >= 20 && jerseyNum < 50 ? 0.1 : 0;
-            values.put(Position.RB, values.get(Position.RB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
+            weightings.put(Position.RB, weightings.get(Position.RB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
         }
-        if (values.get(Position.WR) != null) {
-            jerseyVal = ((jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 10 && jerseyNum < 20)) ? 0.1 : 0;
-            values.put(Position.WR, values.get(Position.WR) + jerseyVal + (rec * 0.01));
+        if (weightings.get(Position.WR) != null) {
+            jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 10 && jerseyNum < 20) ? 0.1 : 0;
+            weightings.put(Position.WR, weightings.get(Position.WR) + jerseyVal + (rec * 0.01));
         }
-        if (values.get(Position.TE) != null) {
-            jerseyVal = ((jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 40 && jerseyNum < 50)) ? 0.1 : 0;
-            values.put(Position.TE, values.get(Position.TE) + jerseyVal + (rec * 0.01));
+        if (weightings.get(Position.TE) != null) {
+            jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 40 && jerseyNum < 50) ? 0.1 : 0;
+            weightings.put(Position.TE, weightings.get(Position.TE) + jerseyVal + (rec * 0.01));
         }
-        if (values.get(Position.OL) != null) {
+        if (weightings.get(Position.OL) != null) {
             jerseyVal = jerseyNum >= 50 && jerseyNum < 80 ? 0.1 : 0;
-            values.put(Position.OL, values.get(Position.OL) + jerseyVal);
+            weightings.put(Position.OL, weightings.get(Position.OL) + jerseyVal);
         }
-        if (values.get(Position.T) != null) {
+        if (weightings.get(Position.T) != null) {
             jerseyVal = jerseyNum >= 50 && jerseyNum < 80 ? 0.1 : 0;
-            values.put(Position.T, values.get(Position.T) + jerseyVal);
+            weightings.put(Position.T, weightings.get(Position.T) + jerseyVal);
         }
-        if (values.get(Position.G) != null) {
+        if (weightings.get(Position.G) != null) {
             jerseyVal = jerseyNum >= 50 && jerseyNum < 80 ? 0.1 : 0;
-            values.put(Position.G, values.get(Position.G) + jerseyVal);
+            weightings.put(Position.G, weightings.get(Position.G) + jerseyVal);
         }
-        if (values.get(Position.C) != null) {
+        if (weightings.get(Position.C) != null) {
             jerseyVal = jerseyNum >= 50 && jerseyNum < 80 ? 0.1 : 0;
-            values.put(Position.C, values.get(Position.C) + jerseyVal);
+            weightings.put(Position.C, weightings.get(Position.C) + jerseyVal);
         }
-        if (values.get(Position.DL) != null) {
-            jerseyVal = ((jerseyNum >= 50 && jerseyNum < 60) || (jerseyNum >= 70 && jerseyNum < 80) ||
-                    (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.DL, values.get(Position.DL) + jerseyVal);
+        if (weightings.get(Position.DL) != null) {
+            jerseyVal = (jerseyNum >= 50 && jerseyNum < 60) || (jerseyNum >= 70 && jerseyNum < 80) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.DL, weightings.get(Position.DL) + jerseyVal);
         }
-        if (values.get(Position.DE) != null) {
-            jerseyVal = ((jerseyNum >= 50 && jerseyNum < 60) || (jerseyNum >= 70 && jerseyNum < 80) ||
-                    (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.DE, values.get(Position.DE) + jerseyVal);
+        if (weightings.get(Position.DE) != null) {
+            jerseyVal = (jerseyNum >= 50 && jerseyNum < 60) || (jerseyNum >= 70 && jerseyNum < 80) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.DE, weightings.get(Position.DE) + jerseyVal);
         }
-        if (values.get(Position.DT) != null) {
-            jerseyVal = ((jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.DT, values.get(Position.DT) + jerseyVal);
+        if (weightings.get(Position.DT) != null) {
+            jerseyVal = (jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.DT, weightings.get(Position.DT) + jerseyVal);
         }
-        if (values.get(Position.NT) != null) {
-            jerseyVal = ((jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.NT, values.get(Position.NT) + jerseyVal);
+        if (weightings.get(Position.NT) != null) {
+            jerseyVal = (jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.NT, weightings.get(Position.NT) + jerseyVal);
         }
-        if (values.get(Position.LB) != null) {
-            jerseyVal = ((jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.LB, values.get(Position.LB) + jerseyVal);
+        if (weightings.get(Position.LB) != null) {
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.LB, weightings.get(Position.LB) + jerseyVal);
         }
-        if (values.get(Position.ILB) != null) {
-            jerseyVal = ((jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.ILB, values.get(Position.ILB) + jerseyVal);
+        if (weightings.get(Position.ILB) != null) {
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.ILB, weightings.get(Position.ILB) + jerseyVal);
         }
-        if (values.get(Position.MLB) != null) {
-            jerseyVal = ((jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.MLB, values.get(Position.MLB) + jerseyVal);
+        if (weightings.get(Position.MLB) != null) {
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.MLB, weightings.get(Position.MLB) + jerseyVal);
         }
-        if (values.get(Position.OLB) != null) {
-            jerseyVal = ((jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90)) ? 0.1 : 0;
-            values.put(Position.OLB, values.get(Position.OLB) + jerseyVal);
+        if (weightings.get(Position.OLB) != null) {
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            weightings.put(Position.OLB, weightings.get(Position.OLB) + jerseyVal);
         }
-        if (values.get(Position.DB) != null) {
+        if (weightings.get(Position.DB) != null) {
             jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
-            values.put(Position.DB, values.get(Position.DB) + jerseyVal);
+            weightings.put(Position.DB, weightings.get(Position.DB) + jerseyVal);
         }
-        if (values.get(Position.CB) != null) {
+        if (weightings.get(Position.CB) != null) {
             jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
-            values.put(Position.CB, values.get(Position.CB) + jerseyVal);
+            weightings.put(Position.CB, weightings.get(Position.CB) + jerseyVal);
         }
-        if (values.get(Position.S) != null) {
+        if (weightings.get(Position.S) != null) {
             jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
-            values.put(Position.S, values.get(Position.S) + jerseyVal);
+            weightings.put(Position.S, weightings.get(Position.S) + jerseyVal);
         }
-        if (values.get(Position.FS) != null) {
+        if (weightings.get(Position.FS) != null) {
             jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
-            values.put(Position.FS, values.get(Position.FS) + jerseyVal);
+            weightings.put(Position.FS, weightings.get(Position.FS) + jerseyVal);
         }
-        if (values.get(Position.SS) != null) {
+        if (weightings.get(Position.SS) != null) {
             jerseyVal = (jerseyNum >= 20 && jerseyNum < 50) ? 0.1 : 0;
-            values.put(Position.SS, values.get(Position.SS) + jerseyVal);
+            weightings.put(Position.SS, weightings.get(Position.SS) + jerseyVal);
         }
     }
 
     /**
+     * Parse position data for a given season.
      *
-     * @param rawData
-     * @return
+     * @param rawPositionData  The raw position data for a given season
+     * @return  The parsed Positions
      */
-    private Set<Position> parsePositions(String rawData) {
-        String[] yearData = rawData.split("[///;:,]");
+    private Set<Position> parsePositions(String rawPositionData) {
+        String[] yearData = rawPositionData.split("[///;:,]");
         Set<Position> positions = new HashSet<>();
 
         for (String pos : yearData) {
@@ -985,12 +980,13 @@ public class PfrDataUpdater {
     }
 
     /**
+     * Parse a player's passing statistics.
      *
-     * @param playerSeason
-     * @param seasonPositions
-     * @param tableHeader
-     * @param row
-     * @throws RosterReviewException
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @param tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parsePassingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
@@ -1038,12 +1034,13 @@ public class PfrDataUpdater {
     }
 
     /**
+     * Parse a player's and receiving statistics.
      *
-     * @param playerSeason
-     * @param seasonPositions
-     * @param tableHeader
-     * @param row
-     * @throws RosterReviewException
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @param tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason, Map<Integer,
             List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row)
@@ -1094,12 +1091,13 @@ public class PfrDataUpdater {
     }
 
     /**
+     * Parse a player's defensive statistics.
      *
-     * @param playerSeason
-     * @param seasonPositions
-     * @param tableHeader
-     * @param row
-     * @throws RosterReviewException
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @p ram tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseDefensiveStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
@@ -1157,12 +1155,13 @@ public class PfrDataUpdater {
     }
 
     /**
+     * Parse a player's kicking statistics.
      *
-     * @param playerSeason
-     * @param seasonPositions
-     * @param tableHeader
-     * @param row
-     * @throws RosterReviewException
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @param tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseKickingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
@@ -1230,12 +1229,13 @@ public class PfrDataUpdater {
     }
 
     /**
+     * Parse a player's return statistics.
      *
-     * @param playerSeason
-     * @param seasonPositions
-     * @param tableHeader
-     * @param row
-     * @throws RosterReviewException
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @param tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseReturnStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
@@ -1279,12 +1279,13 @@ public class PfrDataUpdater {
     }
 
     /**
+     * Parse a player's scoring statistics.
      *
-     * @param playerSeason
-     * @param seasonPositions
-     * @param tableHeader
-     * @param row
-     * @throws RosterReviewException
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @param tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseScoringStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
@@ -1337,4 +1338,4 @@ public class PfrDataUpdater {
             }
         }
     }
-} // 1530
+}

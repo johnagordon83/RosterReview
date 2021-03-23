@@ -25,6 +25,7 @@ import com.rosterreview.entity.DraftPick;
 import com.rosterreview.entity.Player;
 import com.rosterreview.entity.PlayerSeason;
 import com.rosterreview.entity.Team;
+import com.rosterreview.service.PfrDataParsingService;
 import com.rosterreview.service.PlayerService;
 import com.rosterreview.service.TestService;
 
@@ -37,7 +38,7 @@ public class PfrDataUpdaterTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private PfrDataUpdater dataUpdater;
+    private PfrDataParsingService dataUpdater;
 
     @Autowired
     private PlayerService playerService;
