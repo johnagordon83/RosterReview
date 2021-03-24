@@ -50,7 +50,7 @@ public class JDBCDriverDeregistrationListener implements ServletContextListener{
                 }
 
             } else {
-                log.trace("Not deregistering JDBC driver " + driver + " as it does not belong to this webapp's ClassLoader");
+                log.trace("Not deregistering JDBC driver {} as it does not belong to this webapp's ClassLoader", driver);
             }
         }
     }

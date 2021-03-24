@@ -4,10 +4,8 @@ import java.util.List;
 
 import javax.persistence.TypedQuery;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,31 +36,9 @@ public class PlayerDao {
      */
     @Transactional
     public Player getPlayer(String id) {
-
         Session session = sessionFactory.getCurrentSession();
-        //return session.get(Player.class, id);
 
-        Criteria criteria = session.createCriteria(Player.class);
-        criteria.add(Expression.eq("id", id));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        List<Player> list = criteria.list();
-
-        /*
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Player> cr = cb.createQuery(Player.class);
-        Root<Player> root = cr.from(Player.class);
-        cr.select(root).distinct(true);
-
-        Query<Player> query = session.createQuery(cr);
-        List<Player> results = query.getResultList();
-        */
-
-        Player player = null;
-        if (!list.isEmpty()) {
-            player = list.get(0);
-        }
-
-        return player;
+        return session.get(Player.class, id);
     }
 
     /**

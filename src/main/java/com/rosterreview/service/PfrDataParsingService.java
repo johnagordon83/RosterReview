@@ -67,10 +67,14 @@ public class PfrDataParsingService {
     @Transactional
     public void parseAndPersistPlayerDataFromUrl(String playerUrl) {
 
+        ArrayList<Long> times = new ArrayList<>();
+        times.add(System.currentTimeMillis());
+
         try (WebClient webClient = WebScrapingUtils.getConfiguredWebClient()) {
+            times.add(System.currentTimeMillis());
             // Retrieve the web page corresponding to the passed url
             HtmlPage page = webClient.getPage(playerUrl);
-
+            times.add(System.currentTimeMillis());
             // The base xpath for player personal data
             String personXPath = "//div[@itemtype='https://schema.org/Person']";
 
@@ -93,16 +97,17 @@ public class PfrDataParsingService {
                     personXPath.concat("/p[strong[text()='Draft']]"));
             String hofYearRawData = WebScrapingUtils.getElementText(page,
                     personXPath.concat("/p[strong[text()='Hall of Fame']]/a[1]"));
-
+            times.add(System.currentTimeMillis());
             // Parse player's name data
             PersonName personName = parsePlayerName(fullName, nickname);
+            times.add(System.currentTimeMillis());
             String pfrId = playerUrl.substring(playerUrl.lastIndexOf('/') + 1, playerUrl.lastIndexOf('.'));
             Player player = playerService.getPlayerByPfrId(pfrId);
-
+            times.add(System.currentTimeMillis());
             if (player == null) {
                 player = playerService.createPlayer(personName.getFirstName(), personName.getLastName());
             }
-
+            times.add(System.currentTimeMillis());
             // Set player PFR id
             player.setPfrId(pfrId);
 
@@ -112,30 +117,35 @@ public class PfrDataParsingService {
             player.setMiddleName(personName.getMiddleName());
             player.setLastName(personName.getLastName());
             player.setSuffix(personName.getSuffix());
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's position data
             player.setPositions(parsePlayerPositions(player, positionRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's draft pick data
             player.setDraftPicks(parseDraftPicks(player, draftRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's college data
             player.setCollege(parseCollege(collegeRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's height
             player.setHeight(parseHeight(player.getId(), heightRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's weight
             player.setWeight(parseWeight(player.getId(), weightRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's birth date.
             player.setBirthDate(parseBirthDate(player.getId(), birthDateRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's hall of fame year.
             player.setHofYear(parseHofYear(player.getId(), hofYearRawData));
-
+            times.add(System.currentTimeMillis());
             // Parse and set player's statistics
             player.setStatistics(parsePlayerStatistics(page, player));
+            times.add(System.currentTimeMillis());
+
+            for (int i=1; i<times.size(); i++) {
+                log.info("Performance data for {}, {}", player.getLastName(), (times.get(i)-times.get(i-1))/1000);
+            }
 
         } catch (Exception ex) {
             log.error("An exception occurred while parsing player data from url: {}.", playerUrl, ex);

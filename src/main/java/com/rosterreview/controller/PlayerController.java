@@ -36,8 +36,6 @@ public class PlayerController {
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Player getPlayer(@PathVariable("id") String id) {
-        Player player = playerService.getPlayer(id);
-
-        return player;
+        return playerService.getPlayer(id);
     }
 }
