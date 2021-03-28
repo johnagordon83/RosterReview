@@ -36,23 +36,6 @@ public class TeamDao {
         return team;
     }
 
-    public Team getTeam(String teamAbbrev, Integer season) {
-        String hql = "FROM Team t WHERE t.abbrev = :teamAbbrev AND t.season = :season";
-
-        Session session = sessionFactory.getCurrentSession();
-        TypedQuery<Team> query = session.createQuery(hql, Team.class);
-        query.setParameter("teamAbbrev", teamAbbrev);
-        query.setParameter("season", season);
-
-        List<Team> results = query.getResultList();
-        Team team = null;
-        if (!results.isEmpty()) {
-            team = results.get(0);
-        }
-
-        return team;
-    }
-
     public Team getTeamWithPfrAbbrev(String pfrTeamAbbrev, Integer season) {
         String hql = "FROM Team t WHERE t.pfrAbbrev = :pfrTeamAbbrev AND t.season = :season";
 

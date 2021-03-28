@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rosterreview.entity.Player;
+import com.rosterreview.entity.PlayerSeason;
 
 /**
  * A data access class for {@Link Player} data.
@@ -69,6 +70,11 @@ public class PlayerDao {
     public void persistPlayer(Player player) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(player);
+    }
+
+    public void mergeSeason(PlayerSeason season) {
+        Session session = sessionFactory.getCurrentSession();
+        session.merge(season);
     }
 
     public List<String> getPlayerIdsWithMatchingPrefix(String idPrefix) {

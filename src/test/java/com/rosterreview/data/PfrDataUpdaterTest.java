@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rosterreview.config.AppConfig;
@@ -27,10 +28,10 @@ import com.rosterreview.entity.PlayerSeason;
 import com.rosterreview.entity.Team;
 import com.rosterreview.service.PfrDataParsingService;
 import com.rosterreview.service.PlayerService;
-import com.rosterreview.service.TestService;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
+@Transactional
 @ContextConfiguration(loader = AnnotationConfigWebContextLoader.class, classes = { AppConfig.class })
 public class PfrDataUpdaterTest {
 
@@ -38,13 +39,10 @@ public class PfrDataUpdaterTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private PfrDataParsingService dataUpdater;
+    private PfrDataParsingService parsingService;
 
     @Autowired
     private PlayerService playerService;
-
-    @Autowired
-    private TestService testService;
 
     private static final String PLAYER_TEST_DATA_DIR = "/playerdata/";
 
@@ -57,11 +55,9 @@ public class PfrDataUpdaterTest {
         log.info("Testing starting.");
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        log.info("Test complete. Deleting test data.");
-        testService.clearPlayerTestData();
-        log.info("Test data deletion complete.");
+    @AfterAll
+    public static void tearDown() throws Exception {
+        log.info("Testing complete.");
     }
 
     @Test
@@ -271,11 +267,28 @@ public class PfrDataUpdaterTest {
         validatePlayerInfo(playerFileName, playerUrl, playerId);
     }
 
+    @Test
+    public void testUpdateExistingPlayerData() throws IOException {
+        String playerFileName = PLAYER_TEST_DATA_DIR + "rmathews.json";
+        String preUpdatePlayerFileName = PLAYER_TEST_DATA_DIR + "rmathews_pre-update.json";
+        String playerUrl = PFR_PLAYER_URL + "M/MathRy00.htm";
+        String playerId = "mathewry01";
+
+        // Store "pre-update" player data in db
+        Resource resource = new ClassPathResource(preUpdatePlayerFileName);
+        Player preUpdatePlayer = objectMapper.readValue(resource.getInputStream(), Player.class);
+        playerService.persistPlayer(preUpdatePlayer);
+
+        // Parse, persist and validate the latest data for this player.
+        // Pre-update data should be replaced with latest.
+        validatePlayerInfo(playerFileName, playerUrl, playerId);
+    }
+
     private void validatePlayerInfo(String playerFileName, String playerUrl, String playerId) throws IOException {
 
         Resource resource = new ClassPathResource(playerFileName);
         Player refData = objectMapper.readValue(resource.getInputStream(), Player.class);
-        dataUpdater.parseAndPersistPlayerDataFromUrl(playerUrl);
+        parsingService.parseAndPersistPlayerDataFromUrl(playerUrl);
         Player player = playerService.getPlayer(playerId);
 
         // Validate Ids

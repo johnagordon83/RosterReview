@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.rosterreview.dao.PlayerDao;
 import com.rosterreview.entity.Player;
+import com.rosterreview.entity.PlayerSeason;
 
 /**
  * A service class for {@Link Player} data and operations.
@@ -37,10 +38,18 @@ public class PlayerService {
         return playerDao.getPlayerByPfrId(pfrId);
     }
 
+    public void persistPlayer(Player player) {
+        playerDao.persistPlayer(player);
+    }
+
+    public void mergeSeason(PlayerSeason season) {
+        playerDao.mergeSeason(season);
+    }
+
     public Player createPlayer(String firstName, String lastName) {
         String id = generateNewPlayerId(firstName, lastName);
         Player player = new Player(id);
-        playerDao.persistPlayer(player);
+        persistPlayer(player);
 
         return player;
     }

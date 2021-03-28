@@ -94,13 +94,13 @@ public class Player {
         this.middleName = null;
         this.lastName = null;
         this.suffix = null;
-        this.positions = new HashSet<PlayerPosition>();
+        this.positions = new HashSet<>();
         this.height = null;
         this.weight = null;
         this.birthDate = null;
         this.college = null;
-        this.draftPicks = new HashSet<DraftPick>();
-        this.statistics = new ArrayList<PlayerSeason>();
+        this.draftPicks = new HashSet<>();
+        this.statistics = new ArrayList<>();
         this.hofYear = null;
     }
 

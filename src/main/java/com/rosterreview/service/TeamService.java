@@ -23,10 +23,6 @@ public class TeamService {
         return teamDao.getTeam(season, league, location, name);
     }
 
-    public Team getTeam(String teamAbbrev, Integer season) {
-        return teamDao.getTeam(teamAbbrev, season);
-    }
-
     public Team getTeamWithPfrAbbrev(String pfrTeamAbbrev, Integer season) {
         return teamDao.getTeamWithPfrAbbrev(pfrTeamAbbrev, season);
     }

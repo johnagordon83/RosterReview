@@ -13,6 +13,8 @@ import javax.persistence.JoinColumns;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -1501,5 +1503,10 @@ public class PlayerSeason implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(this.getPlayerId(), this.getFranchiseId(), this.getSeason(), this.getSeasonType());
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, new RecursiveToStringStyle());
     }
 }
