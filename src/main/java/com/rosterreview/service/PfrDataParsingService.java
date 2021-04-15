@@ -98,6 +98,7 @@ public class PfrDataParsingService {
             PersonName personName = parsePlayerName(fullName, nickname);
 
             String pfrId = playerUrl.substring(playerUrl.lastIndexOf('/') + 1, playerUrl.lastIndexOf('.'));
+
             Player player = playerService.getPlayerByPfrId(pfrId);
 
             if (player == null) {
@@ -114,12 +115,6 @@ public class PfrDataParsingService {
             player.setLastName(personName.getLastName());
             player.setSuffix(personName.getSuffix());
 
-            // Parse and set player's position data
-            parsePlayerPositions(player, positionRawData);
-
-            // Parse and set player's draft pick data
-            parseDraftPicks(player, draftRawData);
-
             // Parse and set player's college data
             player.setCollege(parseCollege(collegeRawData));
 
@@ -134,6 +129,12 @@ public class PfrDataParsingService {
 
             // Parse and set player's hall of fame year.
             player.setHofYear(parseHofYear(player.getId(), hofYearRawData));
+
+            // Parse and set player's position data
+            parsePlayerPositions(player, positionRawData);
+
+            // Parse and set player's draft pick data
+            parseDraftPicks(player, draftRawData);
 
             // Parse and set player's statistics
             parsePlayerStatistics(page, player);
@@ -282,6 +283,117 @@ public class PfrDataParsingService {
     }
 
     /**
+     * Parse player's college name.
+     *
+     * @param collegeRawData  The raw college data to be parsed.
+     * @return  The name of the primary college the player played for
+     */
+    private String parseCollege(String collegeRawData) {
+
+        String collegeData = collegeRawData.replaceFirst("College: ", "");
+        String[] collegeDataArr = StringUtils.split(collegeData,";|,");
+
+        // If there are multiple colleges listed, select the one with the 'College Stats' link.
+        // If not link present, default to the last college listed.
+        for (String college : collegeDataArr) {
+            collegeData = college;
+            if (collegeData.contains("(College Stats)")) {
+                collegeData = collegeData.replaceAll("\\(College Stats\\)", "");
+                break;
+            }
+        }
+
+        if (collegeData.equals("") || collegeData.contains("none")) {
+            return null;
+        }
+
+        return StringUtils.strip(collegeData, " \n\t\u00A0\u2007\u202F");
+    }
+
+    /**
+     * Parse player's height (in.).
+     *
+     * @param playerId  The id of the player whose height data should be parsed
+     * @param heightRawData  The raw height data to be parsed.
+     * @return  The height of the player in inches
+     */
+    private Integer parseHeight(String playerId, String heightRawData) {
+        Integer height = null;
+
+        try {
+            String heightData = StringUtils.trim(heightRawData);
+            String[] heightDataArr = StringUtils.split(heightData, "-");
+            int feetToInches = Integer.parseInt(heightDataArr[0]) * 12;
+            int inches = Integer.parseInt(heightDataArr[1]);
+            height = feetToInches + inches;
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+            log.warn("Unable to parse height data ('{}') for player with id: {}.", heightRawData, playerId);
+        }
+
+        return height;
+    }
+
+    /**
+     * Parse player's weight (lbs.)
+     *
+     * @param playerId  The id of the player whose weight data should be parsed
+     * @param heightRawData  The raw weight data to be parsed.
+     * @return  The weight of the player in lbs
+     */
+    private Integer parseWeight(String playerId, String weightRawData) {
+        Integer weight = null;
+
+        try {
+            String weightData = StringUtils.replace(weightRawData, "lb", "");
+            weightData = StringUtils.trim(weightData);
+            weight = Integer.valueOf(weightData);
+        } catch (NumberFormatException nfe) {
+            log.warn("Unable to parse weight data ('{}') for player with id: {}.", weightRawData, playerId);
+        }
+
+        return weight;
+    }
+
+    /**
+     * Parse player's birth date
+     *
+     * @param playerId  The id of the player whose birth date should be parsed
+     * @param heightRawData  The raw birth date data to be parsed.
+     * @return  The birth date of the player
+     */
+    private LocalDate parseBirthDate(String playerId, String birthDateRawData) {
+        LocalDate birthDate = null;
+
+        try {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            birthDate = LocalDate.parse(birthDateRawData, dateFormatter);
+        } catch (DateTimeParseException pe) {
+            log.warn("Unable to parse birth date ('{}') for player with id: {}.", birthDateRawData, playerId);
+        }
+
+        return birthDate;
+    }
+
+    /**
+     * Parse player's Hall of Fame year
+     *
+     * @param playerId  The id of the player whose Hall of Fame year should be parsed
+     * @param heightRawData  The raw Hall of Fame year data to be parsed.
+     * @return  The year the player was inducted into the Hall of Fame (or null)
+     */
+    private Integer parseHofYear(String playerId, String hofYearRawData) {
+        Integer hofYear = null;
+
+        try {
+            hofYear = Integer.valueOf(StringUtils.trim(hofYearRawData));
+        } catch (NumberFormatException nfe) {
+            log.warn("Unable to parse Hall of Fame year data ('{}') for player with id: {}.", hofYearRawData, playerId);
+        }
+
+        return hofYear;
+    }
+
+    /**
      * Parse player profile position data.
      *
      * @param player  The Player whose position data should be parsed
@@ -373,9 +485,7 @@ public class PfrDataParsingService {
         Set<Position> intersection = new HashSet<>(positions);
         intersection.retainAll(specificPositions);
         if (positions.contains(genericPosition) || intersection.size() > 1) {
-            for (Position position : intersection) {
-                positions.remove(position);
-            }
+            intersection.forEach(position -> positions.remove(position));
             positions.add(genericPosition);
         }
     }
@@ -475,117 +585,6 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse player's college name.
-     *
-     * @param collegeRawData  The raw college data to be parsed.
-     * @return  The name of the primary college the player played for
-     */
-    private String parseCollege(String collegeRawData) {
-
-        String collegeData = collegeRawData.replaceFirst("College: ", "");
-        String[] collegeDataArr = StringUtils.split(collegeData,";|,");
-
-        // If there are multiple colleges listed, select the one with the 'College Stats' link.
-        // If not link present, default to the last college listed.
-        for (int i = 0; i < collegeDataArr.length; i++) {
-            collegeData = collegeDataArr[i];
-            if (collegeDataArr[i].contains("(College Stats)")) {
-                collegeData = collegeData.replaceAll("\\(College Stats\\)", "");
-                break;
-            }
-        }
-
-        if (collegeData.equals("") || collegeData.contains("none")) {
-            return null;
-        }
-
-        return StringUtils.strip(collegeData, " \n\t\u00A0\u2007\u202F");
-    }
-
-    /**
-     * Parse player's height (in.).
-     *
-     * @param playerId  The id of the player whose height data should be parsed
-     * @param heightRawData  The raw height data to be parsed.
-     * @return  The height of the player in inches
-     */
-    private Integer parseHeight(String playerId, String heightRawData) {
-        Integer height = null;
-
-        try {
-            String heightData = StringUtils.trim(heightRawData);
-            String[] heightDataArr = StringUtils.split(heightData, "-");
-            int feetToInches = Integer.parseInt(heightDataArr[0]) * 12;
-            int inches = Integer.parseInt(heightDataArr[1]);
-            height = feetToInches + inches;
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-            log.warn("Unable to parse height data ('{}') for player with id: {}.", heightRawData, playerId);
-        }
-
-        return height;
-    }
-
-    /**
-     * Parse player's weight (lbs.)
-     *
-     * @param playerId  The id of the player whose weight data should be parsed
-     * @param heightRawData  The raw weight data to be parsed.
-     * @return  The weight of the player in lbs
-     */
-    private Integer parseWeight(String playerId, String weightRawData) {
-        Integer weight = null;
-
-        try {
-            String weightData = StringUtils.replace(weightRawData, "lb", "");
-            weightData = StringUtils.trim(weightData);
-            weight = Integer.valueOf(weightData);
-        } catch (NumberFormatException nfe) {
-            log.warn("Unable to parse weight data ('{}') for player with id: {}.", weightRawData, playerId);
-        }
-
-        return weight;
-    }
-
-    /**
-     * Parse player's birth date
-     *
-     * @param playerId  The id of the player whose birth date should be parsed
-     * @param heightRawData  The raw birth date data to be parsed.
-     * @return  The birth date of the player
-     */
-    private LocalDate parseBirthDate(String playerId, String birthDateRawData) {
-        LocalDate birthDate = null;
-
-        try {
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            birthDate = LocalDate.parse(birthDateRawData, dateFormatter);
-        } catch (DateTimeParseException pe) {
-            log.warn("Unable to parse birth date ('{}') for player with id: {}.", birthDateRawData, playerId);
-        }
-
-        return birthDate;
-    }
-
-    /**
-     * Parse player's Hall of Fame year
-     *
-     * @param playerId  The id of the player whose Hall of Fame year should be parsed
-     * @param heightRawData  The raw Hall of Fame year data to be parsed.
-     * @return  The year the player was inducted into the Hall of Fame (or null)
-     */
-    private Integer parseHofYear(String playerId, String hofYearRawData) {
-        Integer hofYear = null;
-
-        try {
-            hofYear = Integer.valueOf(StringUtils.trim(hofYearRawData));
-        } catch (NumberFormatException nfe) {
-            log.warn("Unable to parse Hall of Fame year data ('{}') for player with id: {}.", hofYearRawData, playerId);
-        }
-
-        return hofYear;
-    }
-
-    /**
      * Parse a player's season statistics.
      *
      * @param page  The HtmlPage to parse
@@ -610,8 +609,7 @@ public class PfrDataParsingService {
             Integer season = null;
             Integer age = null;
 
-            for (int i = 0; i < tableBody.getRows().size(); i++) {
-                HtmlTableRow row = tableBody.getRows().get(i);
+            for (HtmlTableRow row : tableBody.getRows()) {
                 String yearCellContent = row.getCell(0).getTextContent();
                 if (yearCellContent.length() >= 4) {
                     season = Integer.valueOf(yearCellContent.substring(0, 4));
@@ -627,7 +625,7 @@ public class PfrDataParsingService {
                     searchPs.setFranchiseId(team.getFranchiseId());
                     searchPs.setSeason(season);
                     searchPs.setSeasonType(PlayerSeason.SeasonType.REGULAR);
-                    PlayerSeason playerSeason = playerStatistics.stream().filter(ps -> ps.equals(searchPs))
+                    PlayerSeason playerSeason = player.getStatistics().stream().filter(ps -> ps.equals(searchPs))
                             .findFirst().orElse(searchPs);
 
                     // Post-season data tables do not include jersey number or average value data, so
@@ -636,7 +634,7 @@ public class PfrDataParsingService {
                         Integer avgValue = playerSeason.getAvgValue();
                         Integer jerseyNum = playerSeason.getJerseyNumber();
                         searchPs.setSeasonType(PlayerSeason.SeasonType.POST);
-                        playerSeason = playerStatistics.stream().filter(ps -> ps.equals(searchPs))
+                        playerSeason = player.getStatistics().stream().filter(ps -> ps.equals(searchPs))
                                 .findFirst().orElse(searchPs);
                         playerSeason.setJerseyNumber(jerseyNum);
                         playerSeason.setAvgValue(avgValue);
@@ -649,6 +647,9 @@ public class PfrDataParsingService {
 
                     if (!playerStatistics.contains(playerSeason)) {
                         playerStatistics.add(playerSeason);
+                        if (!player.getStatistics().contains(playerSeason)) {
+                            player.getStatistics().add(playerSeason);
+                        }
                     }
 
                     switch (statTable.getId()) {
@@ -678,6 +679,9 @@ public class PfrDataParsingService {
                         case "scoring_playoffs":
                             parseScoringStatistics(playerSeason, seasonPositions, tableHeader, row);
                             break;
+                        case "games_played":
+                            parseGamesPlayedStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            break;
                         default: // Do nothing, don't need data from all tables
                     }
                 }
@@ -688,13 +692,6 @@ public class PfrDataParsingService {
         calculateSeasonPositions(seasonPositions, player.getPositions(), playerStatistics);
 
         player.getStatistics().retainAll(playerStatistics);
-        for (PlayerSeason season : playerStatistics) {
-            if (player.getStatistics().contains(season)) {
-                playerService.mergeSeason(season);
-            } else {
-                player.getStatistics().add(season);
-            }
-        }
     }
 
     /**
@@ -708,12 +705,8 @@ public class PfrDataParsingService {
             Set<PlayerPosition> careerPositions, List<PlayerSeason> statistics) {
 
         // Create a list of all of the season positions across all years (include duplicates)
-        List<Position> allPositions = new ArrayList<>();
-        for (Entry<Integer, List<Position>> entry : seasonPositions.entrySet()) {
-            if (entry.getValue() != null) {
-                allPositions.addAll(entry.getValue());
-            }
-        }
+        List<Position> allPositions = seasonPositions.values().stream()
+                .flatMap(List::stream).collect(Collectors.toList());
 
         // Set the position to associate with each season.
         for (PlayerSeason season : statistics) {
@@ -999,14 +992,12 @@ public class PfrDataParsingService {
      * @param seasonPositions  A mapping of seasons to positions
      * @param tableHeader  The table header containing the column names
      * @param row  The table row containing the statistics to be parsed
-     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parsePassingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
+            List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
+            String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
                 case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
@@ -1039,8 +1030,6 @@ public class PfrDataParsingService {
                     break;
                 case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on passing data column with index: " + j + ".");
                 default : // Do nothing.
             }
         }
@@ -1053,15 +1042,12 @@ public class PfrDataParsingService {
      * @param seasonPositions  A mapping of seasons to positions
      * @param tableHeader  The table header containing the column names
      * @param row  The table row containing the statistics to be parsed
-     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason, Map<Integer,
-            List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row)
-            throws RosterReviewException {
+            List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
+            String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
                 case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
@@ -1096,8 +1082,6 @@ public class PfrDataParsingService {
                     break;
                 case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
                 default : // Do nothing.
             }
         }
@@ -1110,14 +1094,12 @@ public class PfrDataParsingService {
      * @param seasonPositions  A mapping of seasons to positions
      * @p ram tableHeader  The table header containing the column names
      * @param row  The table row containing the statistics to be parsed
-     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseDefensiveStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
+            List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
+            String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
                 case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
@@ -1160,8 +1142,6 @@ public class PfrDataParsingService {
                     break;
                 case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
                 default : // Do nothing.
             }
         }
@@ -1174,14 +1154,12 @@ public class PfrDataParsingService {
      * @param seasonPositions  A mapping of seasons to positions
      * @param tableHeader  The table header containing the column names
      * @param row  The table row containing the statistics to be parsed
-     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseKickingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
+            List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
+            String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
                 case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
@@ -1234,8 +1212,6 @@ public class PfrDataParsingService {
                     break;
                 case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
                 default : // Do nothing.
             }
         }
@@ -1248,14 +1224,12 @@ public class PfrDataParsingService {
      * @param seasonPositions  A mapping of seasons to positions
      * @param tableHeader  The table header containing the column names
      * @param row  The table row containing the statistics to be parsed
-     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseReturnStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
+            List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
+            String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
                 case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
@@ -1284,8 +1258,6 @@ public class PfrDataParsingService {
                     break;
                 case "kick_ret_long": playerSeason.setKickRetLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
                 default : // Do nothing.
             }
         }
@@ -1298,13 +1270,11 @@ public class PfrDataParsingService {
      * @param seasonPositions  A mapping of seasons to positions
      * @param tableHeader  The table header containing the column names
      * @param row  The table row containing the statistics to be parsed
-     * @throws RosterReviewException  Thrown if an unrecognized table column is found
      */
     private void parseScoringStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
-            List<HtmlTableCell> tableHeader, HtmlTableRow row) throws RosterReviewException {
+            List<HtmlTableCell> tableHeader, HtmlTableRow row) {
         for (int j = 3; j < row.getCells().size(); j++) {
-            HtmlTableCell cell = row.getCell(j);
-            String cellData = cell.getTextContent();
+            String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
                 case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
@@ -1345,8 +1315,37 @@ public class PfrDataParsingService {
                     break;
                 case "safety_md": playerSeason.setSafeties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "": throw new RosterReviewException(
-                     "Could not find value for 'data-stat' label on rushing data column with index: " + j + ".");
+                default : // Do nothing.
+            }
+        }
+    }
+
+    /**
+     * Parse a player's games played statistics.
+     *
+     * @param playerSeason  The season for which statistical data is being parsed
+     * @param seasonPositions  A mapping of seasons to positions
+     * @param tableHeader  The table header containing the column names
+     * @param row  The table row containing the statistics to be parsed
+     */
+    private void parseGamesPlayedStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+            List<HtmlTableCell> tableHeader, HtmlTableRow row) {
+        for (int j = 3; j < row.getCells().size(); j++) {
+            String cellData = row.getCell(j).getTextContent();
+
+            switch (tableHeader.get(j).getAttribute("data-stat")) {
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
+                            .addAll(parsePositions(cellData));
+                    break;
+                case "uniform_number": playerSeason.setJerseyNumber(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, null));
+                    break;
+                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                    break;
+                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                    break;
+                case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                    break;
                 default : // Do nothing.
             }
         }

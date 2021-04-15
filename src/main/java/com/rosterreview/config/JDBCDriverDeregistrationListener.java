@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
-public class JDBCDriverDeregistrationListener implements ServletContextListener{
+public class JDBCDriverDeregistrationListener implements ServletContextListener {
 
     // https://stackoverflow.com/questions/3320400/to-prevent-a-memory-leak-the-jdbc-driver-has-been-forcibly-unregistered/23912257#23912257
     // https://github.com/spring-projects/spring-boot/issues/2612
