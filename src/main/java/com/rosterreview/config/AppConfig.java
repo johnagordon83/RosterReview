@@ -13,6 +13,12 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+/**
+ * This {@link Configuration} class declares multiple {@link Bean} methods, and may be processed
+ * by the Spring container to generate bean definitions and service requests for those beans at
+ * runtime. This class also defines callback methods to customize the Java-based configuration
+ * for Spring MVC enabled via {@link EnableWebMvc}.
+ */
 @Configuration
 @ComponentScan("com.rosterreview")
 @PropertySource(value = { "classpath:rosterreview.properties" })
@@ -21,11 +27,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class AppConfig implements WebMvcConfigurer {
 
     /**
-     * Configures an {@link InternalResourceViewResolver}
+     * Configures an {@link InternalResourceViewResolver} bean.
      * <p>
      * Views (.jsp) should be stored in <code>/WEB-INF/views/</code>
      *
-     * @return  The configured InternalResourceViewResolver
+     * @return  a configured InternalResourceViewResolver
      */
     @Bean
     public InternalResourceViewResolver viewResolver() {
@@ -35,6 +41,11 @@ public class AppConfig implements WebMvcConfigurer {
         return resolver;
     }
 
+    /**
+     * Configures an {@link ObjectMapper} bean.
+     *
+     * @return  an configured ObjectMapper
+     */
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -43,6 +54,12 @@ public class AppConfig implements WebMvcConfigurer {
         return mapper;
     }
 
+    /**
+     * Registers the /resources/ directory to serve static resources such as images, js,
+     * and, css files.
+     *
+     * @param registry  a resource handler registry
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/app-resources/**").addResourceLocations("/resources/");

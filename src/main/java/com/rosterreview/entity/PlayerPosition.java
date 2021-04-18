@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * An {@link Entity} class defining a football position played by a specific {@link Player}.
+ * An {@link Entity} defining a football position played by a specific {@link Player}.
  */
 
 @Entity
@@ -35,6 +35,9 @@ public class PlayerPosition implements Serializable {
     @Enumerated(EnumType.STRING)
     protected Position position;
 
+    /**
+     * A no-argument {@link PlayerPosition} constructor required by Spring.
+     */
     PlayerPosition() {}
 
     public PlayerPosition(String playerId, Position position) {
@@ -42,33 +45,45 @@ public class PlayerPosition implements Serializable {
         this.position = position;
     }
 
+    /**
+     * @return the player's unique identifier
+     */
     @JsonIgnore
     public String getPlayerId() {
         return playerId;
     }
 
+    /**
+     * @param playerId  the player's unique identifier
+     */
     @JsonProperty
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
     }
 
+    /**
+     * @return the Position played by the player
+     */
     public Position getPosition() {
         return position;
     }
 
+    /**
+     * @param position  the Position played by the player
+     */
     public void setPosition(Position position) {
         this.position = position;
     }
 
     /**
-     * Compares this playerPosition to the argument. The result is
+     * Compares this {@link PlayerPosition} to the argument. The result is
      * <code>true</code> if and only if the argument is a non-null instance
      * of PlayerPosition that has equivalent values for the playerId and
      * position fields.
      *
      * @param obj  The object to compare this team against.
-     * @return <code>true</code> if the argument is equal to this PlayerPosition
-     *         object, <code>false</code> otherwise.
+     * @return     <code>true</code> if the argument is equal to this PlayerPosition
+     *             object, <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object obj) {
@@ -79,8 +94,8 @@ public class PlayerPosition implements Serializable {
             return false;
         }
         PlayerPosition arg = (PlayerPosition) obj;
-        return this.getPlayerId().equals(arg.getPlayerId()) &&
-                this.getPosition().equals(arg.getPosition());
+        return this.playerId.equals(arg.getPlayerId()) &&
+               this.position.equals(arg.getPosition());
     }
 
     /**
@@ -88,13 +103,18 @@ public class PlayerPosition implements Serializable {
      * based on the playerId and position fields.
      *
      * @return A hash code for this object.
-     * @see #equals
+     * @see    #equals
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getPlayerId(), getPosition());
+        return Objects.hash(this.playerId, this.position);
     }
 
+    /**
+     * Generates a <code>String</code> representation of this {@link PlayerPosition}.
+     * Given the use of reflection, consider removing or re-implementing for
+     * production grade code.
+     */
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, new RecursiveToStringStyle());

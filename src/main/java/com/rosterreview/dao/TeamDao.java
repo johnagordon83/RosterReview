@@ -11,14 +11,27 @@ import org.springframework.stereotype.Repository;
 
 import com.rosterreview.entity.Team;
 
+/**
+ * A {@link Repository} for {@link Team} data.
+ */
 @Repository
 public class TeamDao {
 
     @Autowired
     private SessionFactory sessionFactory;
 
+    /**
+     * Retrieves the {@link Team} with attributes that matches the indicated parameters.
+     *
+     * @param season    the season the team competed in
+     * @param league    the league the team belonged to
+     * @param location  the location of the team
+     * @param name      the team's name
+     * @return          the Team that uniquely matches the indicated parameters
+     */
     public Team getTeam(Integer season, String league, String location, String name) {
-        String hql = "FROM Team t WHERE t.season = :season AND t.league = :league AND t.location = :location AND t.name = :name";
+        String hql = "FROM Team t WHERE t.season = :season AND t.league = :league AND "
+                + "t.location = :location AND t.name = :name";
 
         Session session = sessionFactory.getCurrentSession();
         TypedQuery<Team> query = session.createQuery(hql, Team.class);
@@ -36,6 +49,13 @@ public class TeamDao {
         return team;
     }
 
+    /**
+     * Retrieves the {@link Team} from the specified season that has the indicated pfrTeamAbbrev.
+     *
+     * @param pfrTeamAbbrev  the pfr team abbreviation to match against
+     * @param season         the season the team competed in
+     * @return               the Team that uniquely matches the indicated parameters
+     */
     public Team getTeamWithPfrAbbrev(String pfrTeamAbbrev, Integer season) {
         String hql = "FROM Team t WHERE t.pfrAbbrev = :pfrTeamAbbrev AND t.season = :season";
 
@@ -53,7 +73,12 @@ public class TeamDao {
         return team;
     }
 
-    public List<String> getNflLocations() {
+    /**
+     * Retrieves all unique football team locations throughout history.
+     *
+     * @return  a list of all football team locations
+     */
+    public List<String> getTeamLocations() {
         String hql = "SELECT DISTINCT t.location FROM Team t";
 
         Session session = sessionFactory.getCurrentSession();

@@ -13,10 +13,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rosterreview.entity.Player;
-import com.rosterreview.entity.PlayerSeason;
 
 /**
- * A data access class for {@Link Player} data.
+ * A {@link Repository} for {@link Player} data.
  */
 
 @Repository
@@ -28,12 +27,11 @@ public class PlayerDao {
     protected static Logger log = LoggerFactory.getLogger(PlayerDao.class);
 
     /**
-     * Retrieve {@Link Player} profile information from the {@Link DataSource}
-     * for a player with an id matching the passed argument.
+     * Retrieves the {@link Player} with the specified id.
      *
-     * @param id  The id that uniquely identifies the requested player.
-     * @return    A Player object containing profile information or <code>null</code>
-     *            if a player matching the id argument could not be found.
+     * @param id  the id that uniquely identifies the requested player
+     * @return    a Player object or <code>null</code> if a matching player could
+     *            not be found
      */
     @Transactional
     public Player getPlayer(String id) {
@@ -43,13 +41,11 @@ public class PlayerDao {
     }
 
     /**
-     * Retrieve {@Link Player} profile information from the {@Link DataSource}
-     * for a player with a pfrId matching the passed argument.
+     * Retrieves the {@link Player} with the specified pfrId.
      *
-     * @param pfrId  The pfrId that uniquely identifies the requested player.
-     * @return       A Player object containing profile information or
-     *               <code>null</code> if a player matching the pfrId
-     *               argument could not be found.
+     * @param pfrId  the pfrId that uniquely identifies the requested player
+     * @return       a Player object or <code>null</code> if a matching player could
+     *               not be found.
      */
     public Player getPlayerByPfrId(String pfrId) {
         String hql = "FROM Player p WHERE p.pfrId = :pfrId";
@@ -67,16 +63,23 @@ public class PlayerDao {
         return player;
     }
 
+    /**
+     * Persists the specified {@link Player}.
+     *
+     * @param player  the Player to persist
+     */
     public void persistPlayer(Player player) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(player);
     }
 
-    public void mergeSeason(PlayerSeason season) {
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(season);
-    }
-
+    /**
+     * Retrieves all {@link Player Players} that have ids that being with
+     * the indicated prefix.
+     *
+     * @param idPrefix  the prefix to match player ids against
+     * @return          all players with matching id prefixes
+     */
     public List<String> getPlayerIdsWithMatchingPrefix(String idPrefix) {
         String hql = "SELECT p.id FROM Player p WHERE p.id like :idPrefix";
 

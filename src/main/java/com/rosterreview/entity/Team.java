@@ -12,8 +12,8 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 /**
- * An {@link Entity} class describing a football team. A team represents
- * a professional football franchise in a single year.
+ * An {@link Entity} describing a football team.
+ * A team represents a professional football franchise in a single year.
  */
 
 @Entity
@@ -48,10 +48,13 @@ public class Team implements Serializable {
     @Column(name="pfr_abbrev")
     protected String pfrAbbrev;
 
+    /**
+     * A no-argument {@link Team} constructor required by Spring.
+     */
     Team() {}
 
-    public Team(String franchiseId, Integer season, String league, String location, String name, String abbrev, String pfrId,
-            String pfrAbbrev) {
+    public Team(String franchiseId, Integer season, String league, String location, String name, String abbrev,
+            String pfrId, String pfrAbbrev) {
         this.franchiseId = franchiseId;
         this.season = season;
         this.league = league;
@@ -63,70 +66,70 @@ public class Team implements Serializable {
     }
 
     /**
-     * @return A unique identifier for the franchise that controls this team.
+     * @return the unique identifier for the franchise that controls this team
      */
     public String getFranchiseId() {
         return franchiseId;
     }
 
     /**
-     * @param id  A unique identifier for the franchise that controls this team.
+     * @param franchiseId  the unique identifier for the franchise that controls this team
      */
     public void setFranchiseId(String franchiseId) {
         this.franchiseId = franchiseId;
     }
 
     /**
-     * @return The season (year) this team was active.
+     * @return the season (year) this team was active
      */
     public Integer getSeason() {
         return season;
     }
 
     /**
-     * @return The season (year) this team was active.
+     * @param season  the season (year) this team was active
      */
     public void setSeason(Integer season) {
         this.season = season;
     }
 
     /**
-     * @return The professional football league this team is associated with.
+     * @return the professional football league this team is associated with
      */
     public String getLeague() {
         return league;
     }
 
     /**
-     * @param league  The professional football league this team is associated with.
+     * @param league  the professional football league this team is associated with
      */
     public void setLeague(String league) {
         this.league = league;
     }
 
     /**
-     * @return This team's host location (ex. Chicago, New England).
+     * @return this team's host location (ex. Chicago, New England)
      */
     public String getLocation() {
         return location;
     }
 
     /**
-     * @param location  This team's host location (ex. Chicago, New England).
+     * @param location  this team's host location (ex. Chicago, New England)
      */
     public void setLocation(String location) {
         this.location = location;
     }
 
     /**
-     * @return This team's name (ex. Cowboys, Bears, etc.).
+     * @return this team's name (ex. Cowboys, Bears, etc.)
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name  This team's name (ex. Cowboys, Bears, etc.).
+     * @param name  this team's name (ex. Cowboys, Bears, etc.)
      */
     public void setName(String name) {
         this.name = name;
@@ -135,12 +138,11 @@ public class Team implements Serializable {
     /**
      * Get the abbreviation used to denote this team.
      * <p>
-     * Abbreviations are typically three letter intened
-     * versions of the host location's name, but be influenced
-     * by other sources such as the team's name to prevent use of
-     * an abbreviation by multiple franchises.
+     * Abbreviations are typically three letter versions of the host location's
+     * name, but may be influenced by other sources such as the team's name to
+     * prevent use of an abbreviation by multiple franchises.
      *
-     * @return The abbreviation used to denote the team.
+     * @return the abbreviation used to denote the team
      */
     public String getAbbrev() {
         return abbrev;
@@ -149,12 +151,11 @@ public class Team implements Serializable {
     /**
      * Set the abbreviation used to denote this team.
      * <p>
-     * Abbreviations are typically three letter intened
-     * versions of the host location's name, but other sources
-     * such as the team's name may be used to prevent use of
-     * an abbreviation by multiple franchises.
+     * Abbreviations are typically three letter versions of the host location's
+     * name, but other sources such as the team's name may be used to prevent reuse
+     * of an abbreviation by multiple franchises.
      *
-     * @param abbrev  The abbreviation used to denote the team.
+     * @param abbrev  the abbreviation used to denote the team
      */
     public void setAbbrev(String abbrev) {
         this.abbrev = abbrev;
@@ -162,12 +163,11 @@ public class Team implements Serializable {
 
     /**
      * Gets the unique identifier used by
-     * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for the franchise
-     * that controls this team.
+     * <a href="http://www.pro-football-reference.com">www.pro-football-reference.com</a>
+     * for the franchise that controls this team.
      *
-     * @return The unique identifier used by PFR for the franchise
-     *         that controls this team.
+     * @return the unique identifier used by PFR for the franchise that controls
+     *         this team
      */
     public String getPfrId() {
         return pfrId;
@@ -175,12 +175,11 @@ public class Team implements Serializable {
 
     /**
      * Sets the unique identifier used by
-     * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for the franchise
-     * that controls this team.
+     * <a href="http://www.pro-football-reference.com">www.pro-football-reference.com</a>
+     * for the franchise that controls this team
      *
-     * @param pfrId  A unique identifier used by PFR for the franchise
-     *               that controls this team.
+     * @param pfrId  the unique identifier used by PFR for the franchise that controls
+     *               this team
      */
     public void setPfrId(String pfrId) {
         this.pfrId = pfrId;
@@ -188,10 +187,10 @@ public class Team implements Serializable {
 
     /**
      * Gets the abbreviation used by
-     * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for this team.
+     * <a href="http://www.pro-football-reference.com">www.pro-football-reference.com</a>
+     * for this team.
      *
-     * @return The abbreviation used by PFR to denote the team.
+     * @return the abbreviation used by PFR to denote the team
      */
     public String getPfrAbbrev() {
         return pfrAbbrev;
@@ -199,10 +198,10 @@ public class Team implements Serializable {
 
     /**
      * Sets the abbreviation used by
-     * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for this team.
+     * <a href="http://www.pro-football-reference.com">www.pro-football-reference.com</a>
+     * for this team.
      *
-     * @param pfrId  The abbreviation used by PFR to denote the team.
+     * @param pfrAbbrev  the abbreviation used by PFR to denote the team
      */
     public void setPfrAbbrev(String pfrAbbrev) {
         this.pfrAbbrev = pfrAbbrev;
@@ -210,12 +209,12 @@ public class Team implements Serializable {
 
     /**
      * Compares this team to the argument. The result is <code>true</code>
-     * if and only if the argument is a non-null instance of Team that has
-     * equivalent values for the league, franchiseId, and season fields.
+     * if and only if the argument is a non-null instance of {@link Team} that
+     * has equivalent values for the league, franchiseId, and season fields.
      *
-     * @param obj  The object to compare this team against.
-     * @return <code>true</code> if the argument is equal to this Team object,
-     *         <code>false</code> otherwise.
+     * @param obj  the object to compare this team against.
+     * @return     <code>true</code> if the argument is equal to this Team object,
+     *             <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object obj) {
@@ -226,23 +225,28 @@ public class Team implements Serializable {
             return false;
         }
         Team arg = (Team) obj;
-        return this.getLeague().equals(arg.getLeague()) &&
-                this.getFranchiseId().equals(arg.getFranchiseId()) &&
-                this.getSeason().equals(arg.getSeason());
+        return this.league.equals(arg.getLeague()) &&
+                this.franchiseId.equals(arg.getFranchiseId()) &&
+                this.season.equals(arg.getSeason());
     }
 
     /**
-     * Uses {@link Objects#hash(Object...)} to calculate a hash code for this object
-     * based on the league, franchiseId, and season fields.
+     * Uses {@link Objects#hash(Object...)} to calculate a hash code for this
+     * object based on the league, franchiseId, and season fields.
      *
-     * @return A hash code for this object.
-     * @see #equals
+     * @return a hash code for this object
+     * @see    #equals
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getLeague(), getFranchiseId(), getSeason());
+        return Objects.hash(this.league, this.franchiseId, this.season);
     }
 
+    /**
+     * Generates a <code>String</code> representation of this {@link Team}.
+     * Given the use of reflection, consider removing or re-implementing for
+     * production grade code.
+     */
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, new RecursiveToStringStyle());

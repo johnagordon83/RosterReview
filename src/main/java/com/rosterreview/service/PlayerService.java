@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.rosterreview.dao.PlayerDao;
 import com.rosterreview.entity.Player;
-import com.rosterreview.entity.PlayerSeason;
 
 /**
- * A service class for {@Link Player} data and operations.
+ * A {@link Service} for {@link Player} data and operations.
  */
 
 @Service
@@ -24,28 +23,44 @@ public class PlayerService {
     protected static Logger log = LoggerFactory.getLogger(PlayerService.class);
 
     /**
-     * Request {@Link Player} profile information.
+     * Retrieves the {@link Player} with the specified id.
      *
-     * @param id    The id corresponding to the requested player.
-     * @return      A Player object containing profile information or
-     *              <code>null</code> if no player matches the id argument.
+     * @param id    the id that uniquely identifies the requested player
+     * @return      a Player object or <code>null</code> if a matching player could
+     *              not be found
      */
     public Player getPlayer(String id) {
         return playerDao.getPlayer(id);
     }
 
+    /**
+     * Retrieves the {@link Player} with the specified pfrId.
+     *
+     * @param pfrId  the pfrId that uniquely identifies the requested player
+     * @return       a Player object or <code>null</code> if a matching player could
+     *               not be found.
+     */
     public Player getPlayerByPfrId(String pfrId) {
         return playerDao.getPlayerByPfrId(pfrId);
     }
 
+    /**
+     * Persists the specified {@link Player}.
+     *
+     * @param player  the Player to persist
+     */
     public void persistPlayer(Player player) {
         playerDao.persistPlayer(player);
     }
 
-    public void mergeSeason(PlayerSeason season) {
-        playerDao.mergeSeason(season);
-    }
-
+    /**
+     * Create a new persistant {@link Player} entity with a unique id generated
+     * from the player's name.
+     *
+     * @param firstName  the player's first name
+     * @param lastName   the player's last name
+     * @return           the Player
+     */
     public Player createPlayer(String firstName, String lastName) {
         String id = generateNewPlayerId(firstName, lastName);
         Player player = new Player(id);
@@ -54,18 +69,30 @@ public class PlayerService {
         return player;
     }
 
+    /**
+     * Generates a new unique id for a new {@link Player} entity.
+     * <p>
+     * Ids are composed of an alphabetic prefix followed by a two digit postfix.
+     * The prefix is constructed from the first six letters of the last name, followed
+     * by the first two letters of the first name.  The numeric postfix will be the
+     * smallest positive integer that creates a unique id for the player.
+     *
+     * @param firstName  the player's first name
+     * @param lastName   the player's last name
+     * @return           the player's id
+     */
     private String generateNewPlayerId(String firstName, String lastName) {
         String truncLast = lastName.substring(0, Math.min(lastName.length(), 6));
         String truncFirst = firstName.substring(0, Math.min(firstName.length(), 2));
         String idPrefix = truncLast.concat(truncFirst).toLowerCase();
         String id = "";
-        int idPostFix = 0;
+        int idPostFix = 1;
 
         List<String> playerIds = playerDao.getPlayerIdsWithMatchingPrefix(idPrefix);
 
         do {
-            idPostFix++;
             id = idPrefix.concat(String.format("%02d", idPostFix));
+            idPostFix++;
         } while (playerIds.contains(id));
 
         return id;

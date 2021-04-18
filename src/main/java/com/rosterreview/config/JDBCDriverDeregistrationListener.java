@@ -13,10 +13,14 @@ import org.slf4j.LoggerFactory;
 
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
+/**
+ * This class manually deregisters the JDBC driver upon application shutdown.  Without this
+ * class, Tomcat will automatically do this to prevent a memory leak, but will leave an ugly
+ * warning in the logs.  For more information, see:
+ * <a href="https://stackoverflow.com/questions/3320400/to-prevent-a-memory-leak-the-jdbc-driver-has-been-forcibly-unregistered/23912257#23912257">stackoverflow.com</a>
+ * and <a href="https://github.com/spring-projects/spring-boot/issues/2612">github.com/spring-projects</a>.
+ */
 public class JDBCDriverDeregistrationListener implements ServletContextListener {
-
-    // https://stackoverflow.com/questions/3320400/to-prevent-a-memory-leak-the-jdbc-driver-has-been-forcibly-unregistered/23912257#23912257
-    // https://github.com/spring-projects/spring-boot/issues/2612
 
     private Logger log = LoggerFactory.getLogger(JDBCDriverDeregistrationListener.class);
 
@@ -50,7 +54,8 @@ public class JDBCDriverDeregistrationListener implements ServletContextListener 
                 }
 
             } else {
-                log.trace("Not deregistering JDBC driver {} as it does not belong to this webapp's ClassLoader", driver);
+                log.trace("Not deregistering JDBC driver {} as it does not belong to this webapp's ClassLoader",
+                        driver);
             }
         }
     }

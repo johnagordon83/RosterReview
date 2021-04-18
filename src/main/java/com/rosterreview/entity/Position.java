@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  An enum defining recognized football positions played by {@link Player Player(s)}.
+ *  An enum defining recognized football positions played by {@link Player Players}.
  */
 
 public enum Position {
@@ -184,7 +184,15 @@ public enum Position {
         this.aliases = Arrays.asList(aliases);
     }
 
-    public static Position getPositionByAlias(String alias) {
+    /**
+     * Retrieves an instance of {@link Position} that corresponds to the passed alias argument.
+     *
+     * @param alias                      the <code>String</code> value for which a
+     *                                   Position equivalent should be retrieved
+     * @return                           the Position equivalent of the alias argument
+     * @throws IllegalArgumentException  if no enum matches the alias argument
+     */
+    public static Position getPositionByAlias(String alias) throws IllegalArgumentException {
         Position position = ALIAS_MAP.get(alias);
         if (position == null) {
             throw new IllegalArgumentException("No defined Position exists with alias '" + alias + "'");

@@ -23,7 +23,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 /**
- * An {@link Entity} class defining a professional football player.
+ * An {@link Entity} defining a professional football player.
  */
 
 @Entity
@@ -84,6 +84,9 @@ public class Player {
     @Column(name="hof_year")
     protected Integer hofYear;
 
+    /**
+     * A no-argument {@link Player} constructor required by Spring.
+     */
     public Player() {}
 
     public Player(String id) {
@@ -105,8 +108,8 @@ public class Player {
     }
 
     public Player(String id, String pfrId, String nickname, String firstName, String middleName, String lastName,
-            String suffix, Set<PlayerPosition> positions, Integer height, Integer weight, LocalDate birthDate, String college,
-            Set<DraftPick> draftPicks, List<PlayerSeason> statistics, Integer hofYear) {
+            String suffix, Set<PlayerPosition> positions, Integer height, Integer weight, LocalDate birthDate,
+            String college, Set<DraftPick> draftPicks, List<PlayerSeason> statistics, Integer hofYear) {
 
         this.id = id;
         this.pfrId = pfrId;
@@ -126,14 +129,14 @@ public class Player {
     }
 
     /**
-     * @return A unique identifier for this player.
+     * @return a unique identifier for this player
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param id  A unique identifier for this player.
+     * @param id  a unique identifier for this player
      */
     public void setId(String id) {
         this.id = id;
@@ -142,9 +145,9 @@ public class Player {
     /**
      * Gets the unique identifier used by
      * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for this player.
+     * www.pro-football-reference.com</a> for this player
      *
-     * @return The unique identifier used by PFR for this player.
+     * @return the unique identifier used by PFR for this player
      */
     public String getPfrId() {
         return pfrId;
@@ -153,157 +156,205 @@ public class Player {
     /**
      * Sets the unique identifier used by
      * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for this player.
+     * www.pro-football-reference.com</a> for this player
      *
-     * @param pfrId  A unique identifier used by PFR for this player.
+     * @param pfrId  a unique identifier used by PFR for this player
      */
     public void setPfrId(String pfrId) {
         this.pfrId = pfrId;
     }
 
+    /**
+     * @return the player's nickname
+     */
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * @param nickname  the player's nickname
+     */
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
+    /**
+     * @return  the player's first name
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     * @param firstName  the player's first name
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     * @return  the player's middle name
+     */
     public String getMiddleName() {
         return middleName;
     }
 
+    /**
+     * @param middleName  the player's middle name
+     */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
     }
 
+    /**
+     * @return  the player's last name
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * @param lastName  the player's last name
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    /**
+     * @return  the player's last name suffix
+     */
     public String getSuffix() {
         return suffix;
     }
 
+    /**
+     * @param suffix  the player's last name suffix
+     */
     public void setSuffix(String suffix) {
         this.suffix = suffix;
     }
 
     /**
-     * @return The positions the player is most known for playing.
+     * @return the positions the player is most known for playing
      */
     public Set<PlayerPosition> getPositions() {
         return positions;
     }
 
     /**
-     * @param positions  The positions the player is most known for playing.
+     * @param positions  the {@link Position Positions} the player is most known
+     *                   for playing
      */
     public void setPositions(Set<PlayerPosition> positions) {
         this.positions = positions;
     }
 
     /**
-     * @return The player's height (in).
+     * @return the player's height (inches)
      */
     public Integer getHeight() {
         return height;
     }
 
     /**
-     * @param height  The player's height (in).
+     * @param height  the player's height (inches)
      */
     public void setHeight(Integer height) {
         this.height = height;
     }
 
     /**
-     * @return The player's weight (lb).
+     * @return the player's weight (lbs)
      */
     public Integer getWeight() {
         return weight;
     }
 
     /**
-     * @param weight  The player's weight (lb).
+     * @param weight  the player's weight (lbs)
      */
     public void setWeight(Integer weight) {
         this.weight = weight;
     }
 
+    /**
+     * @return  the player's birth date
+     */
     public LocalDate getBirthDate() {
         return birthDate;
     }
 
+    /**
+     * @param birthDate  the player's birth date
+     */
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
+    /**
+     * @return  the player's primary college
+     */
     public String getCollege() {
         return college;
     }
 
+    /**
+     * @param college  the player's primary college
+     */
     public void setCollege(String college) {
         this.college = college;
     }
 
     /**
-     * @return A set of {@link DraftPick DraftPick(s)} that describe the player's draft history.
+     * @return a set of {@link DraftPick DraftPicks} that describe the player's draft history
      */
     public Set<DraftPick> getDraftPicks() {
         return draftPicks;
     }
 
     /**
-     * @param draftPicks  A set of {@link DraftPick DraftPick(s)} that describe the player's
-     *                    draft history.
+     * @param draftPicks  a set of {@link DraftPick DraftPicks} that describe the player's
+     *                    draft history
      */
     public void setDraftPicks(Set<DraftPick> draftPicks) {
         this.draftPicks = draftPicks;
     }
 
     /**
-     * @return A list of {@link PlayerSeason PlayerSeason(s)} that contain the player's statistics
-     *         for each year of their career.
+     * @return a list of {@link PlayerSeason PlayerSeasons} that contain the player's statistics
+     *         for each year of their career
      */
     public List<PlayerSeason> getStatistics() {
         return statistics;
     }
 
     /**
-     * @param statistics  A list of {@link PlayerSeason PlayerSeason(s)} that contain the player's
-     *        statistics for each year of their career.
+     * @param statistics  a list of {@link PlayerSeason PlayerSeasons} that contain the player's
+     *        statistics for each year of their career
      */
     public void setStatistics(List<PlayerSeason> statistics) {
         this.statistics = statistics;
     }
 
     /**
-     * @return The year the player was inducted into the Pro Football Hall of Fame.
+     * @return the year the player was inducted into the Pro Football Hall of Fame
      */
     public Integer getHofYear() {
         return hofYear;
     }
 
     /**
-     * @param hofYear  The year the player was inducted into the Pro Football Hall of Fame.
+     * @param hofYear  the year the player was inducted into the Pro Football Hall of Fame
      */
     public void setHofYear(Integer hofYear) {
         this.hofYear = hofYear;
     }
 
+    /**
+     * Generates a <code>String</code> representation of this {@link Player}.
+     * Given the use of reflection, consider removing or re-implementing for
+     * production grade code.
+     */
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, new RecursiveToStringStyle());

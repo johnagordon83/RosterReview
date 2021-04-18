@@ -5,6 +5,9 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+/**
+ * A utility class of static methods designed to facilitate web scraping.
+ */
 public class WebScrapingUtils {
 
     // Do not instantiate this utility class.
@@ -13,7 +16,7 @@ public class WebScrapingUtils {
     /**
      * Creates a configured WebClient.
      *
-     * @return  A configured WebClient
+     * @return  a configured WebClient
      */
     public static WebClient getConfiguredWebClient() {
         WebClient webClient = new WebClient(BrowserVersion.CHROME);
@@ -25,12 +28,13 @@ public class WebScrapingUtils {
     }
 
     /**
-     * Get the text content from the first HtmlElement found on the passed HtmlPage that
-     * matches the passed xpath String.
+     * Gets the text content from the first {@link HtmlElement} found on the indicated
+     * {@link HtmlPage} that matches the passed xpath <code>String</code>.
      *
-     * @param page The HtmlPage to search for the HtmlElement
-     * @param xpath An XPath string identifying the target HtmlElement
-     * @return The text content of the HtmlElement if it was found, otherwise an empty string
+     * @param page   the HtmlPage to search for the HtmlElement
+     * @param xpath  an XPath <code>String</code> identifying the target HtmlElement
+     * @return       the text content of the HtmlElement if it was found, otherwise an
+     *               empty string
      */
     public static String getElementText(HtmlPage page, String xpath) {
         HtmlElement elem = page.getFirstByXPath(xpath);
@@ -39,13 +43,13 @@ public class WebScrapingUtils {
     }
 
     /**
-     * Get the value of the passed attribute from the first HtmlElement found on the passed
-     * HtmlPage that matches the passed xpath String.
+     * Gets the value of the attribute argument from the first {@link HtmlElement} found
+     * on the indicated {@link HtmlPage} that matches the passed xpath <code>String</code> .
      *
-     * @param page The HtmlPage to search for the HtmlElement
-     * @param xpath An XPath string identifying the target HtmlElement
-     * @param attribute
-     * @return The value of the attribute if it exists, otherwise an empty string
+     * @param page       the HtmlPage to search for the HtmlElement
+     * @param xpath      an XPath <code>String</code> identifying the target HtmlElement
+     * @param attribute  an element attribute name
+     * @return           the value of the attribute if it exists, otherwise an empty string
      */
     public static String getElementAttribute(HtmlPage page, String xpath, String attribute) {
         HtmlElement elem = page.getFirstByXPath(xpath);
@@ -54,12 +58,12 @@ public class WebScrapingUtils {
     }
 
     /**
-     * Parse string argument to Integer with Integer.valueOf().  If parse fails, return the
-     * specified default value.
+     * Parses the <code>String</code> argument to <code>Integer</code> with
+     * {@link Integer#valueOf(String)}. If parse fails, return the specified default value.
      *
-     * @param value The string to parse
-     * @param defaultVal  The value to use if the parse fails
-     * @return  The parsed Double value or the specified default
+     * @param value       the string to parse
+     * @param defaultVal  the value to use if the parse fails
+     * @return            the parsed <code>Integer</code> value or the specified default
      */
     public static Integer parseIntegerWithDefault(String value, Integer defaultVal) {
         try {
@@ -70,12 +74,12 @@ public class WebScrapingUtils {
     }
 
     /**
-     * Parse string argument to Double with Double.valueOf().  If parse fails, return the
-     * specified default value.
+     * Parses the <code>String</code> argument to <code>Double</code> with
+     * {@link Double#valueOf(String)}. If parse fails, return the specified default value.
      *
-     * @param value The string to parse
-     * @param defaultVal  The value to use if the parse fails
-     * @return  The parsed Double value or the specified default
+     * @param value       the string to parse
+     * @param defaultVal  the value to use if the parse fails
+     * @return            the parsed <code>Double</code> value or the specified default
      */
     public static Double parseDoubleWithDefault(String value, Double defaultVal) {
         try {

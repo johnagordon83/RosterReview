@@ -14,24 +14,24 @@ import com.rosterreview.entity.Player;
 import com.rosterreview.service.PlayerService;
 
 /**
- * PlayerController is an annotated Spring Controller class that handles
- * requests for player data.
+ * A {@link RestController} that handles requests for player data.
  */
 
 @RequestMapping("/player")
 @RestController
 public class PlayerController {
 
-    protected static Logger log = LoggerFactory.getLogger(PlayerController.class);
+    private static Logger log = LoggerFactory.getLogger(PlayerController.class);
 
     @Autowired
     private PlayerService playerService;
 
     /**
-     * Request profile information for a specified {@Link Player}.
+     * Request profile information for the {@link Player} specified by id.
      *
-     * @param id  A string identifier corresponding to the requested Player.
-     * @return    A JSON representation of the requested Player.
+     * @param id  an identifier corresponding to the requested player.
+     * @return    the requested player object or <code>null</code> if a
+     *            matching player could not be found
      */
     @GetMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)

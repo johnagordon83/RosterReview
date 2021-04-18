@@ -29,6 +29,10 @@ import com.rosterreview.entity.Team;
 import com.rosterreview.service.PfrDataParsingService;
 import com.rosterreview.service.PlayerService;
 
+/**
+ * JUnit tests for the {@link PfrDataUpdater}.
+ */
+
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @Transactional
@@ -284,7 +288,8 @@ public class PfrDataUpdaterTest {
         validatePlayerInfo(playerFileName, playerUrl, playerId);
     }
 
-    private void validatePlayerInfo(String playerFileName, String playerUrl, String playerId) throws IOException {
+    private void validatePlayerInfo(String playerFileName, String playerUrl, String playerId)
+            throws IOException {
 
         Resource resource = new ClassPathResource(playerFileName);
         Player refData = objectMapper.readValue(resource.getInputStream(), Player.class);

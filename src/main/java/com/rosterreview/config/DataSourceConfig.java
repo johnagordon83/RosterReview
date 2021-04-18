@@ -17,8 +17,8 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * DataSourceConfig is a configuration class for creating Hibernate
- * connections to a {@link DataSource}.
+ * This {@link Configuration} class creates Hibernate connections
+ * to a {@link DataSource}.
  * <p>
  * The following configuration properties must be defined in
  * <code>classpath:datasource.properties</code>
@@ -50,7 +50,7 @@ public class DataSourceConfig {
     /**
      * Configures a {@link HibernateTemplate}
      *
-     * @return  The configured HibernateTemplate.
+     * @return  the configured HibernateTemplate.
      */
     @Bean
     public HibernateTemplate getHibernateTemplate() {
@@ -60,7 +60,7 @@ public class DataSourceConfig {
     /**
      * Configures a {@link HibernateTransactionManager}
      *
-     * @return  The configured HibernateTransactionManager.
+     * @return  the configured HibernateTransactionManager.
      */
     @Bean
     public HibernateTransactionManager getTransactionManager() {
@@ -75,7 +75,7 @@ public class DataSourceConfig {
      * DataSource configuration parameters are extracted from the
      * application environment. Specify these values in a properties file.
      *
-     * @return  The configured DataSource.
+     * @return  the configured DataSource.
      */
     @Bean
     DataSource dataSource() {
@@ -92,7 +92,7 @@ public class DataSourceConfig {
      * <p>
      * Entity classes must be stored in <code>com.rosterreview.entity</code>
      *
-     * @return  SessionFactory
+     * @return  the configured SessionFactory
      */
     @Bean
     SessionFactory getSessionFactory() {
@@ -102,6 +102,11 @@ public class DataSourceConfig {
                 .buildSessionFactory();
     }
 
+    /**
+     * Loads hibernate configuration properties defined in classpath:datasource.properties.
+     *
+     * @return  the hibernate Properties
+     */
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));

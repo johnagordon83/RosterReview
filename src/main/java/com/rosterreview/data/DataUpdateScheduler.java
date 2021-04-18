@@ -9,16 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.rosterreview.service.PfrDataParsingService;
+import com.rosterreview.utils.WebScrapingUtils;
 
 /**
- * Registers a scheduled event that periodically updates the data store
- * with recent data from an external source.
+ * A {@link Component} class that registers a scheduled event that periodically updates
+ * the data store with recent data from an external source.
  */
 
 @Component
@@ -30,11 +30,6 @@ public class DataUpdateScheduler {
     protected static Logger log = LoggerFactory.getLogger(PfrDataParsingService.class);
 
     /**
-     * Schedules a recurring event that updates the data store with recent
-     * player data from a configured external source.
-     */
-
-    /**
      * Updates the data store with recent player data retrieved from
      * https://www.pro-football-reference.com.
      */
@@ -42,7 +37,7 @@ public class DataUpdateScheduler {
     public void schedulePlayerDataUpdate() {
         log.info("Scheduled player data update is starting.");
 
-        WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER);
+        WebClient webClient = WebScrapingUtils.getConfiguredWebClient();
 
         for (char letter = 'A'; letter <= 'Z'; letter++) {
             try {
@@ -59,8 +54,8 @@ public class DataUpdateScheduler {
                 log.error("There was an error while updating player data.", iox);
             }
         }
-        webClient.close();
 
+        webClient.close();
         log.info("Scheduled player data update has completed.");
     }
 }

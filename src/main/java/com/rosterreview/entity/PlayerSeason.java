@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * An {@link Entity} class describing the statistics generated during a single season
+ * An {@link Entity} describing the statistics generated during a single season
  * of a professional football player's career.
  */
 
@@ -273,7 +273,7 @@ public class PlayerSeason implements Serializable {
     protected Integer avgValue = 0;
 
     /**
-     * An enum defining types of football seasons
+     * An enum defining the types of football seasons
      */
     public enum SeasonType {
         /**
@@ -287,22 +287,25 @@ public class PlayerSeason implements Serializable {
         POST
     }
 
+    /**
+     * A no-argument constructor required by Spring
+     */
     public PlayerSeason() {}
 
     public PlayerSeason(String playerId, String franchiseId, Integer season, SeasonType seasonType, Integer age,
             Position position, Integer jerseyNumber, Integer gamesPlayed, Integer gamesStarted, Integer passComp,
-            Integer passAtt, Integer passYds, Integer passTds, Integer passInts, Integer passLong, Double passerRating,
-            Integer sacked, Integer sackedYds, Integer rushAtt, Integer rushYds, Integer rushTds, Integer rushLong,
-            Integer targets, Integer receptions, Integer recYds, Integer recTds, Integer recLong, Integer fumbles,
-            Integer interceptions, Integer intYds, Integer intTds, Integer intLong, Integer passDef, Integer fumForced,
-            Integer fumRec, Integer fumRecYds, Integer fumRecTds, Double sacks, Integer tackles, Integer assists,
-            Integer safeties, Integer fgaTeens, Integer fgmTeens, Integer fgaTwenties, Integer fgmTwenties,
-            Integer fgaThirties, Integer fgmThirties, Integer fgaFourties, Integer fgmFourties, Integer fgaFiftyPlus,
-            Integer fgmFiftyPlus, Integer fgaTotal, Integer fgmTotal, Integer fgLong, Integer xpa, Integer xpm,
-            Integer punts, Integer puntYds, Integer puntLong, Integer puntBlocked, Integer puntRet, Integer puntRetYds,
-            Integer puntRetTds, Integer puntRetLong, Integer kickRet, Integer kickRetYds, Integer kickRetTds,
-            Integer kickRetLong, Integer otherTds, Integer allTds, Integer twoPointConv, Boolean probowl, Boolean allPro,
-            Integer avgValue) {
+            Integer passAtt, Integer passYds, Integer passTds, Integer passInts, Integer passLong,
+            Double passerRating, Integer sacked, Integer sackedYds, Integer rushAtt, Integer rushYds,
+            Integer rushTds, Integer rushLong, Integer targets, Integer receptions, Integer recYds, Integer recTds,
+            Integer recLong, Integer fumbles, Integer interceptions, Integer intYds, Integer intTds, Integer intLong,
+            Integer passDef, Integer fumForced, Integer fumRec, Integer fumRecYds, Integer fumRecTds, Double sacks,
+            Integer tackles, Integer assists, Integer safeties, Integer fgaTeens, Integer fgmTeens,
+            Integer fgaTwenties, Integer fgmTwenties, Integer fgaThirties, Integer fgmThirties, Integer fgaFourties,
+            Integer fgmFourties, Integer fgaFiftyPlus, Integer fgmFiftyPlus, Integer fgaTotal, Integer fgmTotal,
+            Integer fgLong, Integer xpa, Integer xpm, Integer punts, Integer puntYds, Integer puntLong,
+            Integer puntBlocked, Integer puntRet, Integer puntRetYds, Integer puntRetTds, Integer puntRetLong,
+            Integer kickRet, Integer kickRetYds, Integer kickRetTds, Integer kickRetLong, Integer otherTds,
+            Integer allTds, Integer twoPointConv, Boolean probowl, Boolean allPro, Integer avgValue) {
         this.playerId = playerId;
         this.franchiseId = franchiseId;
         this.season = season;
@@ -380,7 +383,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return The unique identifier of the player.
+     * @return the unique identifier of the player
      */
     @JsonIgnore
     public String getPlayerId() {
@@ -388,7 +391,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @param playerId  The unique identifier of the player.
+     * @param playerId  the unique identifier of the player
      */
     @JsonProperty
     public void setPlayerId(String playerId) {
@@ -396,1073 +399,1073 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return The unique identifier of the football team the player played
-     *         for this season.
+     * @return the unique identifier of the football team the player played
+     *         for this season
      */
     public String getFranchiseId() {
         return franchiseId;
     }
 
     /**
-     * @param teamId  The unique identifier of the football team the player played
-     *                for this season.
+     * @param franchiseId  the unique identifier of the football team the player played
+     *                     for this season
      */
     public void setFranchiseId(String franchiseId) {
         this.franchiseId = franchiseId;
     }
 
     /**
-     * @return The season (year) these statistics were generated.
+     * @return the season (year) these statistics were generated
      */
     public Integer getSeason() {
         return season;
     }
 
     /**
-     * @param season  The season (year) these statistics were generated.
+     * @param season  the season (year) these statistics were generated
      */
     public void setSeason(Integer season) {
         this.season = season;
     }
 
     /**
-     * @return The type of season these statistics were generated in.
+     * @return the type of season these statistics were generated in
      */
     public SeasonType getSeasonType() {
         return seasonType;
     }
 
     /**
-     * @param seasonType  The type of season these statistics were generated in.
+     * @param seasonType  the type of season these statistics were generated in
      */
     public void setSeasonType(SeasonType seasonType) {
         this.seasonType = seasonType;
     }
 
     /**
-     * @return The team the player played for this season.
+     * @return the team the player played for this season
      */
     public Team getTeam() {
         return team;
     }
 
     /**
-     * @param team  The team the player played for this season.
+     * @param team  the team the player played for this season
      */
     public void setTeam(Team team) {
         this.team = team;
     }
 
     /**
-     * @return The age of the player during this season.
+     * @return the age of the player during this season
      */
     public Integer getAge() {
         return age;
     }
 
     /**
-     * @param age  The age of the player during this season.
+     * @param age  the age of the player during this season
      */
     public void setAge(Integer age) {
         this.age = age;
     }
 
     /**
-     * @return The primary position the player played this season.
+     * @return the primary position the player played this season
      */
      public Position getPosition() {
         return position;
     }
 
     /**
-     * @param position  The primary position the player played this season.
+     * @param position  the primary position the player played this season
      */
     public void setPosition(Position position) {
         this.position = position;
     }
 
     /**
-     * @return The jersey number worn by the player this season.
+     * @return the jersey number worn by the player this season
      */
     public Integer getJerseyNumber() {
         return jerseyNumber;
     }
 
     /**
-     * @param jerseyNumber  The jersey number worn by the player this season.
+     * @param jerseyNumber  the jersey number worn by the player this season
      */
     public void setJerseyNumber(Integer jerseyNumber) {
         this.jerseyNumber = jerseyNumber;
     }
 
     /**
-     * @return The number of games the player appeared in this season.
+     * @return the number of games the player appeared in this season
      */
     public Integer getGamesPlayed() {
         return gamesPlayed;
     }
 
     /**
-     * @param gamesPlayed  The number of games the player appeared in this season.
+     * @param gamesPlayed  the number of games the player appeared in this season
      */
     public void setGamesPlayed(Integer gamesPlayed) {
         this.gamesPlayed = gamesPlayed;
     }
 
     /**
-     * @return The number of games the player started this season.
+     * @return the number of games the player started this season
      */
     public Integer getGamesStarted() {
         return gamesStarted;
     }
 
     /**
-     * @param gamesStarted  The number of games the player started this season.
+     * @param gamesStarted  the number of games the player started this season
      */
     public void setGamesStarted(Integer gamesStarted) {
         this.gamesStarted = gamesStarted;
     }
 
     /**
-     * @return The number of passes completed by the player this season.
+     * @return the number of passes completed by the player this season
      */
     public Integer getPassComp() {
         return passComp;
     }
 
     /**
-     * @param passComp  The number of passes completed by the player this season.
+     * @param passComp  the number of passes completed by the player this season
      */
     public void setPassComp(Integer passComp) {
         this.passComp = passComp;
     }
 
     /**
-     * @return The number of passes attempted by the player this season.
+     * @return the number of passes attempted by the player this season
      */
     public Integer getPassAtt() {
         return passAtt;
     }
 
     /**
-     * @param passAtt  The number of passes attempted by the player this season.
+     * @param passAtt  the number of passes attempted by the player this season
      */
     public void setPassAtt(Integer passAtt) {
         this.passAtt = passAtt;
     }
 
     /**
-     * @return The number of passing yards thrown by the player this season.
+     * @return the number of passing yards thrown by the player this season
      */
     public Integer getPassYds() {
         return passYds;
     }
 
     /**
-     * @param passYds  The number of passing yards thrown by the player this season.
+     * @param passYds  the number of passing yards thrown by the player this season
      */
     public void setPassYds(Integer passYds) {
         this.passYds = passYds;
     }
 
     /**
-     * @return The number of passing touchdowns thrown by the player this season.
+     * @return the number of passing touchdowns thrown by the player this season
      */
     public Integer getPassTds() {
         return passTds;
     }
 
     /**
-     * @param passTds  The number of passing touchdowns thrown by the player this season.
+     * @param passTds  the number of passing touchdowns thrown by the player this season
      */
     public void setPassTds(Integer passTds) {
         this.passTds = passTds;
     }
 
     /**
-     * @return The number of interceptions thrown by the player this season.
+     * @return the number of interceptions thrown by the player this season
      */
     public Integer getPassInts() {
         return passInts;
     }
 
     /**
-     * @param passInts  The number of interceptions thrown by the player this season.
+     * @param passInts  the number of interceptions thrown by the player this season
      */
     public void setPassInts(Integer passInts) {
         this.passInts = passInts;
     }
 
     /**
-     * @return The longest pass (yds) thrown by the player this season.
+     * @return the longest pass (yds) thrown by the player this season
      */
     public Integer getPassLong() {
         return passLong;
     }
 
     /**
-     * @param passLong  The longest pass (yds) thrown by the player this season.
+     * @param passLong  the longest pass (yds) thrown by the player this season
      */
     public void setPassLong(Integer passLong) {
         this.passLong = passLong;
     }
 
     /**
-     * @return The player's passer rating for the season.
+     * @return the player's passer rating for the season
      */
     public Double getPasserRating() {
         return passerRating;
     }
 
     /**
-     * @param passerRating  The player's passer rating for this season.
+     * @param passerRating  the player's passer rating for this season
      */
     public void setPassRating(Double passerRating) {
         this.passerRating = passerRating;
     }
 
     /**
-     * @return The number of times the player was sacked this season.
+     * @return the number of times the player was sacked this season
      */
     public Integer getSacked() {
         return sacked;
     }
 
     /**
-     * @param sacked  The number of times the player was sacked this season.
+     * @param sacked  the number of times the player was sacked this season
      */
     public void setSacked(Integer sacked) {
         this.sacked = sacked;
     }
 
     /**
-     * @return The number yards lost when the player was sacked this season.
+     * @return the number yards lost when the player was sacked this season
      */
     public Integer getSackedYds() {
         return sackedYds;
     }
 
     /**
-     * @param sacked  The number yards lost when the player was sacked this season.
+     * @param sackedYds  the number yards lost when the player was sacked this season
      */
     public void setSackedYds(Integer sackedYds) {
         this.sackedYds = sackedYds;
     }
 
     /**
-     * @return The number of rushes attempted by the player this season.
+     * @return the number of rushes attempted by the player this season
      */
     public Integer getRushAtt() {
         return rushAtt;
     }
 
     /**
-     * @param rushAtt  The number of rushes attempted by the player this season.
+     * @param rushAtt  the number of rushes attempted by the player this season
      */
     public void setRushAtt(Integer rushAtt) {
         this.rushAtt = rushAtt;
     }
 
     /**
-     * @return The number of rushing yards gained by the player this season.
+     * @return the number of rushing yards gained by the player this season
      */
     public Integer getRushYds() {
         return rushYds;
     }
 
     /**
-     * @param rushYds  The number of rushing yards gained by the player this season.
+     * @param rushYds  the number of rushing yards gained by the player this season
      */
     public void setRushYds(Integer rushYds) {
         this.rushYds = rushYds;
     }
 
     /**
-     * @return The number of rushing touchdowns scored by the player this season.
+     * @return the number of rushing touchdowns scored by the player this season
      */
     public Integer getRushTds() {
         return rushTds;
     }
 
     /**
-     * @param rushTds  The number of rushing touchdowns scored by the player this season.
+     * @param rushTds  the number of rushing touchdowns scored by the player this season
      */
     public void setRushTds(Integer rushTds) {
         this.rushTds = rushTds;
     }
 
     /**
-     * @return The longest rush made by the player this season.
+     * @return the longest rush made by the player this season
      */
     public Integer getRushLong() {
         return rushLong;
     }
 
     /**
-     * @param rushLong  The longest rush made by the player this season.
+     * @param rushLong  the longest rush made by the player this season
      */
     public void setRushLong(Integer rushLong) {
         this.rushLong = rushLong;
     }
 
     /**
-     * @return The number of passes thrown to the player this season.
+     * @return the number of passes thrown to the player this season
      */
     public Integer getTargets() {
         return targets;
     }
 
     /**
-     * @param targets  The number of passes thrown to the player this season.
+     * @param targets  the number of passes thrown to the player this season
      */
     public void setTargets(Integer targets) {
         this.targets = targets;
     }
 
     /**
-     * @return The number of passes caught by the player this season.
+     * @return the number of passes caught by the player this season
      */
     public Integer getReceptions() {
         return receptions;
     }
 
     /**
-     * @param receptions  The number of passes caught by the player this season.
+     * @param receptions  the number of passes caught by the player this season
      */
     public void setReceptions(Integer receptions) {
         this.receptions = receptions;
     }
 
     /**
-     * @return The number of receiving yards gained by the player this season.
+     * @return the number of receiving yards gained by the player this season
      */
     public Integer getRecYds() {
         return recYds;
     }
 
     /**
-     * @param recYds  The number of receiving yards gained by the player this season.
+     * @param recYds  the number of receiving yards gained by the player this season
      */
     public void setRecYds(Integer recYds) {
         this.recYds = recYds;
     }
 
     /**
-     * @return The number of receiving touchdowns scored by the player this season.
+     * @return the number of receiving touchdowns scored by the player this season
      */
     public Integer getRecTds() {
         return recTds;
     }
 
     /**
-     * @param recTds  The number of receiving touchdowns scored by the player this season.
+     * @param recTds  the number of receiving touchdowns scored by the player this season
      */
     public void setRecTds(Integer recTds) {
         this.recTds = recTds;
     }
 
     /**
-     * @return The longest reception (yds) made by the player this season.
+     * @return the longest reception (yds) made by the player this season
      */
     public Integer getRecLong() {
         return recLong;
     }
 
     /**
-     * @param recLong  The longest reception (yds) made by the player this season.
+     * @param recLong  the longest reception (yds) made by the player this season
      */
     public void setRecLong(Integer recLong) {
         this.recLong = recLong;
     }
 
     /**
-     * @return The number of times the player has fumbled this season.
+     * @return the number of times the player has fumbled this season
      */
     public Integer getFumbles() {
         return fumbles;
     }
 
     /**
-     * @param fumbles  The number of times the player has fumbled this season.
+     * @param fumbles  the number of times the player has fumbled this season
      */
     public void setFumbles(Integer fumbles) {
         this.fumbles = fumbles;
     }
 
     /**
-     * @return The number of passes intercepted by the player this season.
+     * @return the number of passes intercepted by the player this season
      */
     public Integer getInterceptions() {
         return interceptions;
     }
 
     /**
-     * @param interceptions  The number of passes intercepted by the player this season.
+     * @param interceptions  the number of passes intercepted by the player this season
      */
     public void setInterceptions(Integer interceptions) {
         this.interceptions = interceptions;
     }
 
     /**
-     * @return The number of interception return yards gained by the player this season.
+     * @return the number of interception return yards gained by the player this season
      */
     public Integer getIntYds() {
         return intYds;
     }
 
     /**
-     * @param intYds  The number of interception return yards gained by the player this
-     *                season.
+     * @param intYds  the number of interception return yards gained by the player this
+     *                season
      */
     public void setIntYds(Integer intYds) {
         this.intYds = intYds;
     }
 
     /**
-     * @return The number of touchdowns scored by the player on interception returns
-     *         this season.
+     * @return the number of touchdowns scored by the player on interception returns
+     *         this season
      */
     public Integer getIntTds() {
         return intTds;
     }
 
     /**
-     * @param intTds  The number of touchdowns scored by the player on interception returns
-     *                this season.
+     * @param intTds  the number of touchdowns scored by the player on interception returns
+     *                this season
      */
     public void setIntTds(Integer intTds) {
         this.intTds = intTds;
     }
 
     /**
-     * @return The longest return (yds) of an interception made by the player this season.
+     * @return the longest return (yds) of an interception made by the player this season
      */
     public Integer getIntLong() {
         return intLong;
     }
 
     /**
-     * @param intLong  The longest return (yds) of an interception made by the player
-     *                 this season.
+     * @param intLong  the longest return (yds) of an interception made by the player
+     *                 this season
      */
     public void setIntLong(Integer intLong) {
         this.intLong = intLong;
     }
 
     /**
-     * @return The number of passes defended by the player this season.
+     * @return the number of passes defended by the player this season
      */
     public Integer getPassDef() {
         return passDef;
     }
 
     /**
-     * @param passDef  The number of passes defended by the player this season.
+     * @param passDef  the number of passes defended by the player this season
      */
     public void setPassDef(Integer passDef) {
         this.passDef = passDef;
     }
 
     /**
-     * @return The number of fumbles forced by the player this season.
+     * @return the number of fumbles forced by the player this season
      */
     public Integer getFumForced() {
         return fumForced;
     }
 
     /**
-     * @param fumForced  The number of fumbles forced by the player this season.
+     * @param fumForced  the number of fumbles forced by the player this season
      */
     public void setFumForced(Integer fumForced) {
         this.fumForced = fumForced;
     }
 
     /**
-     * @return The number of fumbles recovered by the player this season.
+     * @return the number of fumbles recovered by the player this season
      */
     public Integer getFumRec() {
         return fumRec;
     }
 
     /**
-     * @param fumRec  The number of fumbles recovered by the player this season.
+     * @param fumRec  the number of fumbles recovered by the player this season
      */
     public void setFumRec(Integer fumRec) {
         this.fumRec = fumRec;
     }
 
     /**
-     * @return The number of fumble return yards gained by the player this season.
+     * @return the number of fumble return yards gained by the player this season
      */
     public Integer getFumRecYds() {
         return fumRecYds;
     }
 
     /**
-     * @param fumRecYds  The number of fumble return yards gained by the player
-     *                   this season.
+     * @param fumRecYds  the number of fumble return yards gained by the player
+     *                   this season
      */
     public void setFumRecYds(Integer fumRecYds) {
         this.fumRecYds = fumRecYds;
     }
 
     /**
-     * @return The number of touchdowns scored by the player on fumble returns
-     *         this season.
+     * @return the number of touchdowns scored by the player on fumble returns
+     *         this season
      */
     public Integer getFumRecTds() {
         return fumRecTds;
     }
 
     /**
-     * @param fumRecTds  The number of touchdowns scored by the player on fumble
-     *                   returns this season.
+     * @param fumRecTds  the number of touchdowns scored by the player on fumble
+     *                   returns this season
      */
     public void setFumRecTds(Integer fumRecTds) {
         this.fumRecTds = fumRecTds;
     }
 
     /**
-     * @return The number of quarterback sacks made by the player this season.
+     * @return the number of quarterback sacks made by the player this season
      */
     public Double getSacks() {
         return sacks;
     }
 
     /**
-     * @param sacks  The number of quarterback sacks made by the player this season.
+     * @param sacks  the number of quarterback sacks made by the player this season
      */
     public void setSacks(Double sacks) {
         this.sacks = sacks;
     }
 
     /**
-     * @return The number of solo tackles made by the player this season.
+     * @return the number of solo tackles made by the player this season
      */
     public Integer getTackles() {
         return tackles;
     }
 
     /**
-     * @param tackles  The number of solo tackles made by the player this season.
+     * @param tackles  the number of solo tackles made by the player this season
      */
     public void setTackles(Integer tackles) {
         this.tackles = tackles;
     }
 
     /**
-     * @return The number of tackle assists made by the player this season.
+     * @return the number of tackle assists made by the player this season
      */
     public Integer getAssists() {
         return assists;
     }
 
     /**
-     * @param assists  The number of tackle assists made by the player this season.
+     * @param assists  the number of tackle assists made by the player this season
      */
     public void setAssists(Integer assists) {
         this.assists = assists;
     }
 
     /**
-     * @return The number of safeties made by the player this season.
+     * @return the number of safeties made by the player this season
      */
     public Integer getSafeties() {
         return safeties;
     }
 
     /**
-     * @param safeties  The number of safeties made by the player this season.
+     * @param safeties  the number of safeties made by the player this season
      */
     public void setSafeties(Integer safeties) {
         this.safeties = safeties;
     }
 
     /**
-     * @return The number of 17-19 yard field goals attempted by the player this season.
+     * @return the number of 17-19 yard field goals attempted by the player this season
      */
     public Integer getFgaTeens() {
         return fgaTeens;
     }
 
     /**
-     * @param fgaTeens  The number of 17-19 yard field goals attempted by the player
-     *                  this season.
+     * @param fgaTeens  the number of 17-19 yard field goals attempted by the player
+     *                  this season
      */
     public void setFgaTeens(Integer fgaTeens) {
         this.fgaTeens = fgaTeens;
     }
 
     /**
-     * @return The number of successful 17-19 yard field goal attempts made by the
-     *         player this season.
+     * @return the number of successful 17-19 yard field goal attempts made by the
+     *         player this season
      */
     public Integer getFgmTeens() {
         return fgmTeens;
     }
 
     /**
-     * @param fgmTeens  The number of successful 17-19 yard field goal attempts made
-     *                  by the player this season.
+     * @param fgmTeens  the number of successful 17-19 yard field goal attempts made
+     *                  by the player this season
      */
     public void setFgmTeens(Integer fgmTeens) {
         this.fgmTeens = fgmTeens;
     }
 
     /**
-     * @return The number of 20-29 yard field goals attempted by the player this season.
+     * @return the number of 20-29 yard field goals attempted by the player this season
      */
     public Integer getFgaTwenties() {
         return fgaTwenties;
     }
 
     /**
-     * @param fgaTwenties  The number of 20-29 yard field goals attempted by the player
-     *                     this season.
+     * @param fgaTwenties  the number of 20-29 yard field goals attempted by the player
+     *                     this season
      */
     public void setFgaTwenties(Integer fgaTwenties) {
         this.fgaTwenties = fgaTwenties;
     }
 
     /**
-     * @return The number of successful 20-29 yard field goal attempts made by the player
-     *         this season.
+     * @return the number of successful 20-29 yard field goal attempts made by the player
+     *         this season
      */
     public Integer getFgmTwenties() {
         return fgmTwenties;
     }
 
     /**
-     * @param fgmTwenties  The number of successful 20-29 yard field goal attempts made by
-     *                     the player this season.
+     * @param fgmTwenties  the number of successful 20-29 yard field goal attempts made by
+     *                     the player this season
      */
     public void setFgmTwenties(Integer fgmTwenties) {
         this.fgmTwenties = fgmTwenties;
     }
 
     /**
-     * @return The number of 30-39 yard field goals attempted by the player this season.
+     * @return the number of 30-39 yard field goals attempted by the player this season
      */
     public Integer getFgaThirties() {
         return fgaThirties;
     }
 
     /**
-     * @param fgaThirties  The number of 30-39 yard field goals attempted by the player
-     *                     this season.
+     * @param fgaThirties  the number of 30-39 yard field goals attempted by the player
+     *                     this season
      */
     public void setFgaThirties(Integer fgaThirties) {
         this.fgaThirties = fgaThirties;
     }
 
     /**
-     * @return The number of successful 30-39 yard field goal attempts made by the player
-     *         this season.
+     * @return the number of successful 30-39 yard field goal attempts made by the player
+     *         this season
      */
     public Integer getFgmThirties() {
         return fgmThirties;
     }
 
     /**
-     * @param fgmThirties  The number of successful 30-39 yard field goal attempts made by
-     *                     the player this season.
+     * @param fgmThirties  the number of successful 30-39 yard field goal attempts made by
+     *                     the player this season
      */
     public void setFgmThirties(Integer fgmThirties) {
         this.fgmThirties = fgmThirties;
     }
 
     /**
-     * @return The number of 40-49 yard field goals attempted by the player this season.
+     * @return the number of 40-49 yard field goals attempted by the player this season
      */
     public Integer getFgaFourties() {
         return fgaFourties;
     }
 
     /**
-     * @param fgaFourties  The number of 40-49 yard field goals attempted by the player
-     *                     this season.
+     * @param fgaFourties  the number of 40-49 yard field goals attempted by the player
+     *                     this season
      */
     public void setFgaFourties(Integer fgaFourties) {
         this.fgaFourties = fgaFourties;
     }
 
     /**
-     * @return The number of successful 40-49 yard field goal attempts made by the player
-     *         this season.
+     * @return the number of successful 40-49 yard field goal attempts made by the player
+     *         this season
      */
     public Integer getFgmFourties() {
         return fgmFourties;
     }
 
     /**
-     * @param fgmFourties  The number of successful 40-49 yard field goal attempts made by
-     *                     the player this season.
+     * @param fgmFourties  the number of successful 40-49 yard field goal attempts made by
+     *                     the player this season
      */
     public void setFgmFourties(Integer fgmFourties) {
         this.fgmFourties = fgmFourties;
     }
 
     /**
-     * @return The number of 50+ yard field goals attempted by the player this season.
+     * @return the number of 50+ yard field goals attempted by the player this season
      */
     public Integer getFgaFiftyPlus() {
         return fgaFiftyPlus;
     }
 
     /**
-     * @param fgaFiftyPlus  The number of 50+ yard field goals attempted by the player
-     *                      this season.
+     * @param fgaFiftyPlus  the number of 50+ yard field goals attempted by the player
+     *                      this season
      */
     public void setFgaFiftyPlus(Integer fgaFiftyPlus) {
         this.fgaFiftyPlus = fgaFiftyPlus;
     }
 
     /**
-     * @return The number of successful 50+ yard field goal attempts made by the player
-     *         this season.
+     * @return the number of successful 50+ yard field goal attempts made by the player
+     *         this season
      */
     public Integer getFgmFiftyPlus() {
         return fgmFiftyPlus;
     }
 
     /**
-     * @param fgmFiftyPlus  The number of successful 50+ yard field goal attempts made
-     *                      by the player this season.
+     * @param fgmFiftyPlus  the number of successful 50+ yard field goal attempts made
+     *                      by the player this season
      */
     public void setFgmFiftyPlus(Integer fgmFiftyPlus) {
         this.fgmFiftyPlus = fgmFiftyPlus;
     }
 
     /**
-     * @return The total number of field goals attempted by the player this season.
+     * @return the total number of field goals attempted by the player this season
      */
     public Integer getFgaTotal() {
         return fgaTotal;
     }
 
     /**
-     * @param fgaTotal  The total number of field goals attempted by the player this
-     *                  season.
+     * @param fgaTotal  the total number of field goals attempted by the player this
+     *                  season
      */
     public void setFgaTotal(Integer fgaTotal) {
         this.fgaTotal = fgaTotal;
     }
 
     /**
-     * @return The total number of successful field goal attempts made by the player
-     *         this season.
+     * @return the total number of successful field goal attempts made by the player
+     *         this season
      */
     public Integer getFgmTotal() {
         return fgmTotal;
     }
 
     /**
-     * @param fgmTotal  The total number of successful field goal attempts made by the
-     *                  player this season.
+     * @param fgmTotal  the total number of successful field goal attempts made by the
+     *                  player this season
      */
     public void setFgmTotal(Integer fgmTotal) {
         this.fgmTotal = fgmTotal;
     }
 
     /**
-     * @return The longest successful field goal (yds) attempt made by the player
-     *         this season.
+     * @return the longest successful field goal (yds) attempt made by the player
+     *         this season
      */
     public Integer getFgLong() {
         return fgLong;
     }
 
     /**
-     * @param fgLong  The longest successful field goal (yds) attempt made by the
-     *                player this season.
+     * @param fgLong  the longest successful field goal (yds) attempt made by the
+     *                player this season
      */
     public void setFgLong(Integer fgLong) {
         this.fgLong = fgLong;
     }
 
     /**
-     * @return The total number of extra points attempted by the player this season.
+     * @return the total number of extra points attempted by the player this season
      */
     public Integer getXpa() {
         return xpa;
     }
 
     /**
-     * @param xpa  The total number of extra points attempted by the player this season.
+     * @param xpa  the total number of extra points attempted by the player this season
      */
     public void setXpa(Integer xpa) {
         this.xpa = xpa;
     }
 
     /**
-     * @return The total number of successful extra point attempts made by the player
-     *         this season.
+     * @return the total number of successful extra point attempts made by the player
+     *         this season
      */
     public Integer getXpm() {
         return xpm;
     }
 
     /**
-     * @param xpm  The total number of successful extra point attempts made by the player
-     *             this season.
+     * @param xpm  the total number of successful extra point attempts made by the player
+     *             this season
      */
     public void setXpm(Integer xpm) {
         this.xpm = xpm;
     }
 
     /**
-     * @return The total number of punts made by the player this season.
+     * @return the total number of punts made by the player this season
      */
     public Integer getPunts() {
         return punts;
     }
 
     /**
-     * @param punts  The total number of punts made by the player this season.
+     * @param punts  the total number of punts made by the player this season
      */
     public void setPunts(Integer punts) {
         this.punts = punts;
     }
 
     /**
-     * @return The total number of punt yards made by the player this season.
+     * @return the total number of punt yards made by the player this season
      */
     public Integer getPuntYds() {
         return puntYds;
     }
 
     /**
-     * @param puntYds  The total number of punt yards made by the player this season.
+     * @param puntYds  the total number of punt yards made by the player this season
      */
     public void setPuntYds(Integer puntYds) {
         this.puntYds = puntYds;
     }
 
     /**
-     * @return The longest punt (yds) made by the player this season.
+     * @return the longest punt (yds) made by the player this season
      */
     public Integer getPuntLong() {
         return puntLong;
     }
 
     /**
-     * @param puntLong  The longest punt (yds) made by the player this season.
+     * @param puntLong  the longest punt (yds) made by the player this season
      */
     public void setPuntLong(Integer puntLong) {
         this.puntLong = puntLong;
     }
 
     /**
-     * @return The number of the player's punts that were blocked this season.
+     * @return the number of the player's punts that were blocked this season
      */
     public Integer getPuntBlocked() {
         return puntBlocked;
     }
 
     /**
-     * @param puntBlocked  The number of the player's punts that were blocked this season.
+     * @param puntBlocked  the number of the player's punts that were blocked this season
      */
     public void setPuntBlocked(Integer puntBlocked) {
         this.puntBlocked = puntBlocked;
     }
 
     /**
-     * @return The number of punts returned by the player this season.
+     * @return the number of punts returned by the player this season
      */
     public Integer getPuntRet() {
         return puntRet;
     }
 
     /**
-     * @param puntRet  The number of punts returned by the player this season.
+     * @param puntRet  the number of punts returned by the player this season
      */
     public void setPuntRet(Integer puntRet) {
         this.puntRet = puntRet;
     }
 
     /**
-     * @return The number of punt return yards gained by the player this season.
+     * @return the number of punt return yards gained by the player this season
      */
     public Integer getPuntRetYds() {
         return puntRetYds;
     }
 
     /**
-     * @param puntRetYds  The number of punt return yards gained by the player this season.
+     * @param puntRetYds  the number of punt return yards gained by the player this season
      */
     public void setPuntRetYds(Integer puntRetYds) {
         this.puntRetYds = puntRetYds;
     }
 
     /**
-     * @return The number of punts returned for touchdowns by the player this season.
+     * @return the number of punts returned for touchdowns by the player this season
      */
     public Integer getPuntRetTds() {
         return puntRetTds;
     }
 
     /**
-     * @param puntRetTds  The number of punts returned for touchdowns by the player this season.
+     * @param puntRetTds  the number of punts returned for touchdowns by the player this season
      */
     public void setPuntRetTds(Integer puntRetTds) {
         this.puntRetTds = puntRetTds;
     }
 
     /**
-     * @return The longest punt return (yds) made by the player this season.
+     * @return the longest punt return (yds) made by the player this season
      */
     public Integer getPuntRetLong() {
         return puntRetLong;
     }
 
     /**
-     * @param puntRetLong  The longest punt return (yds) made by the player this season.
+     * @param puntRetLong  the longest punt return (yds) made by the player this season
      */
     public void setPuntRetLong(Integer puntRetLong) {
         this.puntRetLong = puntRetLong;
     }
 
     /**
-     * @return The number of kickoffs returned by the player this season.
+     * @return the number of kickoffs returned by the player this season
      */
     public Integer getKickRet() {
         return kickRet;
     }
 
     /**
-     * @param kickRet  The number of kickoffs returned by the player this season.
+     * @param kickRet  the number of kickoffs returned by the player this season
      */
     public void setKickRet(Integer kickRet) {
         this.kickRet = kickRet;
     }
 
     /**
-     * @return The number of kickoff return yards gained by the player this season.
+     * @return the number of kickoff return yards gained by the player this season
      */
     public Integer getKickRetYds() {
         return kickRetYds;
     }
 
     /**
-     * @param kickRetYds  The number of kickoff return yards gained by the player this season.
+     * @param kickRetYds  the number of kickoff return yards gained by the player this season
      */
     public void setKickRetYds(Integer kickRetYds) {
         this.kickRetYds = kickRetYds;
     }
 
     /**
-     * @return The number of kickoffs returned for touchdowns by the player this season.
+     * @return the number of kickoffs returned for touchdowns by the player this season
      */
     public Integer getKickRetTds() {
         return kickRetTds;
     }
 
     /**
-     * @param kickRetTds  The number of kickoffs returned for touchdowns by the player
-     *                    this season.
+     * @param kickRetTds  the number of kickoffs returned for touchdowns by the player
+     *                    this season
      */
     public void setKickRetTds(Integer kickRetTds) {
         this.kickRetTds = kickRetTds;
     }
 
     /**
-     * @return The longest kick return (yds) made by the player this season.
+     * @return the longest kick return (yds) made by the player this season
      */
     public Integer getKickRetLong() {
         return kickRetLong;
     }
 
     /**
-     * @param kickRetLong  The longest kick return (yds) made by the player this season.
+     * @param kickRetLong  the longest kick return (yds) made by the player this season
      */
     public void setKickRetLong(Integer kickRetLong) {
         this.kickRetLong = kickRetLong;
     }
 
     /**
-     * @return The total number of touchdowns scored via other means by the player this season.
+     * @return the total number of touchdowns scored via other means by the player this season
      */
     public Integer getOtherTds() {
         return otherTds;
     }
 
     /**
-     * @param otherTds  The total number of touchdowns scored via other means by the player
-     *                  this season.
+     * @param otherTds  the total number of touchdowns scored via other means by the player
+     *                  this season
      */
     public void setOtherTds(Integer otherTds) {
         this.otherTds = otherTds;
     }
 
     /**
-     * @return The total number of touchdowns scored by the player this season.
+     * @return the total number of touchdowns scored by the player this season
      */
     public Integer getAllTds() {
         return allTds;
     }
 
     /**
-     * @param allTds  The total number of touchdowns scored by the player this season.
+     * @param allTds  the total number of touchdowns scored by the player this season
      */
     public void setAllTds(Integer allTds) {
         this.allTds = allTds;
     }
 
     /**
-     * @return The total number of two point conversions scored by the player this season.
+     * @return the total number of two point conversions scored by the player this season
      */
     public Integer getTwoPointConv() {
         return twoPointConv;
     }
 
     /**
-     * @param twoPointConv  The total number of two point conversions scored by the player
-     *                      this season.
+     * @param twoPointConv  the total number of two point conversions scored by the player
+     *                      this season
      */
     public void setTwoPointConv(Integer twoPointConv) {
         this.twoPointConv = twoPointConv;
     }
 
     /**
-     * @return A Boolean indicating if the player made the probowl this season.
+     * @return a Boolean indicating if the player made the probowl this season
      */
     public Boolean getProbowl() {
         return probowl;
     }
 
     /**
-     * @param probowl  A Boolean indicating if the player made the probowl this season.
+     * @param probowl  a Boolean indicating if the player made the probowl this season
      */
     public void setProbowl(Boolean probowl) {
         this.probowl = probowl;
     }
 
     /**
-     * @return A Boolean indicating if the player was selected as an all-pro this season.
+     * @return a Boolean indicating if the player was selected as an all-pro this season
      */
     public Boolean getAllPro() {
         return allPro;
     }
 
     /**
-     * @param allPro  A Boolean indicating if the player was selected as an all-pro this season.
+     * @param allPro  a Boolean indicating if the player was selected as an all-pro this season
      */
     public void setAllPro(Boolean allPro) {
         this.allPro = allPro;
     }
 
     /**
-     * @return A metric calculated from the player's statistics this season which
-     *         approximates the amount of value the player has produced this season.
+     * @return a metric calculated from the player's statistics this season which
+     *         approximates the amount of value the player has produced this season
      */
     public Integer getAvgValue() {
         return avgValue;
     }
 
     /**
-     * @param setAvgValue  A metric calculated from the player's statistics this season
-     *                     which approximates the amount of value the player has produced
-     *                     this season.
+     * @param avgValue  a metric calculated from the player's statistics this season
+     *                  which approximates the amount of value the player has produced
+     *                  this season
      */
     public void setAvgValue(Integer avgValue) {
         this.avgValue = avgValue;
@@ -1470,8 +1473,8 @@ public class PlayerSeason implements Serializable {
 
     /**
      * Compares this playerSeason to the argument. The result is <code>true</code>
-     * if and only if the argument is a non-null instance of PlayerSeason that has equivalent
-     * values for the playerId, season, and franchiseId attributes.
+     * if and only if the argument is a non-null instance of {@link PlayerSeason} that
+     * has equivalent values for the playerId, season, and franchiseId attributes.
      *
      * @param obj  The object to compare this PlayerSeason against.
      * @return <code>true</code> if the argument is equal to this PlayerSeason object,
@@ -1487,10 +1490,10 @@ public class PlayerSeason implements Serializable {
         }
 
         PlayerSeason arg = (PlayerSeason) obj;
-        return this.getPlayerId().equals(arg.getPlayerId()) &&
-               this.getFranchiseId().equals(arg.getFranchiseId()) &&
-               this.getSeason().equals(arg.getSeason()) &&
-               this.getSeasonType().equals(arg.getSeasonType());
+        return this.playerId.equals(arg.getPlayerId()) &&
+               this.franchiseId.equals(arg.getFranchiseId()) &&
+               this.season.equals(arg.getSeason()) &&
+               this.seasonType.equals(arg.getSeasonType());
     }
 
     /**
@@ -1502,9 +1505,14 @@ public class PlayerSeason implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.getPlayerId(), this.getFranchiseId(), this.getSeason(), this.getSeasonType());
+        return Objects.hash(this.playerId, this.franchiseId, this.season, this.seasonType);
     }
 
+    /**
+     * Generates a <code>String</code> representation of this {@link PlayerSeason}.
+     * Given the use of reflection, consider removing or re-implementing for
+     * production grade code.
+     */
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, new RecursiveToStringStyle());

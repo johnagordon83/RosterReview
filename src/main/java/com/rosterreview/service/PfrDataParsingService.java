@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -38,15 +38,19 @@ import com.rosterreview.entity.PlayerPosition;
 import com.rosterreview.entity.PlayerSeason;
 import com.rosterreview.entity.Position;
 import com.rosterreview.entity.Team;
-import com.rosterreview.utils.RosterReviewException;
 import com.rosterreview.utils.WebScrapingUtils;
 
 /**
- * This service is responsible for updating the application data store with current player data.
- *
- * The service scrapes and parses the latest player data from https://www.pro-football-reference.com.
+ * This {@link Service} scrapes, parses, and stores demographic and statistical data for
+ * football players from <a href="https://www.pro-football-reference.com">
+ * https://www.pro-football-reference.com</a>.
+ * <p>
+ * To ingest player data, consumers of this service must pass a <code>String</code>
+ * representation of the URL for a player's Pro-Football Reference profile to the
+ * {@link #parseAndPersistPlayerDataFromUrl(String) parseAndPersistPlayerDataFromUrl}
+ * method.
  */
-@Component
+@Service
 public class PfrDataParsingService {
 
     @Autowired
@@ -57,12 +61,18 @@ public class PfrDataParsingService {
 
     private static Logger log = LoggerFactory.getLogger(PfrDataParsingService.class);
 
+    /**
+     * The base URL for the Pro Football Reference website.
+     */
     public static final String PFR_URL = "https://www.pro-football-reference.com";
 
     /**
-     * Parse and persist player data from the player's PFR page at the passed url.
+     * Scrapes, parses, and persists demographic and statistical data for a football
+     * player from <a href="https://www.pro-football-reference.com">
+     * https://www.pro-football-reference.com</a>.
+     * Parsed data is used to construct and persist a {@link Player} entity.
      *
-     * @param playerUrl  The PFR url for the player's data
+     * @param playerUrl  the URL for the player's PFR profile page
      */
     @Transactional
     public void parseAndPersistPlayerDataFromUrl(String playerUrl) {
@@ -145,11 +155,11 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse raw player name data strings.
+     * Parses player name from data strings.
      *
-     * @param fullName  The raw full name string.
-     * @param nickname  The raw nickname string.
-     * @return A PersonName containing the parsed name data.
+     * @param fullName  the raw full name string
+     * @param nickname  the raw nickname string
+     * @return          the parsed player name data
      */
     private PersonName parsePlayerName(String fullName, String nickname) {
 
@@ -198,7 +208,7 @@ public class PfrDataParsingService {
             /* Determine if name component is part of the last name
              * Start at the end of the full name, consider each component part of last name if:
              *    1.  It is not the first name component (index = 0) AND
-             *    2a. It is the last name component that isn't a suffix OR
+             *    2a. It is the last element in the array that isn't a suffix OR
              *    2b. It is a recognized last name prefix AND this name occurs at the same index
              *        in both the fullName and nickname
              */
@@ -249,10 +259,11 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Determine if the name argument is a recognized last name prefix.
+     * Determines if a <code>String</code> is a recognized last name prefix.
      *
-     * @param name The name to test
-     * @return <code>true</code> if the argument is a last name prefix, <code>false</code> otherwise.
+     * @param name  the <code>String</code> to test
+     * @return      <code>true</code> if the argument is a last name prefix,
+     *              <code>false</code> otherwise
      */
     private boolean isLastNamePrefix(String name) {
         switch (name.toLowerCase()) {
@@ -283,18 +294,23 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse player's college name.
+     * Parses a player's primary college name from a raw data <code>String</code>.
      *
-     * @param collegeRawData  The raw college data to be parsed.
-     * @return  The name of the primary college the player played for
+     * @param collegeRawData  the raw college data to be parsed
+     * @return                the name of the player's primary college or <code>null</code>
+     *                        if the player did not attend
      */
     private String parseCollege(String collegeRawData) {
 
         String collegeData = collegeRawData.replaceFirst("College: ", "");
+        if (collegeData.equals("") || collegeData.contains("none")) {
+            return null;
+        }
+
         String[] collegeDataArr = StringUtils.split(collegeData,";|,");
 
         // If there are multiple colleges listed, select the one with the 'College Stats' link.
-        // If not link present, default to the last college listed.
+        // If no link is present, default to the last college listed.
         for (String college : collegeDataArr) {
             collegeData = college;
             if (collegeData.contains("(College Stats)")) {
@@ -303,19 +319,15 @@ public class PfrDataParsingService {
             }
         }
 
-        if (collegeData.equals("") || collegeData.contains("none")) {
-            return null;
-        }
-
         return StringUtils.strip(collegeData, " \n\t\u00A0\u2007\u202F");
     }
 
     /**
-     * Parse player's height (in.).
+     * Parses a player's height (inches).
      *
-     * @param playerId  The id of the player whose height data should be parsed
-     * @param heightRawData  The raw height data to be parsed.
-     * @return  The height of the player in inches
+     * @param playerId       the id of the player whose height data will be parsed
+     * @param heightRawData  the raw height data to be parsed
+     * @return               the height of the player in inches
      */
     private Integer parseHeight(String playerId, String heightRawData) {
         Integer height = null;
@@ -334,11 +346,11 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse player's weight (lbs.)
+     * Parses a player's weight (lbs).
      *
-     * @param playerId  The id of the player whose weight data should be parsed
-     * @param heightRawData  The raw weight data to be parsed.
-     * @return  The weight of the player in lbs
+     * @param playerId       the id of the player whose weight data will be parsed
+     * @param weightRawData  the raw weight data to be parsed
+     * @return               the weight of the player in lbs
      */
     private Integer parseWeight(String playerId, String weightRawData) {
         Integer weight = null;
@@ -355,11 +367,11 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse player's birth date
+     * Parses a player's birth date.
      *
-     * @param playerId  The id of the player whose birth date should be parsed
-     * @param heightRawData  The raw birth date data to be parsed.
-     * @return  The birth date of the player
+     * @param playerId          the id of the player whose birth date will be parsed
+     * @param birthDateRawData  the raw birth date data to be parsed
+     * @return                  the birth date of the player
      */
     private LocalDate parseBirthDate(String playerId, String birthDateRawData) {
         LocalDate birthDate = null;
@@ -375,11 +387,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse player's Hall of Fame year
+     * Parses a player's Hall of Fame year.
      *
-     * @param playerId  The id of the player whose Hall of Fame year should be parsed
-     * @param heightRawData  The raw Hall of Fame year data to be parsed.
-     * @return  The year the player was inducted into the Hall of Fame (or null)
+     * @param playerId        the id of the player whose Hall of Fame year will be parsed
+     * @param hofYearRawData  the raw Hall of Fame year data to be parsed
+     * @return                the year the player was inducted into the Hall of Fame, or
+     *                        <code>null</code> if the player has not been inducted
      */
     private Integer parseHofYear(String playerId, String hofYearRawData) {
         Integer hofYear = null;
@@ -387,18 +400,20 @@ public class PfrDataParsingService {
         try {
             hofYear = Integer.valueOf(StringUtils.trim(hofYearRawData));
         } catch (NumberFormatException nfe) {
-            log.warn("Unable to parse Hall of Fame year data ('{}') for player with id: {}.", hofYearRawData, playerId);
+            log.warn("Unable to parse Hall of Fame year data ('{}') for player with id: {}.",
+                    hofYearRawData, playerId);
         }
 
         return hofYear;
     }
 
     /**
-     * Parse player profile position data.
+     * Parses a player's profile position data.
+     * Updates the {@link Player} argument with the parsed data.
      *
-     * @param player  The Player whose position data should be parsed
-     * @param positionRawData  The raw position data string to parse
-     * @return  A set of positions to be associated with the player's profile
+     * @param player           the player whose position data will be parsed
+     * @param positionRawData  the raw position data <code>String</code> to parse
+     * @see                    Position
      */
     private void parsePlayerPositions(Player player, String positionRawData) {
 
@@ -413,7 +428,8 @@ public class PfrDataParsingService {
             try {
                 positions.add(Position.getPositionByAlias(pos));
             } catch (IllegalArgumentException iae) {
-                log.warn("Unsupported player position found ('{}') for player with id: {}.", pos, player.getId());
+                log.warn("Unsupported player position found ('{}') for player with id: {}.",
+                        pos, player.getId());
             }
         }
 
@@ -440,7 +456,8 @@ public class PfrDataParsingService {
         }
 
         if (positions.size() > 4) {
-            Set<Position> dbPos = new HashSet<>(Arrays.asList(Position.CB, Position.S, Position.SS, Position.SS));
+            Set<Position> dbPos = new HashSet<>(Arrays.asList(Position.CB, Position.S,
+                    Position.SS, Position.SS));
             generalizePosition(positions, Position.DB, dbPos);
         }
 
@@ -451,11 +468,11 @@ public class PfrDataParsingService {
 
        if (positions.size() > 4) {
             log.warn("Unable to consolidate parsed position data ('{}') for player with id: {} "
-                    + "to four or fewer positions.",
-                    player.getId(), positionRawData);
+                    + "to four or fewer positions.", player.getId(), positionRawData);
         }
 
-        // Add parsed positions to the player object.  If there are still more than 4, only 4 will be retained.
+        // Add parsed positions to the player object.
+        // If there are still more than 4, only 4 will be retained.
         // There are no known cases where position data would be dropped in this manner.
         Set<PlayerPosition> playerPositions = new HashSet<>();
         Iterator<Position> iter = positions.iterator();
@@ -468,16 +485,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Reduce the number of profile positions associated with a player by replacing specific positions with
-     * their more generic counterpart.
+     * Reduces the number of profile {@link Position Positions} associated with a
+     * {@link Player} by replacing specific positions with their more generic counterpart.
+     * <p>
+     * This function may reduce the size of the positions set by replacing any elements
+     * within it that are listed in specificPositions with a single instance of the
+     * genericPosition argument.
      *
-     * This function may reduce the size of the positions set by replacing any positions specified in
-     * specificPositions that are found in the positions set with a single instance of the genericPosition
-     * argument.
-     *
-     * @param positions  The player's profile positions
-     * @param genericPosition  The position that specific positions should be generalized to
-     * @param specificPositions  The specific positions that should be generalized to genericPosition
+     * @param positions          the player's profile positions
+     * @param genericPosition    a generic position
+     * @param specificPositions  the specific positions that should be replaced
      */
      private void generalizePosition(Set<Position> positions, Position genericPosition,
              Set<Position> specificPositions) {
@@ -491,18 +508,18 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse player draft picks.
+     * Parses a player's draft pick data.
+     * Updates the {@link Player} argument with the parsed {@link DraftPick DraftPicks}.
      *
-     * @param player  The player whose draft data should be parsed
-     * @param draftRawData  The raw draft pick data string to be parsed
-     * @return  A set of positions associated with the player's profile
+     * @param player        the player whose draft data will be parsed
+     * @param draftRawData  the raw draft pick data <code>String</code>
      */
     private void parseDraftPicks(Player player, String draftRawData) {
 
         HashSet<DraftPick> draftPicks = new HashSet<>();
 
         try {
-            List<String> nflLocations = teamService.getNflLocations();
+            List<String> nflLocations = teamService.getTeamLocations();
             String[] draftDataArr = StringUtils.split(draftRawData.replaceFirst("Draft: ", ""),";");
 
             for (String draftData : draftDataArr) {
@@ -585,13 +602,13 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's season statistics.
+     * Parses a player's season statistics.
+     * Updates the {@link Player} argument with the parsed data.
      *
-     * @param page  The HtmlPage to parse
-     * @param player  The Player whose data will be parsed
-     * @throws RosterReviewException
+     * @param page   the html page to parse
+     * @param player the player whose data will be parsed
      */
-    private void parsePlayerStatistics(HtmlPage page, Player player) throws RosterReviewException {
+    private void parsePlayerStatistics(HtmlPage page, Player player) {
 
         List<PlayerSeason> playerStatistics = new ArrayList<>();
         HashMap<Integer, List<Position>> seasonPositions = new HashMap<>();
@@ -695,18 +712,22 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Calculate the Position that should be associated with each season in the player's career.
+     * Updates each {@link PlayerSeason} in a player's career with a primary {@link Position}.
+     * Positions are determined by examining:
+     * <ul>
+     * <li>positions associated with the player's profile</li>
+     * <li>positions associated with all seasons in the players career</li>
+     * <li>the player's statistics</li>
+     * <li>the player's jersey number</li>
+     * </ul>
      *
-     * @param seasonPositions  A Map of a player's seasons to a list of the positions they played that year
-     * @param careerPositions  The positions associated with a player's profile
-     * @param statistics  The player's seasonal statistics
+     * @param seasonPositions  a map of the years in which a player played to a list of the
+     *                         positions they played that year
+     * @param careerPositions  the positions associated with a player's profile
+     * @param statistics       a player's seasonal statistics
      */
     private void calculateSeasonPositions(HashMap<Integer, List<Position>> seasonPositions,
             Set<PlayerPosition> careerPositions, List<PlayerSeason> statistics) {
-
-        // Create a list of all of the season positions across all years (include duplicates)
-        List<Position> allPositions = seasonPositions.values().stream()
-                .flatMap(List::stream).collect(Collectors.toList());
 
         // Set the position to associate with each season.
         for (PlayerSeason season : statistics) {
@@ -717,6 +738,9 @@ public class PfrDataParsingService {
                 positions.get(0).equals(Position.PR))) {
                 season.setPosition(positions.get(0));
             } else {
+                // Create a list of all of the season positions across all years (include duplicates)
+                List<Position> allPositions = seasonPositions.values().stream()
+                        .flatMap(List::stream).collect(Collectors.toList());
                 // Use career positions, and all season positions to deduce what position should
                 // be associated with this season.
                 season.setPosition(consolidate(positions, careerPositions, allPositions, season));
@@ -725,15 +749,21 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Calculate a single Position to associate with a player's season by examining the
-     * positions they played that year, positions played in all years, and positions associated
-     * with the player's career.
+     * Calculates a single {@link Position} that best describes a player's role during
+     * the indicated {@link PlayerSeason}.
+     * The position is determined by examining:
+     * <ul>
+     * <li>positions associated with the player's profile</li>
+     * <li>positions associated with all seasons in the players career</li>
+     * <li>the player's statistics</li>
+     * <li>the player's jersey number</li>
+     * </ul>
      *
-     * @param seasonPositions  A list of one or more positions associated with a season
-     * @param careerPositions  The positions associated withe the player's profile
-     * @param allPositions  The positions associated with seasons from the player's entire career
-     * @param season  The season who's position is being consolidated
-     * @return  A single Position that should be associated with a PlayerSeason
+     * @param seasonPositions  the positions associated with the season argument
+     * @param careerPositions  the positions associated with the player's profile
+     * @param allPositions     the positions associated with seasons from the player's entire career
+     * @param season           the season for which a position is being calculated
+     * @return                 a position
      */
     private Position consolidate(List<Position> seasonPositions, Set<PlayerPosition> careerPositions,
             List<Position> allPositions, PlayerSeason season) {
@@ -757,7 +787,8 @@ public class PfrDataParsingService {
          */
         if ((seasonPositions.size() < 2) || (weightingValues.size() > 1 &&
                 weightingValues.get(0).equals(weightingValues.get(1)))) {
-            List<Position> careerPosList = careerPositions.stream().map(PlayerPosition::getPosition).collect(Collectors.toList());
+            List<Position> careerPosList = careerPositions.stream().map(PlayerPosition::getPosition)
+                    .collect(Collectors.toList());
             calculatePositionWeightings(careerPosList, positionWeightings, 0.5, 0.4, 0.3);
             calculatePositionWeightings(allPositions, positionWeightings, 0.1, 0.05, 0.025);
         }
@@ -774,17 +805,22 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Calculate weightings for each Position associate with the player's season.
+     * Calculates weightings for each {@link Position} associated with a player's season.
+     * Positions specified by PFR receive the primary weighting.  If the PFR position
+     * is a specific position, include it's generic with a lesser weighting.
+     * <p>
+     * Example: The position {@link Position#FS} is a specific position and would be assigned
+     * a primary weighting.  The first level generic for this position would be
+     * {@link Position#S} which would recieve a secondaryweighting.  This position also has a
+     * second level generic {@link Position#DB} which would recieve a tertiary weighting.
      *
-     * Positions specified by PFR receive the most weighting (primary).  If the PFR position
-     * is a specific position, include it's generic with a lesser weighting (secondary or tertiary).
-     *
-     * @param seasonPositions  The positions associated with a given season
-     * @param positionWeightings  A mapping of positions to their weightings
-     * @param primaryWeighting  The weighting to be assigned to the original PFR positions
-     * @param secondaryWeighting  The weighting to be applied to generic forms of specific positions
-     * @param tertiaryWeighting  The weighting to be applied to second-level generic forms of specific
-     *                           positions
+     * @param seasonPositions     the positions associated with a given season
+     * @param positionWeightings  a mapping of positions to their weightings
+     * @param primaryWeighting    the weighting to be assigned to the original PFR positions
+     * @param secondaryWeighting  the weighting to be applied to first-level generic forms of
+     *                            specific positions
+     * @param tertiaryWeighting   the weighting to be applied to second-level generic forms of
+     *                            specific positions
      */
     private void calculatePositionWeightings(List<Position> seasonPositions, Map<Position,
             Double> positionWeightings, double primaryWeighting, double secondaryWeighting,
@@ -848,12 +884,15 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Modify Position weightings based upon the player's statistics and jersey number.
+     * Updates {@link Position} weightings based upon the statistics and jersey number
+     * stored within the indicated {@link PlayerSeason}.
      *
-     * @param season  The player's season statistics
-     * @param weightings  A Mapping of positions associated with a player's season to their weightings
+     * @param season      the player's season statistics
+     * @param weightings  a mapping of positions associated with a player's season to
+     *                    their weightings
      */
-    private void calculateStatisticAndJerseyNumberWeightings(PlayerSeason season, Map<Position, Double> weightings) {
+    private void calculateStatisticAndJerseyNumberWeightings(PlayerSeason season,
+            Map<Position, Double> weightings) {
 
         Integer passAtt = season.getPassAtt();
         Integer jerseyNum = season.getJerseyNumber();
@@ -868,19 +907,23 @@ public class PfrDataParsingService {
         }
         if (weightings.get(Position.QB) != null) {
             jerseyVal = jerseyNum < 20 ? 0.1 : 0;
-            weightings.put(Position.QB, weightings.get(Position.QB) + jerseyVal + (passAtt * 0.01));
+            weightings.put(Position.QB, weightings.get(Position.QB) + jerseyVal +
+                    (passAtt * 0.01));
         }
         if (weightings.get(Position.HB) != null) {
             jerseyVal = jerseyNum >= 20 && jerseyNum < 50 ? 0.1 : 0;
-            weightings.put(Position.HB, weightings.get(Position.HB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
+            weightings.put(Position.HB, weightings.get(Position.HB) + jerseyVal +
+                    (rushAtt * 0.01) + (rec * 0.005));
         }
         if (weightings.get(Position.FB) != null) {
             jerseyVal = jerseyNum >= 20 && jerseyNum < 50 ? 0.1 : 0;
-            weightings.put(Position.FB, weightings.get(Position.FB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
+            weightings.put(Position.FB, weightings.get(Position.FB) + jerseyVal +
+                    (rushAtt * 0.01) + (rec * 0.005));
         }
         if (weightings.get(Position.RB) != null) {
             jerseyVal = jerseyNum >= 20 && jerseyNum < 50 ? 0.1 : 0;
-            weightings.put(Position.RB, weightings.get(Position.RB) + jerseyVal + (rushAtt * 0.01) + (rec * 0.005));
+            weightings.put(Position.RB, weightings.get(Position.RB) + jerseyVal +
+                    (rushAtt * 0.01) + (rec * 0.005));
         }
         if (weightings.get(Position.WR) != null) {
             jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 10 && jerseyNum < 20) ? 0.1 : 0;
@@ -963,10 +1006,10 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse position data for a given season.
+     * Parses {@link Position} data from a raw data <code>String</code>.
      *
-     * @param rawPositionData  The raw position data for a given season
-     * @return  The parsed Positions
+     * @param rawPositionData  raw position data
+     * @return                 the parsed positions
      */
     private Set<Position> parsePositions(String rawPositionData) {
         String[] yearData = rawPositionData.split("[///;:,]");
@@ -986,12 +1029,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's passing statistics.
+     * Parses a player's passing statistics and stores them in the given {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @param tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
     private void parsePassingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
@@ -1026,7 +1069,8 @@ public class PfrDataParsingService {
                     break;
                 case "pass_sacked": playerSeason.setSacked(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_sacked_yds": playerSeason.setSackedYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_sacked_yds": playerSeason.setSackedYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
@@ -1036,22 +1080,23 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's and receiving statistics.
+     * Parses a player's rushing and receiving statistics, and stores them in the given
+     * {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @param tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
-    private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason, Map<Integer,
-            List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row) {
+    private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason,
+            Map<Integer, List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
             String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
+                        k -> new ArrayList<Position>()).addAll(parsePositions(cellData));
                     break;
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
@@ -1088,12 +1133,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's defensive statistics.
+     * Parses a player's defensive statistics and stores them in the given {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @p ram tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
     private void parseDefensiveStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
@@ -1102,8 +1147,8 @@ public class PfrDataParsingService {
             String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
+                        k -> new ArrayList<Position>()).addAll(parsePositions(cellData));
                     break;
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
@@ -1148,12 +1193,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's kicking statistics.
+     * Parses a player's kicking statistics and stores them in the given {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @param tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
     private void parseKickingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
@@ -1162,8 +1207,8 @@ public class PfrDataParsingService {
             String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
+                        k -> new ArrayList<Position>()).addAll(parsePositions(cellData));
                     break;
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
@@ -1218,12 +1263,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's return statistics.
+     * Parses a player's return statistics and stores them in the given {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @param tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
     private void parseReturnStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
@@ -1232,8 +1277,8 @@ public class PfrDataParsingService {
             String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
+                        k -> new ArrayList<Position>()).addAll(parsePositions(cellData));
                     break;
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
@@ -1264,12 +1309,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's scoring statistics.
+     * Parses a player's scoring statistics and stores them in the given {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @param tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
     private void parseScoringStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
@@ -1277,8 +1322,8 @@ public class PfrDataParsingService {
             String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
+                        k -> new ArrayList<Position>()).addAll(parsePositions(cellData));
                     break;
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
@@ -1321,12 +1366,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parse a player's games played statistics.
+     * Parses a player's games played statistics and stores them in the given {@link PlayerSeason}.
      *
-     * @param playerSeason  The season for which statistical data is being parsed
-     * @param seasonPositions  A mapping of seasons to positions
-     * @param tableHeader  The table header containing the column names
-     * @param row  The table row containing the statistics to be parsed
+     * @param playerSeason     the season for which statistical data is being parsed
+     * @param seasonPositions  a mapping of seasons to positions
+     * @param tableHeader      the table header containing the column names
+     * @param row              the table row containing the statistics to be parsed
      */
     private void parseGamesPlayedStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
@@ -1334,8 +1379,8 @@ public class PfrDataParsingService {
             String cellData = row.getCell(j).getTextContent();
 
             switch (tableHeader.get(j).getAttribute("data-stat")) {
-                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(), k -> new ArrayList<Position>())
-                            .addAll(parsePositions(cellData));
+                case "pos": seasonPositions.computeIfAbsent(playerSeason.getSeason(),
+                        k -> new ArrayList<Position>()).addAll(parsePositions(cellData));
                     break;
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
