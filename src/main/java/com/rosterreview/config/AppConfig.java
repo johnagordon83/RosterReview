@@ -7,17 +7,17 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
- * This {@link Configuration} class declares multiple {@link Bean} methods, and may be processed
- * by the Spring container to generate bean definitions and service requests for those beans at
- * runtime. This class also defines callback methods to customize the Java-based configuration
- * for Spring MVC enabled via {@link EnableWebMvc}.
+ * This {@link Configuration} class declares multiple {@link Bean} methods, and may be
+ * processed by the Spring container to generate bean definitions and service requests
+ * for those beans at runtime. This class also defines callback methods to customize the
+ * Java-based configuration for Spring MVC enabled via {@link EnableWebMvc}.
  */
 @Configuration
 @ComponentScan("com.rosterreview")
@@ -25,21 +25,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @EnableScheduling
 @EnableWebMvc
 public class AppConfig implements WebMvcConfigurer {
-
-    /**
-     * Configures an {@link InternalResourceViewResolver} bean.
-     * <p>
-     * Views (.jsp) should be stored in <code>/WEB-INF/views/</code>
-     *
-     * @return  a configured InternalResourceViewResolver
-     */
-    @Bean
-    public InternalResourceViewResolver viewResolver() {
-        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix("/WEB-INF/views/");
-        resolver.setSuffix(".jsp");
-        return resolver;
-    }
 
     /**
      * Configures an {@link ObjectMapper} bean.
@@ -55,13 +40,23 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Registers the /resources/ directory to serve static resources such as images, js,
-     * and, css files.
+     * Registers a view controller for the base url.
+     */
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("index.html");
+    }
+
+    /**
+     * Registers the location of static resources such as images, html, js, and css files.
      *
      * @param registry  a resource handler registry
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/app-resources/**").addResourceLocations("/resources/");
+        final String BUILD_DIR = "/WEB-INF/roster-review-app/build/";
+
+        registry.addResourceHandler("/static/**").addResourceLocations(BUILD_DIR.concat("static/"));
+        registry.addResourceHandler("/index.html").addResourceLocations(BUILD_DIR.concat("index.html"));
     }
 }

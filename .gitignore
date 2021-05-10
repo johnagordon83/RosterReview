@@ -6,6 +6,13 @@
 # TARGET DIR
 target/
 
+# REACT BUILD DIR
+src/main/java/webapp/WEB-INF/roster-review-app/build/
+
+# NODE
+src/main/java/webapp/WEB-INF/roster-review-app/node/
+src/main/java/webapp/WEB-INF/roster-review-app/node_modules/
+
 # LOCAL DATASOURCE PROPERTIES
 datasource.properties
 
