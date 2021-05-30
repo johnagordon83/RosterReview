@@ -1,0 +1,77 @@
+/* Position the left navigation bar 'overdrafted' logo */
+#navbar-logo {
+    height: 42px;
+    line-height: 1em;
+    padding: 9px 0px;
+    margin-right: 8px
+}
+
+/* Style the central navigation bar links */
+.navbar-collapse > ul {
+    font: 18px sans-serif;
+    line-height: 1.5em;
+}
+
+/* Position the player search field and menu toggler to the right */
+#right-navbar-items {
+    display: flex;
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    height: 42px;
+    padding: 1px 0px;
+}
+
+/* Style the navbar toggler */
+#right-navbar-items .navbar-toggler {
+    margin-left:auto;
+    border: none;
+    box-shadow: none;
+}
+
+/* When the toggler is in focus, use a lighter shaded icon */
+#right-navbar-items .navbar-toggler:focus .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8 %29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Hide the player search input if the browser is too narrow */
+@media screen and (max-width:600px){
+    #right-navbar-items .input-group {
+        display: none;
+    }
+}
+
+/* Style the player search input container */
+#right-navbar-items .input-group {
+    width: 280px;
+    padding: 5px 0px;
+    height: 40px;
+}
+
+/* Style the player seaerch input */ 
+#right-navbar-items .form-control {
+    height: 30px;
+    margin-left: auto;
+    font: 1.1em sans-serif;
+    box-shadow: none;
+}
+
+/* Hide the player search input placeholder text when the input is in focus */
+#right-navbar-items .form-control:focus::placeholder {
+    color: transparent;
+}
+
+/* Style the player search input placeholder text */
+#right-navbar-items .form-control::placeholder {
+    color: #B4B4B4;
+}
+
+/* Round the left end of the player search input */
+#right-navbar-items .left-pill {
+    border-radius: 50rem 0 0 50rem !important;
+}
+
+/* Round the right end of the player search input */
+#right-navbar-items .right-pill {
+    border-radius: 0 50rem 50rem 0 !important;
+}
