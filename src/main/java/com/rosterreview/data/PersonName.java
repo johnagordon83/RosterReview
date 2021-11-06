@@ -24,7 +24,8 @@ public class PersonName {
      * @param lastName    a person's last name
      * @param suffix      a person's last name suffix
      */
-    public PersonName(String firstName, String nickname, String middleName, String lastName, String suffix) {
+    public PersonName(String firstName, String nickname, String middleName,
+            String lastName, String suffix) {
         this.firstName = firstName;
         this.nickname = nickname;
         this.middleName = middleName;
@@ -33,7 +34,7 @@ public class PersonName {
     }
 
     /**
-     * @return a person's first name
+     * @return  a person's first name
      */
     public String getFirstName() {
         return firstName;
@@ -47,7 +48,7 @@ public class PersonName {
     }
 
     /**
-     * @return a person's nickname
+     * @return  a person's nickname
      */
     public String getNickname() {
         return nickname;
@@ -61,7 +62,7 @@ public class PersonName {
     }
 
     /**
-     * @return a person's middle name
+     * @return  a person's middle name
      */
     public String getMiddleName() {
         return middleName;
@@ -75,7 +76,7 @@ public class PersonName {
     }
 
     /**
-     * @return a person's last name
+     * @return  a person's last name
      */
     public String getLastName() {
         return lastName;

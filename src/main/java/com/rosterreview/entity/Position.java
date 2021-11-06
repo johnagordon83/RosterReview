@@ -19,8 +19,8 @@ public enum Position {
     /**
      * Running Back
      * <p>
-     * Should be used to generically classify players that have played multiple running back
-     * positions including halfback, tailback, fullback, wingback, etc.
+     * Should be used to generically classify players that have played multiple
+     * running back positions including halfback, tailback, fullback, wingback, etc.
      */
     RB("RB",  "WB", "B"),
 
@@ -135,8 +135,11 @@ public enum Position {
      * <p>
      * Should be used to generically classify players that have played both
      * free safety and strong safety.
+     *
+     * For players from the 1960's and earlier, 'LS' indicates 'Left Safety'.
+     * However, this conflicts with the current usage of 'Long Snapper'.
      */
-    S("S", "LS", "RS"),
+    S("S", "RS"),
 
     /**
      * Free Safety
@@ -166,7 +169,12 @@ public enum Position {
     /**
      * Punter
      */
-    P("P");
+    P("P"),
+
+    /**
+     * Long Snapper
+     */
+    LS("LS");
 
     private static final Map<String, Position> ALIAS_MAP = new HashMap<>();
 
@@ -185,17 +193,20 @@ public enum Position {
     }
 
     /**
-     * Retrieves an instance of {@link Position} that corresponds to the passed alias argument.
+     * Retrieves an instance of {@link Position} that corresponds to the
+     * passed alias argument.
      *
-     * @param alias                      the <code>String</code> value for which a
-     *                                   Position equivalent should be retrieved
-     * @return                           the Position equivalent of the alias argument
+     * @param alias  the <code>String</code> value for which a Position
+     *               equivalent should be retrieved
+     * @return       the Position equivalent of the alias argument
      * @throws IllegalArgumentException  if no enum matches the alias argument
      */
-    public static Position getPositionByAlias(String alias) throws IllegalArgumentException {
+    public static Position getPositionByAlias(String alias)
+            throws IllegalArgumentException {
         Position position = ALIAS_MAP.get(alias);
         if (position == null) {
-            throw new IllegalArgumentException("No defined Position exists with alias '" + alias + "'");
+            throw new IllegalArgumentException(
+                    "No defined Position exists with alias '" + alias + "'");
         }
         return position;
     }

@@ -33,9 +33,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * <p>
  * <b>Hibernate Properties</b>
  * <ul>
- * <li>hibernate.dialect:       Set the SQL dialect for the DataSource.</li>
- * <li>hibernate.hbm2ddl.auto:  Set automatic schema generation.</li>
- * <li>hibernate.show_sql:      Enable logging of generated SQL statements.</li>
+ * <li>hibernate.dialect:      Set the SQL dialect for the DataSource.</li>
+ * <li>hibernate.hbm2ddl.auto: Set automatic schema generation.</li>
+ * <li>hibernate.show_sql:     Enable logging of generated SQL statements.</li>
  * </ul>
  */
 
@@ -48,9 +48,9 @@ public class DataSourceConfig {
     private Environment env;
 
     /**
-     * Configures a {@link HibernateTemplate}
+     * Configures a {@link HibernateTemplate}.
      *
-     * @return  the configured HibernateTemplate.
+     * @return  a configured HibernateTemplate.
      */
     @Bean
     public HibernateTemplate getHibernateTemplate() {
@@ -58,24 +58,25 @@ public class DataSourceConfig {
     }
 
     /**
-     * Configures a {@link HibernateTransactionManager}
+     * Configures a {@link HibernateTransactionManager}.
      *
-     * @return  the configured HibernateTransactionManager.
+     * @return  a configured HibernateTransactionManager.
      */
     @Bean
     public HibernateTransactionManager getTransactionManager() {
         HibernateTransactionManager txManager = new HibernateTransactionManager();
         txManager.setSessionFactory(getSessionFactory());
+
         return txManager;
     }
 
     /**
      * Configures a {@link DataSource}.
      * <p>
-     * DataSource configuration parameters are extracted from the
-     * application environment. Specify these values in a properties file.
+     * DataSource configuration parameters are extracted from the application
+     * environment. Specify these values in a properties file.
      *
-     * @return  the configured DataSource.
+     * @return  a configured DataSource
      */
     @Bean
     DataSource dataSource() {
@@ -84,15 +85,16 @@ public class DataSourceConfig {
         dataSource.setUrl(env.getProperty("ds.url"));
         dataSource.setUsername(env.getProperty("ds.username"));
         dataSource.setPassword(env.getProperty("ds.password"));
+
         return dataSource;
     }
 
     /**
      * Configures a {@link SessionFactory}
      * <p>
-     * Entity classes must be stored in <code>com.rosterreview.entity</code>
+     * Entity classes must be stored in <code>com.rosterreview.entity</code>.
      *
-     * @return  the configured SessionFactory
+     * @return  a configured SessionFactory
      */
     @Bean
     SessionFactory getSessionFactory() {
@@ -103,15 +105,21 @@ public class DataSourceConfig {
     }
 
     /**
-     * Loads hibernate configuration properties defined in classpath:datasource.properties.
+     * Loads hibernate configuration {@link Properties} defined in
+     * <code>classpath:datasource.properties</code>.
      *
-     * @return  the hibernate Properties
+     * @return  a configured Properties object
      */
     private Properties getHibernateProperties() {
+        final String DIALECT = "hibernate.dialect";
+        final String HBM2DDL = "hibernate.hbm2ddl.auto";
+        final String SHOW_SQL = "hibernate.show_sql";
+
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
-        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+        properties.put(DIALECT, env.getProperty(DIALECT));
+        properties.put(HBM2DDL, env.getProperty(HBM2DDL));
+        properties.put(SHOW_SQL, env.getProperty(SHOW_SQL));
+
         return properties;
     }
 }

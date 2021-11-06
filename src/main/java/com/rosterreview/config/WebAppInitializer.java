@@ -6,16 +6,19 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**
- * This class registers a {@link DispatcherServlet} and loads the {@link AppConfig} class.
+ * This class registers a {@link DispatcherServlet} and loads the
+ * {@link AppConfig} class.
  */
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     /**
-     * Specifies {@link org.springframework.context.annotation.Configuration} and/or
-     * {@link org.springframework.stereotype.Component} classes for the root application context.
+     * Specifies {@link org.springframework.context.annotation.Configuration}
+     * and/or {@link org.springframework.stereotype.Component} classes for the
+     * root application context.
+     * <p>
      * Currently registers {@link AppConfig} as the application configuration class.
      *
-     * @return the configuration and component classes
+     * @return  the configuration and component classes
      */
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -23,10 +26,11 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     }
 
     /**
-     * Specifies {@link org.springframework.context.annotation.Configuration} and/or
-     * {@link org.springframework.stereotype.Component} classes for the Servlet application context.
+     * Specifies {@link org.springframework.context.annotation.Configuration}
+     * and/or {@link org.springframework.stereotype.Component} classes for the
+     * servlet application context.
      *
-     * @return the configuration and component classes
+     * @return  the configuration and component classes
      */
     @Override
     protected Class<?>[] getServletConfigClasses() {
@@ -36,7 +40,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     /**
      * Specifies the servlet mapping(s) for the {@link DispatcherServlet}.
      *
-     * @return the servlet mappings
+     * @return  the servlet mappings
      */
     @Override
     protected String[] getServletMappings() {
@@ -45,14 +49,15 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 
     /**
      * Registers a {@link DispatcherServlet} against the given {@link ServletContext}.
-     * Also adds an instance of {@link JDBCDriverDeregistrationListener} to the servlet context.
+     * <p>
+     * Also adds an instance of {@link JDBCDriverDeregistrationListener}
+     * to the servlet context.
      *
      * @param servletContext  the servlet context
      */
     @Override
     protected void registerDispatcherServlet(ServletContext servletContext) {
-        super.registerDispatcherServlet(servletContext);
-
         servletContext.addListener(new JDBCDriverDeregistrationListener());
+        super.registerDispatcherServlet(servletContext);
     }
 }

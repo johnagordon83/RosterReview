@@ -31,7 +31,7 @@
 
 /* When the toggler is in focus, use a lighter shaded icon */
 #right-navbar-items .navbar-toggler:focus .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8 %29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30' %3e%3cpath stroke='rgba%28255, 255, 255, 0.8 %29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 /* Hide the player search input if the browser is too narrow */
@@ -48,7 +48,7 @@
     height: 40px;
 }
 
-/* Style the player seaerch input */ 
+/* Style the player seaerch input */
 #right-navbar-items .form-control {
     height: 30px;
     margin-left: auto;
@@ -63,7 +63,13 @@
 
 /* Style the player search input placeholder text */
 #right-navbar-items .form-control::placeholder {
-    color: #B4B4B4;
+    color: #969696;
+}
+
+/* Round the left end of the player search input */
+#right-navbar-items button:focus {
+    color: #212529 !important;
+    box-shadow: none;
 }
 
 /* Round the left end of the player search input */

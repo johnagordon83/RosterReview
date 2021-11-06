@@ -17,45 +17,48 @@ import com.rosterreview.service.PfrDataParsingService;
 import com.rosterreview.utils.WebScrapingUtils;
 
 /**
- * A {@link Component} class that registers a scheduled event that periodically updates
- * the data store with recent data from an external source.
+ * A {@link Component} class that registers a scheduled event that periodically
+ * updates the data store with recent data from an external source.
  */
 
 @Component
 public class DataUpdateScheduler {
 
     @Autowired
-    protected PfrDataParsingService pfrDataUpdater;
+    private PfrDataParsingService pfrDataUpdater;
 
-    protected static Logger log = LoggerFactory.getLogger(PfrDataParsingService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PfrDataParsingService.class);
 
     /**
      * Updates the data store with recent player data retrieved from
      * https://www.pro-football-reference.com.
      */
-    @Scheduled(cron = "${player.data.update.schedule}", zone = "${player.data.update.timezone}")
+    @Scheduled(cron = "${player.data.update.schedule}",
+               zone = "${player.data.update.timezone}")
     public void schedulePlayerDataUpdate() {
-        log.info("Scheduled player data update is starting.");
+        LOG.info("Scheduled player data update is starting.");
 
         WebClient webClient = WebScrapingUtils.getConfiguredWebClient();
 
         for (char letter = 'A'; letter <= 'Z'; letter++) {
             try {
-                String playersByLetterUrl = PfrDataParsingService.PFR_URL + "/players/" + letter;
+                String playersByLetterUrl = PfrDataParsingService.PFR_URL
+                        + "/players/" + letter;
 
                 HtmlPage page = webClient.getPage(playersByLetterUrl);
                 List<DomNode> activePlayerNodes = page.getByXPath("div[@id='div_players']/b/a");
 
                 for (DomNode node : activePlayerNodes) {
-                    String playerUrl = PfrDataParsingService.PFR_URL + ((DomElement) node).getAttribute("href");
+                    String playerUrl = PfrDataParsingService.PFR_URL +
+                            ((DomElement) node).getAttribute("href");
                     pfrDataUpdater.parseAndPersistPlayerDataFromUrl(playerUrl);
                 }
             } catch (IOException iox) {
-                log.error("There was an error while updating player data.", iox);
+                LOG.error("There was an error while updating player data.", iox);
             }
         }
 
         webClient.close();
-        log.info("Scheduled player data update has completed.");
+        LOG.info("Scheduled player data update has completed.");
     }
 }

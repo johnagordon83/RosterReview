@@ -20,7 +20,8 @@ public class TeamService {
     private TeamDao teamDao;
 
     /**
-     * Retrieves the {@link Team} with attributes that matches the indicated parameters.
+     * Retrieves the {@link Team} with attributes that matches the indicated
+     * parameters.
      *
      * @param season    the season the team competed in
      * @param league    the league the team belonged to
@@ -33,7 +34,8 @@ public class TeamService {
     }
 
     /**
-     * Retrieves the {@link Team} from the specified season that has the indicated pfrTeamAbbrev.
+     * Retrieves the {@link Team} from the specified season that has the
+     * indicated pfrTeamAbbrev.
      *
      * @param pfrTeamAbbrev  the pfr team abbreviation to match against
      * @param season         the season the team competed in

@@ -19,8 +19,6 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 /**
  * An {@link Entity} defining a professional football player.
@@ -34,55 +32,55 @@ public class Player {
 
     @Id
     @Column(name="id")
-    protected String id;
+    private String id;
 
     @Column(name="pfr_id")
-    protected String pfrId;
+    private String pfrId;
 
     @Column(name="nickname")
-    protected String nickname;
+    private String nickname;
 
     @Column(name="first_name")
-    protected String firstName;
+    private String firstName;
 
     @Column(name="middle_name")
-    protected String middleName;
+    private String middleName;
 
     @Column(name="last_name")
-    protected String lastName;
+    private String lastName;
 
     @Column(name="suffix")
-    protected String suffix;
+    private String suffix;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
-    protected Set<PlayerPosition> positions;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false,
+                insertable=false, updatable=false)
+    private Set<PlayerPosition> positions;
 
     @Column(name="height")
-    protected Integer height;
+    private Integer height;
 
     @Column(name="weight")
-    protected Integer weight;
+    private Integer weight;
 
     @Column(name="birth_date")
-    protected LocalDate birthDate;
+    private LocalDate birthDate;
 
     @Column(name="college")
-    protected String college;
+    private String college;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
-    protected Set<DraftPick> draftPicks;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false,
+                insertable=false, updatable=false)
+    private Set<DraftPick> draftPicks;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.SUBSELECT)
-    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false, insertable=false, updatable=false)
-    protected List<PlayerSeason> statistics;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name="player_id", referencedColumnName = "id", nullable = false,
+                insertable=false, updatable=false)
+    private List<PlayerSeason> statistics;
 
     @Column(name="hof_year")
-    protected Integer hofYear;
+    private Integer hofYear;
 
     /**
      * A no-argument {@link Player} constructor required by Spring.
@@ -107,9 +105,11 @@ public class Player {
         this.hofYear = null;
     }
 
-    public Player(String id, String pfrId, String nickname, String firstName, String middleName, String lastName,
-            String suffix, Set<PlayerPosition> positions, Integer height, Integer weight, LocalDate birthDate,
-            String college, Set<DraftPick> draftPicks, List<PlayerSeason> statistics, Integer hofYear) {
+    public Player(String id, String pfrId, String nickname, String firstName,
+            String middleName, String lastName, String suffix,
+            Set<PlayerPosition> positions, Integer height, Integer weight,
+            LocalDate birthDate, String college, Set<DraftPick> draftPicks,
+            List<PlayerSeason> statistics, Integer hofYear) {
 
         this.id = id;
         this.pfrId = pfrId;
@@ -129,7 +129,7 @@ public class Player {
     }
 
     /**
-     * @return a unique identifier for this player
+     * @return  a unique identifier for this player
      */
     public String getId() {
         return id;
@@ -145,9 +145,9 @@ public class Player {
     /**
      * Gets the unique identifier used by
      * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for this player
+     * www.pro-football-reference.com</a> for this player.
      *
-     * @return the unique identifier used by PFR for this player
+     * @return  the unique identifier used by PFR for this player
      */
     public String getPfrId() {
         return pfrId;
@@ -156,7 +156,7 @@ public class Player {
     /**
      * Sets the unique identifier used by
      * <a href="http://www.pro-football-reference.com">
-     * www.pro-football-reference.com</a> for this player
+     * www.pro-football-reference.com</a> for this player.
      *
      * @param pfrId  a unique identifier used by PFR for this player
      */
@@ -165,7 +165,7 @@ public class Player {
     }
 
     /**
-     * @return the player's nickname
+     * @return  the player's nickname
      */
     public String getNickname() {
         return nickname;
@@ -235,7 +235,7 @@ public class Player {
     }
 
     /**
-     * @return the positions the player is most known for playing
+     * @return  the positions the player is most known for playing
      */
     public Set<PlayerPosition> getPositions() {
         return positions;
@@ -264,7 +264,7 @@ public class Player {
     }
 
     /**
-     * @return the player's weight (lbs)
+     * @return  the player's weight (lbs)
      */
     public Integer getWeight() {
         return weight;
@@ -306,45 +306,48 @@ public class Player {
     }
 
     /**
-     * @return a set of {@link DraftPick DraftPicks} that describe the player's draft history
+     * @return  a set of {@link DraftPick DraftPicks} that describe the
+     *          player's draft history
      */
     public Set<DraftPick> getDraftPicks() {
         return draftPicks;
     }
 
     /**
-     * @param draftPicks  a set of {@link DraftPick DraftPicks} that describe the player's
-     *                    draft history
+     * @param draftPicks  a set of {@link DraftPick DraftPicks} that describe
+     *                    the player's draft history
      */
     public void setDraftPicks(Set<DraftPick> draftPicks) {
         this.draftPicks = draftPicks;
     }
 
     /**
-     * @return a list of {@link PlayerSeason PlayerSeasons} that contain the player's statistics
-     *         for each year of their career
+     * @return  a list of {@link PlayerSeason PlayerSeasons} that contain the
+     *          player's statistics for each year of their career
      */
     public List<PlayerSeason> getStatistics() {
         return statistics;
     }
 
     /**
-     * @param statistics  a list of {@link PlayerSeason PlayerSeasons} that contain the player's
-     *        statistics for each year of their career
+     * @param statistics  a list of {@link PlayerSeason PlayerSeasons} that
+     *                    contain the player's statistics for each year of
+     *                    their career
      */
     public void setStatistics(List<PlayerSeason> statistics) {
         this.statistics = statistics;
     }
 
     /**
-     * @return the year the player was inducted into the Pro Football Hall of Fame
+     * @return  the year the player was inducted into the Pro Football Hall of Fame
      */
     public Integer getHofYear() {
         return hofYear;
     }
 
     /**
-     * @param hofYear  the year the player was inducted into the Pro Football Hall of Fame
+     * @param hofYear  the year the player was inducted into the Pro Football
+     *                 Hall of Fame
      */
     public void setHofYear(Integer hofYear) {
         this.hofYear = hofYear;
@@ -352,6 +355,7 @@ public class Player {
 
     /**
      * Generates a <code>String</code> representation of this {@link Player}.
+     * <p>
      * Given the use of reflection, consider removing or re-implementing for
      * production grade code.
      */

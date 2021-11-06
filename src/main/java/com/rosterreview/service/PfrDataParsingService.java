@@ -41,8 +41,8 @@ import com.rosterreview.entity.Team;
 import com.rosterreview.utils.WebScrapingUtils;
 
 /**
- * This {@link Service} scrapes, parses, and stores demographic and statistical data for
- * football players from <a href="https://www.pro-football-reference.com">
+ * This {@link Service} scrapes, parses, and stores demographic and statistical
+ * data for football players from <a href="https://www.pro-football-reference.com">
  * https://www.pro-football-reference.com</a>.
  * <p>
  * To ingest player data, consumers of this service must pass a <code>String</code>
@@ -59,7 +59,7 @@ public class PfrDataParsingService {
     @Autowired
     private TeamService teamService;
 
-    private static Logger log = LoggerFactory.getLogger(PfrDataParsingService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PfrDataParsingService.class);
 
     /**
      * The base URL for the Pro Football Reference website.
@@ -67,9 +67,10 @@ public class PfrDataParsingService {
     public static final String PFR_URL = "https://www.pro-football-reference.com";
 
     /**
-     * Scrapes, parses, and persists demographic and statistical data for a football
-     * player from <a href="https://www.pro-football-reference.com">
+     * Scrapes, parses, and persists demographic and statistical data for a
+     * football player from <a href="https://www.pro-football-reference.com">
      * https://www.pro-football-reference.com</a>.
+     * <p>
      * Parsed data is used to construct and persist a {@link Player} entity.
      *
      * @param playerUrl  the URL for the player's PFR profile page
@@ -107,12 +108,14 @@ public class PfrDataParsingService {
             // Parse player's name data
             PersonName personName = parsePlayerName(fullName, nickname);
 
-            String pfrId = playerUrl.substring(playerUrl.lastIndexOf('/') + 1, playerUrl.lastIndexOf('.'));
+            String pfrId = playerUrl.substring(playerUrl.lastIndexOf('/') + 1,
+                    playerUrl.lastIndexOf('.'));
 
             Player player = playerService.getPlayerByPfrId(pfrId);
 
             if (player == null) {
-                player = playerService.createPlayer(personName.getFirstName(), personName.getLastName());
+                player = playerService.createPlayer(personName.getFirstName(),
+                        personName.getLastName());
             }
 
             // Set player PFR id
@@ -150,7 +153,8 @@ public class PfrDataParsingService {
             parsePlayerStatistics(page, player);
 
         } catch (Exception ex) {
-            log.error("An exception occurred while parsing player data from url: {}.", playerUrl, ex);
+            LOG.error("An exception occurred while parsing player data from url: {}.",
+                    playerUrl, ex);
         }
     }
 
@@ -205,12 +209,14 @@ public class PfrDataParsingService {
         if (fullNameArr.length == (suffixCount + 1)) {
             lastNameComponents.add(fullNameArr[0]);
         } else {
-            /* Determine if name component is part of the last name
-             * Start at the end of the full name, consider each component part of last name if:
+            /*
+             * Determine if name component is part of the last name
+             * Start at the end of the full name, consider each component part
+             * of last name if:
              *    1.  It is not the first name component (index = 0) AND
              *    2a. It is the last element in the array that isn't a suffix OR
-             *    2b. It is a recognized last name prefix AND this name occurs at the same index
-             *        in both the fullName and nickname
+             *    2b. It is a recognized last name prefix AND this name occurs at
+             *        the same index in both the fullName and nickname
              */
             while (fullNameIndex > 0 && nicknameIndex > 0 &&
                     ((fullNameIndex == (fullNameArr.length - 1 - suffixCount)) ||
@@ -297,8 +303,8 @@ public class PfrDataParsingService {
      * Parses a player's primary college name from a raw data <code>String</code>.
      *
      * @param collegeRawData  the raw college data to be parsed
-     * @return                the name of the player's primary college or <code>null</code>
-     *                        if the player did not attend
+     * @return                the name of the player's primary college or
+     *                        <code>null</code> if the player did not attend
      */
     private String parseCollege(String collegeRawData) {
 
@@ -309,8 +315,11 @@ public class PfrDataParsingService {
 
         String[] collegeDataArr = StringUtils.split(collegeData,";|,");
 
-        // If there are multiple colleges listed, select the one with the 'College Stats' link.
-        // If no link is present, default to the last college listed.
+        /*
+         * If there are multiple colleges listed, select the one with the
+         * 'College Stats' link.
+         * If no link is present, default to the last college listed.
+         */
         for (String college : collegeDataArr) {
             collegeData = college;
             if (collegeData.contains("(College Stats)")) {
@@ -339,7 +348,8 @@ public class PfrDataParsingService {
             int inches = Integer.parseInt(heightDataArr[1]);
             height = feetToInches + inches;
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-            log.warn("Unable to parse height data ('{}') for player with id: {}.", heightRawData, playerId);
+            LOG.warn("Unable to parse height data ('{}') for player with id: {}.",
+                    heightRawData, playerId);
         }
 
         return height;
@@ -360,7 +370,8 @@ public class PfrDataParsingService {
             weightData = StringUtils.trim(weightData);
             weight = Integer.valueOf(weightData);
         } catch (NumberFormatException nfe) {
-            log.warn("Unable to parse weight data ('{}') for player with id: {}.", weightRawData, playerId);
+            LOG.warn("Unable to parse weight data ('{}') for player with id: {}.",
+                    weightRawData, playerId);
         }
 
         return weight;
@@ -380,7 +391,8 @@ public class PfrDataParsingService {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             birthDate = LocalDate.parse(birthDateRawData, dateFormatter);
         } catch (DateTimeParseException pe) {
-            log.warn("Unable to parse birth date ('{}') for player with id: {}.", birthDateRawData, playerId);
+            LOG.warn("Unable to parse birth date ('{}') for player with id: {}.",
+                    birthDateRawData, playerId);
         }
 
         return birthDate;
@@ -389,10 +401,12 @@ public class PfrDataParsingService {
     /**
      * Parses a player's Hall of Fame year.
      *
-     * @param playerId        the id of the player whose Hall of Fame year will be parsed
+     * @param playerId        the id of the player whose Hall of Fame year
+     *                        will be parsed
      * @param hofYearRawData  the raw Hall of Fame year data to be parsed
-     * @return                the year the player was inducted into the Hall of Fame, or
-     *                        <code>null</code> if the player has not been inducted
+     * @return                the year the player was inducted into the
+     *                        Hall of Fame, or <code>null</code> if the player
+     *                        has not been inducted
      */
     private Integer parseHofYear(String playerId, String hofYearRawData) {
         Integer hofYear = null;
@@ -400,8 +414,8 @@ public class PfrDataParsingService {
         try {
             hofYear = Integer.valueOf(StringUtils.trim(hofYearRawData));
         } catch (NumberFormatException nfe) {
-            log.warn("Unable to parse Hall of Fame year data ('{}') for player with id: {}.",
-                    hofYearRawData, playerId);
+            LOG.warn("Unable to parse Hall of Fame year data ('{}') for "
+                    + "player with id: {}.", hofYearRawData, playerId);
         }
 
         return hofYear;
@@ -409,6 +423,7 @@ public class PfrDataParsingService {
 
     /**
      * Parses a player's profile position data.
+     * <p>
      * Updates the {@link Player} argument with the parsed data.
      *
      * @param player           the player whose position data will be parsed
@@ -428,25 +443,31 @@ public class PfrDataParsingService {
             try {
                 positions.add(Position.getPositionByAlias(pos));
             } catch (IllegalArgumentException iae) {
-                log.warn("Unsupported player position found ('{}') for player with id: {}.",
-                        pos, player.getId());
+                LOG.warn("Unsupported player position found ('{}') for player "
+                        + "with id: {}.", pos, player.getId());
             }
         }
 
-        // Need to limit the number of positions to a maximum of 4.
-        // If there are more than 4, replace specific positions with their more generic counterparts.
+        /*
+         * Need to limit the number of positions to a maximum of 4.
+         * If there are more than 4, replace specific positions with their more
+         * generic counterparts.
+         */
         if (positions.size() > 4) {
-            Set<Position> olPos = new HashSet<>(Arrays.asList(Position.T, Position.G, Position.C));
+            Set<Position> olPos = new HashSet<>(Arrays.asList(Position.T,
+                    Position.G, Position.C));
             generalizePosition(positions, Position.OL, olPos);
         }
 
         if (positions.size() > 4) {
-            Set<Position> dlPos = new HashSet<>(Arrays.asList(Position.DT, Position.NT, Position.DE));
+            Set<Position> dlPos = new HashSet<>(Arrays.asList(Position.DT,
+                    Position.NT, Position.DE));
             generalizePosition(positions, Position.DL, dlPos);
         }
 
         if (positions.size() > 4) {
-            Set<Position> lbPos = new HashSet<>(Arrays.asList(Position.ILB, Position.MLB, Position.OLB));
+            Set<Position> lbPos = new HashSet<>(Arrays.asList(Position.ILB,
+                    Position.MLB, Position.OLB));
             generalizePosition(positions, Position.LB, lbPos);
         }
 
@@ -456,8 +477,8 @@ public class PfrDataParsingService {
         }
 
         if (positions.size() > 4) {
-            Set<Position> dbPos = new HashSet<>(Arrays.asList(Position.CB, Position.S,
-                    Position.SS, Position.SS));
+            Set<Position> dbPos = new HashSet<>(Arrays.asList(Position.CB,
+                    Position.S, Position.SS, Position.SS));
             generalizePosition(positions, Position.DB, dbPos);
         }
 
@@ -467,13 +488,17 @@ public class PfrDataParsingService {
         }
 
        if (positions.size() > 4) {
-            log.warn("Unable to consolidate parsed position data ('{}') for player with id: {} "
-                    + "to four or fewer positions.", player.getId(), positionRawData);
+            LOG.warn("Unable to consolidate parsed position data ('{}') for "
+                    + "player with id: {} to four or fewer positions.",
+                    player.getId(), positionRawData);
         }
 
-        // Add parsed positions to the player object.
-        // If there are still more than 4, only 4 will be retained.
-        // There are no known cases where position data would be dropped in this manner.
+        /*
+         * Add parsed positions to the player object.
+         * If there are still more than 4, only 4 will be retained.
+         * There are no known cases where position data would be dropped
+         * in this manner.
+         */
         Set<PlayerPosition> playerPositions = new HashSet<>();
         Iterator<Position> iter = positions.iterator();
         while (iter.hasNext() && playerPositions.size() <= 4) {
@@ -485,12 +510,13 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Reduces the number of profile {@link Position Positions} associated with a
-     * {@link Player} by replacing specific positions with their more generic counterpart.
+     * Reduces the number of profile {@link Position Positions} associated
+     * with a {@link Player} by replacing specific positions with their more
+     * generic counterpart.
      * <p>
-     * This function may reduce the size of the positions set by replacing any elements
-     * within it that are listed in specificPositions with a single instance of the
-     * genericPosition argument.
+     * This function may reduce the size of the positions set by replacing any
+     * elements within it that are listed in specificPositions with a single
+     * instance of the genericPosition argument.
      *
      * @param positions          the player's profile positions
      * @param genericPosition    a generic position
@@ -509,7 +535,9 @@ public class PfrDataParsingService {
 
     /**
      * Parses a player's draft pick data.
-     * Updates the {@link Player} argument with the parsed {@link DraftPick DraftPicks}.
+     * <p>
+     * Updates the {@link Player} argument with the parsed
+     * {@link DraftPick DraftPicks}.
      *
      * @param player        the player whose draft data will be parsed
      * @param draftRawData  the raw draft pick data <code>String</code>
@@ -520,7 +548,8 @@ public class PfrDataParsingService {
 
         try {
             List<String> nflLocations = teamService.getTeamLocations();
-            String[] draftDataArr = StringUtils.split(draftRawData.replaceFirst("Draft: ", ""),";");
+            String[] draftDataArr = StringUtils.split(draftRawData.replaceFirst(
+                    "Draft: ", ""),";");
 
             for (String draftData : draftDataArr) {
                 draftData = draftData.trim();
@@ -530,26 +559,27 @@ public class PfrDataParsingService {
                 int teamDataEndIndex = draftData.indexOf(" in the");
                 int roundStartIndex = teamDataEndIndex + 8;
                 int roundEndIndex = draftData.indexOf(" round");
-                Integer round = Integer.valueOf(draftData.substring(roundStartIndex, roundEndIndex)
-                        .replaceAll(ordinalSuffixes, ""));
+                Integer round = Integer.valueOf(draftData.substring(roundStartIndex,
+                        roundEndIndex).replaceAll(ordinalSuffixes, ""));
 
                 // Parse the slot the player was drafted at.
                 int slotStartIndex = draftData.indexOf('(') + 1;
                 int slotEndIndex = draftData.indexOf(" overall");
-                Integer slot = Integer.valueOf(draftData.substring(slotStartIndex, slotEndIndex)
-                        .replaceAll(ordinalSuffixes, ""));
+                Integer slot = Integer.valueOf(draftData.substring(slotStartIndex,
+                        slotEndIndex).replaceAll(ordinalSuffixes, ""));
 
                 // Parse draft year.
                 int yearStartIndex = draftData.indexOf("of the") + 7;
-                Integer year = Integer.valueOf(draftData.substring(yearStartIndex, yearStartIndex + 4));
+                Integer year = Integer.valueOf(draftData.substring(yearStartIndex,
+                        yearStartIndex + 4));
 
                 // Determine if draft was supplemental or not.
                 boolean supplemental = draftData.contains("Supplemental");
 
                 // Parse league data.
                 int leagueStartIndex = yearStartIndex + 5;
-                int leagueEndIndex = supplemental ? draftData.lastIndexOf(" Supplemental") :
-                    draftData.lastIndexOf(" Draft.");
+                int leagueEndIndex = supplemental ? draftData.lastIndexOf(" Supplemental")
+                        : draftData.lastIndexOf(" Draft.");
                 String league = draftData.substring(leagueStartIndex, leagueEndIndex);
 
                 // Parse drafting team's name and location.
@@ -565,7 +595,8 @@ public class PfrDataParsingService {
                     } else {
                         locationJoiner.add(nameSegment);
                         // Determine if current location value is an actual NFL location.
-                        locationFound = Collections.binarySearch(nflLocations, locationJoiner.toString()) > -1;
+                        locationFound = Collections.binarySearch(nflLocations,
+                                locationJoiner.toString()) > -1;
                     }
                 }
 
@@ -576,9 +607,11 @@ public class PfrDataParsingService {
                 Team team = teamService.getTeam(year, league, location, teamName);
 
                 if (team != null) {
-                    DraftPick newDraftPick = new DraftPick(player.getId(), league, null, null, null, null, null);
+                    DraftPick newDraftPick = new DraftPick(player.getId(), league,
+                            null, null, null, null, null);
                     DraftPick draftPick = player.getDraftPicks().stream()
-                            .filter(dp -> dp.equals(newDraftPick)).findFirst().orElse(newDraftPick);
+                            .filter(dp -> dp.equals(newDraftPick)).findFirst()
+                            .orElse(newDraftPick);
 
                     draftPick.setFanchiseId(team.getFranchiseId());
                     draftPick.setYear(year);
@@ -588,13 +621,16 @@ public class PfrDataParsingService {
                     draftPick.setTeam(team);
                     draftPicks.add(draftPick);
                 } else {
-                    log.warn("Could not identify a team that drafted a player with id: {}: "
-                            + "(year: {}, league: {}, location: {}, teamName: {}).",
+                    LOG.warn("Could not identify a team that drafted a player "
+                            + "with id: {}: (year: {}, league: {}, location: {}, "
+                            + "teamName: {}).",
                             player.getId(), year, league, location, teamName);
                 }
             }
-        } catch (NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
-            log.warn("Unable to parse draft data ('{}') for player with id: {}.", draftRawData, player.getId());
+        } catch (NumberFormatException | IndexOutOfBoundsException |
+                NullPointerException ex) {
+            LOG.warn("Unable to parse draft data ('{}') for player with id: {}.",
+                    draftRawData, player.getId());
         }
 
         player.getDraftPicks().clear();
@@ -613,13 +649,15 @@ public class PfrDataParsingService {
         List<PlayerSeason> playerStatistics = new ArrayList<>();
         HashMap<Integer, List<Position>> seasonPositions = new HashMap<>();
 
-        String xpath = "//table[contains(@class, 'per_match_toggle') and contains(@class, 'stats_table')]";
+        String xpath = "//table[contains(@class, 'per_match_toggle') and "
+                + "contains(@class, 'stats_table')]";
         List<HtmlTable> statTables = page.getByXPath(xpath);
 
         for (HtmlTable statTable : statTables) {
             // parse the current table
             int numHeaderRows = statTable.getHeader().getRows().size();
-            List<HtmlTableCell> tableHeader = statTable.getHeader().getRows().get(numHeaderRows - 1).getCells();
+            List<HtmlTableCell> tableHeader = statTable.getHeader().getRows()
+                    .get(numHeaderRows - 1).getCells();
             HtmlTableBody tableBody = statTable.getBodies().get(0);
 
             // Variables for players who switched teams mid-season
@@ -630,11 +668,15 @@ public class PfrDataParsingService {
                 String yearCellContent = row.getCell(0).getTextContent();
                 if (yearCellContent.length() >= 4) {
                     season = Integer.valueOf(yearCellContent.substring(0, 4));
-                    age = WebScrapingUtils.parseIntegerWithDefault(row.getCell(1).getTextContent(), null);
+                    age = WebScrapingUtils.parseIntegerWithDefault(row.getCell(1)
+                            .getTextContent(), null);
                 }
 
                 String teamAbbrev = row.getCell(2).getTextContent();
-                // If player played for more than 1 team in a season, teamAbbrev might have a value like '2TM'
+                /*
+                 * If player played for more than 1 team in a season, teamAbbrev
+                 * might have a value like '2TM'
+                 */
                 if (!Character.isDigit(teamAbbrev.charAt(0))) {
                     Team team = teamService.getTeamWithPfrAbbrev(teamAbbrev, season);
                     PlayerSeason searchPs = new PlayerSeason();
@@ -642,16 +684,21 @@ public class PfrDataParsingService {
                     searchPs.setFranchiseId(team.getFranchiseId());
                     searchPs.setSeason(season);
                     searchPs.setSeasonType(PlayerSeason.SeasonType.REGULAR);
-                    PlayerSeason playerSeason = player.getStatistics().stream().filter(ps -> ps.equals(searchPs))
+                    PlayerSeason playerSeason = player.getStatistics().stream()
+                            .filter(ps -> ps.equals(searchPs))
                             .findFirst().orElse(searchPs);
 
-                    // Post-season data tables do not include jersey number or average value data, so
-                    // copy it from the corresponding regular season if it exists.
+                    /*
+                     * Post-season data tables do not include jersey number or
+                     * average value data, so copy it from the corresponding
+                     * regular season if it exists.
+                     */
                     if (statTable.getId().contains("playoffs")) {
                         Integer avgValue = playerSeason.getAvgValue();
                         Integer jerseyNum = playerSeason.getJerseyNumber();
                         searchPs.setSeasonType(PlayerSeason.SeasonType.POST);
-                        playerSeason = player.getStatistics().stream().filter(ps -> ps.equals(searchPs))
+                        playerSeason = player.getStatistics().stream()
+                                .filter(ps -> ps.equals(searchPs))
                                 .findFirst().orElse(searchPs);
                         playerSeason.setJerseyNumber(jerseyNum);
                         playerSeason.setAvgValue(avgValue);
@@ -672,32 +719,39 @@ public class PfrDataParsingService {
                     switch (statTable.getId()) {
                         case "passing":
                         case "passing_playoffs":
-                            parsePassingStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parsePassingStatistics(playerSeason, seasonPositions,
+                                    tableHeader, row);
                             break;
                         case "rushing_and_receiving":
                         case "receiving_and_rushing":
                         case "rushing_and_receiving_playoffs":
                         case "receiving_and_rushing_playoffs":
-                            parseRushingAndReceivingStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseRushingAndReceivingStatistics(playerSeason,
+                                    seasonPositions, tableHeader, row);
                             break;
                         case "defense":
                         case "defense_playoffs":
-                            parseDefensiveStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseDefensiveStatistics(playerSeason, seasonPositions,
+                                    tableHeader, row);
                             break;
                         case "kicking":
                         case "kicking_playoffs":
-                            parseKickingStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseKickingStatistics(playerSeason, seasonPositions,
+                                    tableHeader, row);
                             break;
                         case "returns":
                         case "returns_playoffs":
-                            parseReturnStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseReturnStatistics(playerSeason, seasonPositions,
+                                    tableHeader, row);
                             break;
                         case "scoring":
                         case "scoring_playoffs":
-                            parseScoringStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseScoringStatistics(playerSeason, seasonPositions,
+                                    tableHeader, row);
                             break;
                         case "games_played":
-                            parseGamesPlayedStatistics(playerSeason, seasonPositions, tableHeader, row);
+                            parseGamesPlayedStatistics(playerSeason, seasonPositions,
+                                    tableHeader, row);
                             break;
                         default: // Do nothing, don't need data from all tables
                     }
@@ -705,14 +759,20 @@ public class PfrDataParsingService {
             }
         }
 
-        // Calculate which position should be associated with each season in playerStatistics
-        calculateSeasonPositions(seasonPositions, player.getPositions(), playerStatistics);
+        /*
+         * Calculate which position should be associated with each season
+         * in playerStatistics
+         */
+        calculateSeasonPositions(seasonPositions, player.getPositions(),
+                playerStatistics);
 
         player.getStatistics().retainAll(playerStatistics);
     }
 
     /**
-     * Updates each {@link PlayerSeason} in a player's career with a primary {@link Position}.
+     * Updates each {@link PlayerSeason} in a player's career with a primary
+     * {@link Position}.
+     * <p>
      * Positions are determined by examining:
      * <ul>
      * <li>positions associated with the player's profile</li>
@@ -721,8 +781,8 @@ public class PfrDataParsingService {
      * <li>the player's jersey number</li>
      * </ul>
      *
-     * @param seasonPositions  a map of the years in which a player played to a list of the
-     *                         positions they played that year
+     * @param seasonPositions  a map of the years in which a player played to a
+     *                         list of the positions they played that year
      * @param careerPositions  the positions associated with a player's profile
      * @param statistics       a player's seasonal statistics
      */
@@ -732,25 +792,34 @@ public class PfrDataParsingService {
         // Set the position to associate with each season.
         for (PlayerSeason season : statistics) {
             List<Position> positions = seasonPositions.get(season.getSeason());
-            // If only one position is associated with this season choose it.
-            // Prefer not to select PR or KR however
+            /*
+             * If only one position is associated with this season choose it.
+             * Prefer not to select PR or KR however
+             */
             if (positions.size() == 1 && !(positions.get(0).equals(Position.KR) ||
                 positions.get(0).equals(Position.PR))) {
                 season.setPosition(positions.get(0));
             } else {
-                // Create a list of all of the season positions across all years (include duplicates)
+                /*
+                 * Create a list of all of the season positions across all
+                 * years (include duplicates)
+                 */
                 List<Position> allPositions = seasonPositions.values().stream()
                         .flatMap(List::stream).collect(Collectors.toList());
-                // Use career positions, and all season positions to deduce what position should
-                // be associated with this season.
-                season.setPosition(consolidate(positions, careerPositions, allPositions, season));
+                /*
+                 * Use career positions, and all season positions to deduce what
+                 * position should be associated with this season.
+                 */
+                season.setPosition(consolidate(positions, careerPositions,
+                        allPositions, season));
             }
         }
     }
 
     /**
-     * Calculates a single {@link Position} that best describes a player's role during
-     * the indicated {@link PlayerSeason}.
+     * Calculates a single {@link Position} that best describes a player's
+     * role during the indicated {@link PlayerSeason}.
+     * <p>
      * The position is determined by examining:
      * <ul>
      * <li>positions associated with the player's profile</li>
@@ -761,39 +830,50 @@ public class PfrDataParsingService {
      *
      * @param seasonPositions  the positions associated with the season argument
      * @param careerPositions  the positions associated with the player's profile
-     * @param allPositions     the positions associated with seasons from the player's entire career
+     * @param allPositions     the positions associated with seasons from the
+     *                         player's entire career
      * @param season           the season for which a position is being calculated
      * @return                 a position
      */
-    private Position consolidate(List<Position> seasonPositions, Set<PlayerPosition> careerPositions,
-            List<Position> allPositions, PlayerSeason season) {
+    private Position consolidate(List<Position> seasonPositions,
+            Set<PlayerPosition> careerPositions,List<Position> allPositions,
+            PlayerSeason season) {
 
         // Assign weightings to each position associated with the season
         Map<Position, Double> positionWeightings = new EnumMap<>(Position.class);
         calculatePositionWeightings(seasonPositions, positionWeightings, 1.0, 0.9, 0.8);
 
-        // Sort the current position weightings largest to smallest (need to determine largest two)
+        /*
+         * Sort the current position weightings largest to smallest (need to
+         * determine largest two)
+         */
         ArrayList<Double> weightingValues = new ArrayList<>(positionWeightings.values());
         Collections.sort(weightingValues, Collections.reverseOrder());
 
         /*
-         * If any of the following are true, we need to consider career positions and positions associated
-         * with other seasons to decide what position should be associated with this season.
+         * If any of the following are true, we need to consider career
+         * positions and positions associated with other seasons to decide what
+         * position should be associated with this season.
          *
          * 1.) There are no positions associated with this season
-         * 2.) There is one position associated with this season, but it is either KR or PR
-         * 3.) There are two or more positions associated with this season, but there is a tie
-         *     for the highest weighted position.
+         * 2.) There is one position associated with this season, but it is
+         *     either KR or PR
+         * 3.) There are two or more positions associated with this season, but
+         *     there is a tie for the highest weighted position.
          */
         if ((seasonPositions.size() < 2) || (weightingValues.size() > 1 &&
                 weightingValues.get(0).equals(weightingValues.get(1)))) {
-            List<Position> careerPosList = careerPositions.stream().map(PlayerPosition::getPosition)
+            List<Position> careerPosList = careerPositions.stream()
+                    .map(PlayerPosition::getPosition)
                     .collect(Collectors.toList());
             calculatePositionWeightings(careerPosList, positionWeightings, 0.5, 0.4, 0.3);
             calculatePositionWeightings(allPositions, positionWeightings, 0.1, 0.05, 0.025);
         }
 
-        // Also consider the player's statistics and jersey number for calculating the season position
+        /*
+         * Also consider the player's statistics and jersey number for
+         * calculating the season position
+         */
         calculateStatisticAndJerseyNumberWeightings(season, positionWeightings);
 
         // Identify the position with the highest calculated weighting and return it
@@ -805,39 +885,50 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Calculates weightings for each {@link Position} associated with a player's season.
-     * Positions specified by PFR receive the primary weighting.  If the PFR position
-     * is a specific position, include it's generic with a lesser weighting.
+     * Calculates weightings for each {@link Position} associated with a
+     * player's season. Positions specified by PFR receive the primary weighting.
+     * If the PFR position is a specific position, include it's generic with a
+     * lesser weighting.
      * <p>
-     * Example: The position {@link Position#FS} is a specific position and would be assigned
-     * a primary weighting.  The first level generic for this position would be
-     * {@link Position#S} which would recieve a secondaryweighting.  This position also has a
-     * second level generic {@link Position#DB} which would recieve a tertiary weighting.
+     * Example: The position {@link Position#FS} is a specific position and would
+     * be assigned a primary weighting.  The first level generic for this position
+     * would be {@link Position#S} which would recieve a secondaryweighting. This
+     * position also has a second level generic {@link Position#DB} which would
+     * recieve a tertiary weighting.
      *
      * @param seasonPositions     the positions associated with a given season
      * @param positionWeightings  a mapping of positions to their weightings
-     * @param primaryWeighting    the weighting to be assigned to the original PFR positions
-     * @param secondaryWeighting  the weighting to be applied to first-level generic forms of
-     *                            specific positions
-     * @param tertiaryWeighting   the weighting to be applied to second-level generic forms of
-     *                            specific positions
+     * @param primaryWeighting    the weighting to be assigned to the original PFR
+     *                            positions
+     * @param secondaryWeighting  the weighting to be applied to first-level generic
+     *                            forms of specific positions
+     * @param tertiaryWeighting   the weighting to be applied to second-level generic
+     *                            forms of specific positions
      */
-    private void calculatePositionWeightings(List<Position> seasonPositions, Map<Position,
-            Double> positionWeightings, double primaryWeighting, double secondaryWeighting,
-            double tertiaryWeighting) {
+    private void calculatePositionWeightings(List<Position> seasonPositions,
+            Map<Position, Double> positionWeightings, double primaryWeighting,
+            double secondaryWeighting, double tertiaryWeighting) {
 
         for (Position pos : seasonPositions) {
-            // Assign a primary weighting for positions that were listed for the given season
+            /*
+             * Assign a primary weighting for positions that were listed for the
+             * given season
+             */
             Double primaryVal = positionWeightings.getOrDefault(pos, 0.0);
             if (pos.equals(Position.KR) || pos.equals(Position.PR)) {
-                // Assign a lower weighting for KR and PR, as these should be deemphasized.
+                /*
+                 * Assign a lower weighting for KR and PR, as these should
+                 * be deemphasized.
+                 */
                 positionWeightings.put(pos, primaryVal + 0.1);
             } else {
                 positionWeightings.put(pos, primaryVal + primaryWeighting);
             }
 
-            // If position is a specific position, apply a secondary or tertiary weighting for
-            // the positions more generic counterparts.
+            /*
+             * If position is a specific position, apply a secondary or tertiary
+             * weighting for the positions more generic counterparts.
+             */
             switch (pos) {
                 case HB:
                 case FB:
@@ -884,12 +975,12 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Updates {@link Position} weightings based upon the statistics and jersey number
-     * stored within the indicated {@link PlayerSeason}.
+     * Updates {@link Position} weightings based upon the statistics and jersey
+     * number stored within the indicated {@link PlayerSeason}.
      *
      * @param season      the player's season statistics
-     * @param weightings  a mapping of positions associated with a player's season to
-     *                    their weightings
+     * @param weightings  a mapping of positions associated with a player's season
+     *                    to their weightings
      */
     private void calculateStatisticAndJerseyNumberWeightings(PlayerSeason season,
             Map<Position, Double> weightings) {
@@ -900,7 +991,10 @@ public class PfrDataParsingService {
         Integer rec = season.getReceptions();
         double jerseyVal;
 
-        // Any player with 20 or more pass attempts in a season should be regarded as a QB
+        /*
+         *  Any player with 20 or more pass attempts in a season should be regarded
+         *  as a QB
+         */
         if (passAtt >= 20) {
             weightings.put(Position.QB, Double.MAX_VALUE);
             return;
@@ -926,12 +1020,16 @@ public class PfrDataParsingService {
                     (rushAtt * 0.01) + (rec * 0.005));
         }
         if (weightings.get(Position.WR) != null) {
-            jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 10 && jerseyNum < 20) ? 0.1 : 0;
-            weightings.put(Position.WR, weightings.get(Position.WR) + jerseyVal + (rec * 0.01));
+            jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) ||
+                    (jerseyNum >= 10 && jerseyNum < 20) ? 0.1 : 0;
+            weightings.put(Position.WR, weightings.get(Position.WR)
+                    + jerseyVal + (rec * 0.01));
         }
         if (weightings.get(Position.TE) != null) {
-            jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) || (jerseyNum >= 40 && jerseyNum < 50) ? 0.1 : 0;
-            weightings.put(Position.TE, weightings.get(Position.TE) + jerseyVal + (rec * 0.01));
+            jerseyVal = (jerseyNum >= 80 && jerseyNum < 90) ||
+                    (jerseyNum >= 40 && jerseyNum < 50) ? 0.1 : 0;
+            weightings.put(Position.TE, weightings.get(Position.TE)
+                    + jerseyVal + (rec * 0.01));
         }
         if (weightings.get(Position.OL) != null) {
             jerseyVal = jerseyNum >= 50 && jerseyNum < 80 ? 0.1 : 0;
@@ -950,37 +1048,43 @@ public class PfrDataParsingService {
             weightings.put(Position.C, weightings.get(Position.C) + jerseyVal);
         }
         if (weightings.get(Position.DL) != null) {
-            jerseyVal = (jerseyNum >= 50 && jerseyNum < 60) || (jerseyNum >= 70 && jerseyNum < 80) ||
-                    (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 50 && jerseyNum < 60) ||
+                    (jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.DL, weightings.get(Position.DL) + jerseyVal);
         }
         if (weightings.get(Position.DE) != null) {
-            jerseyVal = (jerseyNum >= 50 && jerseyNum < 60) || (jerseyNum >= 70 && jerseyNum < 80) ||
-                    (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 50 && jerseyNum < 60) ||
+                    (jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.DE, weightings.get(Position.DE) + jerseyVal);
         }
         if (weightings.get(Position.DT) != null) {
-            jerseyVal = (jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 70 && jerseyNum < 80) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.DT, weightings.get(Position.DT) + jerseyVal);
         }
         if (weightings.get(Position.NT) != null) {
-            jerseyVal = (jerseyNum >= 70 && jerseyNum < 80) || (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 70 && jerseyNum < 80) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.NT, weightings.get(Position.NT) + jerseyVal);
         }
         if (weightings.get(Position.LB) != null) {
-            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.LB, weightings.get(Position.LB) + jerseyVal);
         }
         if (weightings.get(Position.ILB) != null) {
-            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.ILB, weightings.get(Position.ILB) + jerseyVal);
         }
         if (weightings.get(Position.MLB) != null) {
-            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.MLB, weightings.get(Position.MLB) + jerseyVal);
         }
         if (weightings.get(Position.OLB) != null) {
-            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) || (jerseyNum >= 90) ? 0.1 : 0;
+            jerseyVal = (jerseyNum >= 40 && jerseyNum < 60) ||
+                    (jerseyNum >= 90) ? 0.1 : 0;
             weightings.put(Position.OLB, weightings.get(Position.OLB) + jerseyVal);
         }
         if (weightings.get(Position.DB) != null) {
@@ -1018,10 +1122,17 @@ public class PfrDataParsingService {
         for (String pos : yearData) {
             try {
                 if (StringUtils.isNotBlank(pos)) {
+                    /*
+                     *  Special case for 'LS' which means 'Left Saftey' in pre-1970
+                     *  data, but 'Long Snapper' in modern data. Note that for long
+                     *  snapper season data, the position is always blank.  Therefore,
+                     *  if 'LS' appears here, assume 'Left Safety'.
+                     */
+                    pos = (pos.equals("LS")) ? "S" : pos;
                     positions.add(Position.getPositionByAlias(pos.toUpperCase()));
                 }
             } catch (IllegalArgumentException iae) {
-                log.warn(iae.getMessage(), iae);
+                LOG.warn(iae.getMessage(), iae);
             }
         }
 
@@ -1029,14 +1140,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's passing statistics and stores them in the given {@link PlayerSeason}.
+     * Parses a player's passing statistics and stores them in the
+     * given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
      * @param tableHeader      the table header containing the column names
      * @param row              the table row containing the statistics to be parsed
      */
-    private void parsePassingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+    private void parsePassingStatistics(PlayerSeason playerSeason,
+            Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
@@ -1049,30 +1162,41 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_cmp": playerSeason.setPassComp(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_cmp": playerSeason.setPassComp(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_att": playerSeason.setPassAtt(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_att": playerSeason.setPassAtt(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_yds": playerSeason.setPassYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_yds": playerSeason.setPassYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_td": playerSeason.setPassTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_td": playerSeason.setPassTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_int": playerSeason.setPassInts(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_int": playerSeason.setPassInts(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_long": playerSeason.setPassLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_long": playerSeason.setPassLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_rating": playerSeason.setPassRating(WebScrapingUtils.parseDoubleWithDefault(cellData, 0.0));
+                case "pass_rating": playerSeason.setPassRating(
+                        WebScrapingUtils.parseDoubleWithDefault(cellData, 0.0));
                     break;
-                case "pass_sacked": playerSeason.setSacked(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_sacked": playerSeason.setSacked(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 case "pass_sacked_yds": playerSeason.setSackedYds(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "av": playerSeason.setAvgValue(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }
@@ -1080,8 +1204,8 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's rushing and receiving statistics, and stores them in the given
-     * {@link PlayerSeason}.
+     * Parses a player's rushing and receiving statistics, and stores them in
+     * the given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
@@ -1089,7 +1213,8 @@ public class PfrDataParsingService {
      * @param row              the table row containing the statistics to be parsed
      */
     private void parseRushingAndReceivingStatistics(PlayerSeason playerSeason,
-            Map<Integer, List<Position>> seasonPositions, List<HtmlTableCell> tableHeader, HtmlTableRow row) {
+            Map<Integer, List<Position>> seasonPositions, List<HtmlTableCell> tableHeader,
+            HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
             String cellData = row.getCell(j).getTextContent();
@@ -1101,31 +1226,44 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rush_att": playerSeason.setRushAtt(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rush_att": playerSeason.setRushAtt(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rush_yds": playerSeason.setRushYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rush_yds": playerSeason.setRushYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rush_td": playerSeason.setRushTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rush_td": playerSeason.setRushTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rush_long": playerSeason.setRushLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rush_long": playerSeason.setRushLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fumbles": playerSeason.setFumbles(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fumbles": playerSeason.setFumbles(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "targets": playerSeason.setTargets(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "targets": playerSeason.setTargets(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rec": playerSeason.setReceptions(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rec": playerSeason.setReceptions(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rec_yds": playerSeason.setRecYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rec_yds": playerSeason.setRecYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rec_td": playerSeason.setRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rec_td": playerSeason.setRecTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rec_long": playerSeason.setRecLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rec_long": playerSeason.setRecLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "av": playerSeason.setAvgValue(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }
@@ -1133,14 +1271,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's defensive statistics and stores them in the given {@link PlayerSeason}.
+     * Parses a player's defensive statistics and stores them in the
+     * given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
      * @param tableHeader      the table header containing the column names
      * @param row              the table row containing the statistics to be parsed
      */
-    private void parseDefensiveStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+    private void parseDefensiveStatistics(PlayerSeason playerSeason, Map<Integer,
+            List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
@@ -1153,39 +1293,56 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "def_int": playerSeason.setInterceptions(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "def_int": playerSeason.setInterceptions(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "def_int_yds": playerSeason.setIntYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "def_int_yds": playerSeason.setIntYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "def_int_td": playerSeason.setIntTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "def_int_td": playerSeason.setIntTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "def_int_long": playerSeason.setIntLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "def_int_long": playerSeason.setIntLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "pass_defended": playerSeason.setPassDef(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "pass_defended": playerSeason.setPassDef(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fumbles_forced": playerSeason.setFumForced(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fumbles_forced": playerSeason.setFumForced(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fumbles": playerSeason.setFumbles(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fumbles": playerSeason.setFumbles(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fumbles_rec": playerSeason.setFumRec(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fumbles_rec": playerSeason.setFumRec(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fumbles_rec_yds": playerSeason.setFumRecYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fumbles_rec_yds": playerSeason.setFumRecYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fumbles_rec_td": playerSeason.setFumRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fumbles_rec_td": playerSeason.setFumRecTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "sacks": playerSeason.setSacks(WebScrapingUtils.parseDoubleWithDefault(cellData, 0.0));
+                case "sacks": playerSeason.setSacks(
+                        WebScrapingUtils.parseDoubleWithDefault(cellData, 0.0));
                     break;
-                case "tackles_solo": playerSeason.setTackles(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "tackles_solo": playerSeason.setTackles(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "tackles_assists": playerSeason.setAssists(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "tackles_assists": playerSeason.setAssists(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "safety_md": playerSeason.setSafeties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "safety_md": playerSeason.setSafeties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "av": playerSeason.setAvgValue(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }
@@ -1193,14 +1350,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's kicking statistics and stores them in the given {@link PlayerSeason}.
+     * Parses a player's kicking statistics and stores them in the
+     * given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
      * @param tableHeader      the table header containing the column names
      * @param row              the table row containing the statistics to be parsed
      */
-    private void parseKickingStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+    private void parseKickingStatistics(PlayerSeason playerSeason, Map<Integer,
+            List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
@@ -1213,49 +1372,71 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga1": playerSeason.setFgaTeens(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga1": playerSeason.setFgaTeens(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm1": playerSeason.setFgmTeens(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm1": playerSeason.setFgmTeens(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga2": playerSeason.setFgaTwenties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga2": playerSeason.setFgaTwenties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm2": playerSeason.setFgmTwenties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm2": playerSeason.setFgmTwenties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga3": playerSeason.setFgaThirties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga3": playerSeason.setFgaThirties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm3": playerSeason.setFgmThirties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm3": playerSeason.setFgmThirties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga4": playerSeason.setFgaFourties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga4": playerSeason.setFgaFourties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm4": playerSeason.setFgmFourties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm4": playerSeason.setFgmFourties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga5": playerSeason.setFgaFiftyPlus(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga5": playerSeason.setFgaFiftyPlus(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm5": playerSeason.setFgmFiftyPlus(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm5": playerSeason.setFgmFiftyPlus(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga": playerSeason.setFgaTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga": playerSeason.setFgaTotal(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm": playerSeason.setFgmTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm": playerSeason.setFgmTotal(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fg_long": playerSeason.setFgLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fg_long": playerSeason.setFgLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "xpa": playerSeason.setXpa(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "xpa": playerSeason.setXpa(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "xpm": playerSeason.setXpm(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "xpm": playerSeason.setXpm(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt": playerSeason.setPunts(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt": playerSeason.setPunts(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_yds": playerSeason.setPuntYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_yds": playerSeason.setPuntYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_long": playerSeason.setPuntLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_long": playerSeason.setPuntLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_blocked": playerSeason.setPuntBlocked(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_blocked": playerSeason.setPuntBlocked(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "av": playerSeason.setAvgValue(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }
@@ -1263,14 +1444,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's return statistics and stores them in the given {@link PlayerSeason}.
+     * Parses a player's return statistics and stores them in the
+     * given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
      * @param tableHeader      the table header containing the column names
      * @param row              the table row containing the statistics to be parsed
      */
-    private void parseReturnStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+    private void parseReturnStatistics(PlayerSeason playerSeason, Map<Integer,
+            List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
 
         for (int j = 3; j < row.getCells().size(); j++) {
@@ -1283,25 +1466,35 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_ret": playerSeason.setPuntRet(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_ret": playerSeason.setPuntRet(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_ret_yds": playerSeason.setPuntRetYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_ret_yds": playerSeason.setPuntRetYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_ret_td": playerSeason.setPuntRetTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_ret_td": playerSeason.setPuntRetTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "punt_ret_long": playerSeason.setPuntRetLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "punt_ret_long": playerSeason.setPuntRetLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "kick_ret": playerSeason.setKickRet(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "kick_ret": playerSeason.setKickRet(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "kick_ret_yds": playerSeason.setKickRetYds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "kick_ret_yds": playerSeason.setKickRetYds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "kick_ret_td": playerSeason.setKickRetTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "kick_ret_td": playerSeason.setKickRetTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "kick_ret_long": playerSeason.setKickRetLong(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "kick_ret_long": playerSeason.setKickRetLong(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }
@@ -1309,14 +1502,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's scoring statistics and stores them in the given {@link PlayerSeason}.
+     * Parses a player's scoring statistics and stores them in the
+     * given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
      * @param tableHeader      the table header containing the column names
      * @param row              the table row containing the statistics to be parsed
      */
-    private void parseScoringStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+    private void parseScoringStatistics(PlayerSeason playerSeason,
+            Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
         for (int j = 3; j < row.getCells().size(); j++) {
             String cellData = row.getCell(j).getTextContent();
@@ -1328,37 +1523,53 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rushtd": playerSeason.setRushTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rushtd": playerSeason.setRushTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "rectd": playerSeason.setRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "rectd": playerSeason.setRecTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "prtd": playerSeason.setPuntRetTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "prtd": playerSeason.setPuntRetTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "krtd": playerSeason.setKickRetTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "krtd": playerSeason.setKickRetTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "frtd": playerSeason.setFumRecTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "frtd": playerSeason.setFumRecTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "ditd": playerSeason.setIntTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "ditd": playerSeason.setIntTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "otd": playerSeason.setOtherTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "otd": playerSeason.setOtherTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "alltd": playerSeason.setAllTds(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "alltd": playerSeason.setAllTds(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "two_pt_md": playerSeason.setTwoPointConv(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "two_pt_md": playerSeason.setTwoPointConv(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "xpm": playerSeason.setXpm(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "xpm": playerSeason.setXpm(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "xpa": playerSeason.setXpa(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "xpa": playerSeason.setXpa(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fgm": playerSeason.setFgmTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fgm": playerSeason.setFgmTotal(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "fga": playerSeason.setFgaTotal(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "fga": playerSeason.setFgaTotal(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "safety_md": playerSeason.setSafeties(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "safety_md": playerSeason.setSafeties(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }
@@ -1366,14 +1577,16 @@ public class PfrDataParsingService {
     }
 
     /**
-     * Parses a player's games played statistics and stores them in the given {@link PlayerSeason}.
+     * Parses a player's games played statistics and stores them in the
+     * given {@link PlayerSeason}.
      *
      * @param playerSeason     the season for which statistical data is being parsed
      * @param seasonPositions  a mapping of seasons to positions
      * @param tableHeader      the table header containing the column names
      * @param row              the table row containing the statistics to be parsed
      */
-    private void parseGamesPlayedStatistics(PlayerSeason playerSeason, Map<Integer, List<Position>> seasonPositions,
+    private void parseGamesPlayedStatistics(PlayerSeason playerSeason,
+            Map<Integer, List<Position>> seasonPositions,
             List<HtmlTableCell> tableHeader, HtmlTableRow row) {
         for (int j = 3; j < row.getCells().size(); j++) {
             String cellData = row.getCell(j).getTextContent();
@@ -1385,11 +1598,14 @@ public class PfrDataParsingService {
                 case "uniform_number": playerSeason.setJerseyNumber(
                         WebScrapingUtils.parseIntegerWithDefault(cellData, null));
                     break;
-                case "g": playerSeason.setGamesPlayed(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "g": playerSeason.setGamesPlayed(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "gs": playerSeason.setGamesStarted(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "gs": playerSeason.setGamesStarted(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
-                case "av": playerSeason.setAvgValue(WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
+                case "av": playerSeason.setAvgValue(
+                        WebScrapingUtils.parseIntegerWithDefault(cellData, 0));
                     break;
                 default : // Do nothing.
             }

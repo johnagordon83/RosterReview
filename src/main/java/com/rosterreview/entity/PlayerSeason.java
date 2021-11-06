@@ -38,239 +38,241 @@ public class PlayerSeason implements Serializable {
 
     @Id
     @Column(name="player_id")
-    protected String playerId;
+    private String playerId;
 
     @Id
     @Column(name="franchise_id")
-    protected String franchiseId;
+    private String franchiseId;
 
     @Id
     @Column(name="season")
-    protected Integer season;
+    private Integer season;
 
     @Id
     @Column(name="season_type")
     @Enumerated(EnumType.STRING)
-    protected SeasonType seasonType;
+    private SeasonType seasonType;
 
     @OneToOne()
     @Fetch(FetchMode.JOIN)
     @JoinColumns({
-        @JoinColumn(name="franchise_id", referencedColumnName="franchise_id", insertable=false, updatable=false),
-        @JoinColumn(name="season", referencedColumnName="season", insertable=false, updatable=false)
+        @JoinColumn(name="franchise_id", referencedColumnName="franchise_id",
+                insertable=false, updatable=false),
+        @JoinColumn(name="season", referencedColumnName="season",
+                insertable=false, updatable=false)
         })
-    protected Team team;
+    private Team team;
 
     @Column(name="age")
-    protected Integer age;
+    private Integer age;
 
     @Column(name="position")
     @Enumerated(EnumType.STRING)
-    protected Position position;
+    private Position position;
 
     @Column(name="jersey_number")
-    protected Integer jerseyNumber;
+    private Integer jerseyNumber;
 
     @Column(name="games_played", nullable=false)
-    protected Integer gamesPlayed = 0;
+    private Integer gamesPlayed = 0;
 
     @Column(name="games_started", nullable=false)
-    protected Integer gamesStarted = 0;
+    private Integer gamesStarted = 0;
 
     @Column(name="pass_comp", nullable=false)
-    protected Integer passComp = 0;
+    private Integer passComp = 0;
 
     @Column(name="pass_att", nullable=false)
-    protected Integer passAtt = 0;
+    private Integer passAtt = 0;
 
     @Column(name="pass_yds", nullable=false)
-    protected Integer passYds = 0;
+    private Integer passYds = 0;
 
     @Column(name="pass_tds", nullable=false)
-    protected Integer passTds = 0;
+    private Integer passTds = 0;
 
     @Column(name="pass_ints", nullable=false)
-    protected Integer passInts = 0;
+    private Integer passInts = 0;
 
     @Column(name="pass_long", nullable=false)
-    protected Integer passLong = 0;
+    private Integer passLong = 0;
 
     @Column(name="passer_rating", nullable=false)
-    protected Double passerRating = 0.0;
+    private Double passerRating = 0.0;
 
     @Column(name="sacked", nullable=false)
-    protected Integer sacked = 0;
+    private Integer sacked = 0;
 
     @Column(name="sacked_yds", nullable=false)
-    protected Integer sackedYds = 0;
+    private Integer sackedYds = 0;
 
     @Column(name="rush_att", nullable=false)
-    protected Integer rushAtt = 0;
+    private Integer rushAtt = 0;
 
     @Column(name="rush_yds", nullable=false)
-    protected Integer rushYds = 0;
+    private Integer rushYds = 0;
 
     @Column(name="rush_tds", nullable=false)
-    protected Integer rushTds = 0;
+    private Integer rushTds = 0;
 
     @Column(name="rush_long")
-    protected Integer rushLong = 0;
+    private Integer rushLong = 0;
 
     @Column(name="targets", nullable=false)
-    protected Integer targets = 0;
+    private Integer targets = 0;
 
     @Column(name="rec", nullable=false)
-    protected Integer receptions = 0;
+    private Integer receptions = 0;
 
     @Column(name="rec_yds", nullable=false)
-    protected Integer recYds = 0;
+    private Integer recYds = 0;
 
     @Column(name="rec_tds", nullable=false)
-    protected Integer recTds = 0;
+    private Integer recTds = 0;
 
     @Column(name="rec_long", nullable=false)
-    protected Integer recLong = 0;
+    private Integer recLong = 0;
 
     @Column(name="fumbles", nullable=false)
-    protected Integer fumbles = 0;
+    private Integer fumbles = 0;
 
     @Column(name="interceptions", nullable=false)
-    protected Integer interceptions = 0;
+    private Integer interceptions = 0;
 
     @Column(name="int_yds", nullable=false)
-    protected Integer intYds = 0;
+    private Integer intYds = 0;
 
     @Column(name="int_tds", nullable=false)
-    protected Integer intTds = 0;
+    private Integer intTds = 0;
 
     @Column(name="int_long", nullable=false)
-    protected Integer intLong = 0;
+    private Integer intLong = 0;
 
     @Column(name="pass_def", nullable=false)
-    protected Integer passDef = 0;
+    private Integer passDef = 0;
 
     @Column(name="fum_forced", nullable=false)
-    protected Integer fumForced = 0;
+    private Integer fumForced = 0;
 
     @Column(name="fum_rec", nullable=false)
-    protected Integer fumRec = 0;
+    private Integer fumRec = 0;
 
     @Column(name="fum_rec_yds", nullable=false)
-    protected Integer fumRecYds = 0;
+    private Integer fumRecYds = 0;
 
     @Column(name="fum_rec_tds", nullable=false)
-    protected Integer fumRecTds = 0;
+    private Integer fumRecTds = 0;
 
     @Column(name="sacks", nullable=false)
-    protected Double sacks = 0.0;
+    private Double sacks = 0.0;
 
     @Column(name="tackles", nullable=false)
-    protected Integer tackles = 0;
+    private Integer tackles = 0;
 
     @Column(name="assists", nullable=false)
-    protected Integer assists = 0;
+    private Integer assists = 0;
 
     @Column(name="safeties", nullable=false)
-    protected Integer safeties = 0;
+    private Integer safeties = 0;
 
     @Column(name="fga_teens", nullable=false)
-    protected Integer fgaTeens = 0;
+    private Integer fgaTeens = 0;
 
     @Column(name="fgm_teens", nullable=false)
-    protected Integer fgmTeens = 0;
+    private Integer fgmTeens = 0;
 
     @Column(name="fga_twenties", nullable=false)
-    protected Integer fgaTwenties = 0;
+    private Integer fgaTwenties = 0;
 
     @Column(name="fgm_twenties", nullable=false)
-    protected Integer fgmTwenties = 0;
+    private Integer fgmTwenties = 0;
 
     @Column(name="fga_thirties", nullable=false)
-    protected Integer fgaThirties = 0;
+    private Integer fgaThirties = 0;
 
     @Column(name="fgm_thirties", nullable=false)
-    protected Integer fgmThirties = 0;
+    private Integer fgmThirties = 0;
 
     @Column(name="fga_fourties", nullable=false)
-    protected Integer fgaFourties = 0;
+    private Integer fgaFourties = 0;
 
     @Column(name="fgm_fourties", nullable=false)
-    protected Integer fgmFourties = 0;
+    private Integer fgmFourties = 0;
 
     @Column(name="fga_fifty_plus", nullable=false)
-    protected Integer fgaFiftyPlus = 0;
+    private Integer fgaFiftyPlus = 0;
 
     @Column(name="fgm_fifty_plus", nullable=false)
-    protected Integer fgmFiftyPlus = 0;
+    private Integer fgmFiftyPlus = 0;
 
     @Column(name="fga_total", nullable=false)
-    protected Integer fgaTotal = 0;
+    private Integer fgaTotal = 0;
 
     @Column(name="fgm_total", nullable=false)
-    protected Integer fgmTotal = 0;
+    private Integer fgmTotal = 0;
 
     @Column(name="fg_long", nullable=false)
-    protected Integer fgLong = 0;
+    private Integer fgLong = 0;
 
     @Column(name="xpa", nullable=false)
-    protected Integer xpa = 0;
+    private Integer xpa = 0;
 
     @Column(name="xpm", nullable=false)
-    protected Integer xpm = 0;
+    private Integer xpm = 0;
 
     @Column(name="punts", nullable=false)
-    protected Integer punts = 0;
+    private Integer punts = 0;
 
     @Column(name="punt_yds", nullable=false)
-    protected Integer puntYds = 0;
+    private Integer puntYds = 0;
 
     @Column(name="punt_long", nullable=false)
-    protected Integer puntLong = 0;
+    private Integer puntLong = 0;
 
     @Column(name="punt_blocked", nullable=false)
-    protected Integer puntBlocked = 0;
+    private Integer puntBlocked = 0;
 
     @Column(name="punt_ret", nullable=false)
-    protected Integer puntRet = 0;
+    private Integer puntRet = 0;
 
     @Column(name="punt_ret_yds", nullable=false)
-    protected Integer puntRetYds = 0;
+    private Integer puntRetYds = 0;
 
     @Column(name="punt_ret_tds", nullable=false)
-    protected Integer puntRetTds = 0;
+    private Integer puntRetTds = 0;
 
     @Column(name="punt_ret_long", nullable=false)
-    protected Integer puntRetLong = 0;
+    private Integer puntRetLong = 0;
 
     @Column(name="kick_ret", nullable=false)
-    protected Integer kickRet = 0;
+    private Integer kickRet = 0;
 
     @Column(name="kick_ret_yds", nullable=false)
-    protected Integer kickRetYds = 0;
+    private Integer kickRetYds = 0;
 
     @Column(name="kick_ret_tds", nullable=false)
-    protected Integer kickRetTds = 0;
+    private Integer kickRetTds = 0;
 
     @Column(name="kick_ret_long", nullable=false)
-    protected Integer kickRetLong = 0;
+    private Integer kickRetLong = 0;
 
     @Column(name="other_tds", nullable=false)
-    protected Integer otherTds = 0;
+    private Integer otherTds = 0;
 
     @Column(name="all_tds", nullable=false)
-    protected Integer allTds = 0;
+    private Integer allTds = 0;
 
     @Column(name="two_point_conv", nullable=false)
-    protected Integer twoPointConv = 0;
+    private Integer twoPointConv = 0;
 
     @Column(name="probowl")
-    protected Boolean probowl;
+    private Boolean probowl;
 
     @Column(name="all_pro")
-    protected Boolean allPro;
+    private Boolean allPro;
 
     @Column(name="avg_value", nullable=false)
-    protected Integer avgValue = 0;
+    private Integer avgValue = 0;
 
     /**
      * An enum defining the types of football seasons
@@ -292,20 +294,27 @@ public class PlayerSeason implements Serializable {
      */
     public PlayerSeason() {}
 
-    public PlayerSeason(String playerId, String franchiseId, Integer season, SeasonType seasonType, Integer age,
-            Position position, Integer jerseyNumber, Integer gamesPlayed, Integer gamesStarted, Integer passComp,
-            Integer passAtt, Integer passYds, Integer passTds, Integer passInts, Integer passLong,
-            Double passerRating, Integer sacked, Integer sackedYds, Integer rushAtt, Integer rushYds,
-            Integer rushTds, Integer rushLong, Integer targets, Integer receptions, Integer recYds, Integer recTds,
-            Integer recLong, Integer fumbles, Integer interceptions, Integer intYds, Integer intTds, Integer intLong,
-            Integer passDef, Integer fumForced, Integer fumRec, Integer fumRecYds, Integer fumRecTds, Double sacks,
-            Integer tackles, Integer assists, Integer safeties, Integer fgaTeens, Integer fgmTeens,
-            Integer fgaTwenties, Integer fgmTwenties, Integer fgaThirties, Integer fgmThirties, Integer fgaFourties,
-            Integer fgmFourties, Integer fgaFiftyPlus, Integer fgmFiftyPlus, Integer fgaTotal, Integer fgmTotal,
-            Integer fgLong, Integer xpa, Integer xpm, Integer punts, Integer puntYds, Integer puntLong,
-            Integer puntBlocked, Integer puntRet, Integer puntRetYds, Integer puntRetTds, Integer puntRetLong,
-            Integer kickRet, Integer kickRetYds, Integer kickRetTds, Integer kickRetLong, Integer otherTds,
-            Integer allTds, Integer twoPointConv, Boolean probowl, Boolean allPro, Integer avgValue) {
+    public PlayerSeason(String playerId, String franchiseId, Integer season,
+            SeasonType seasonType, Integer age, Position position,
+            Integer jerseyNumber, Integer gamesPlayed, Integer gamesStarted,
+            Integer passComp, Integer passAtt, Integer passYds, Integer passTds,
+            Integer passInts, Integer passLong, Double passerRating, Integer sacked,
+            Integer sackedYds, Integer rushAtt, Integer rushYds, Integer rushTds,
+            Integer rushLong, Integer targets, Integer receptions, Integer recYds,
+            Integer recTds, Integer recLong, Integer fumbles, Integer interceptions,
+            Integer intYds, Integer intTds, Integer intLong, Integer passDef,
+            Integer fumForced, Integer fumRec, Integer fumRecYds, Integer fumRecTds,
+            Double sacks, Integer tackles, Integer assists, Integer safeties,
+            Integer fgaTeens, Integer fgmTeens, Integer fgaTwenties,
+            Integer fgmTwenties, Integer fgaThirties, Integer fgmThirties,
+            Integer fgaFourties, Integer fgmFourties, Integer fgaFiftyPlus,
+            Integer fgmFiftyPlus, Integer fgaTotal, Integer fgmTotal,
+            Integer fgLong, Integer xpa, Integer xpm, Integer punts,
+            Integer puntYds, Integer puntLong, Integer puntBlocked, Integer puntRet,
+            Integer puntRetYds, Integer puntRetTds, Integer puntRetLong,
+            Integer kickRet, Integer kickRetYds, Integer kickRetTds,
+            Integer kickRetLong, Integer otherTds, Integer allTds,
+            Integer twoPointConv, Boolean probowl, Boolean allPro, Integer avgValue) {
         this.playerId = playerId;
         this.franchiseId = franchiseId;
         this.season = season;
@@ -383,7 +392,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the unique identifier of the player
+     * @return  the unique identifier of the player
      */
     @JsonIgnore
     public String getPlayerId() {
@@ -399,23 +408,23 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the unique identifier of the football team the player played
-     *         for this season
+     * @return  the unique identifier of the football team the player played
+     *          for this season
      */
     public String getFranchiseId() {
         return franchiseId;
     }
 
     /**
-     * @param franchiseId  the unique identifier of the football team the player played
-     *                     for this season
+     * @param franchiseId  the unique identifier of the football team the player
+     *                     played for this season
      */
     public void setFranchiseId(String franchiseId) {
         this.franchiseId = franchiseId;
     }
 
     /**
-     * @return the season (year) these statistics were generated
+     * @return  the season (year) these statistics were generated
      */
     public Integer getSeason() {
         return season;
@@ -429,7 +438,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the type of season these statistics were generated in
+     * @return  the type of season these statistics were generated in
      */
     public SeasonType getSeasonType() {
         return seasonType;
@@ -443,7 +452,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the team the player played for this season
+     * @return  the team the player played for this season
      */
     public Team getTeam() {
         return team;
@@ -457,7 +466,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the age of the player during this season
+     * @return  the age of the player during this season
      */
     public Integer getAge() {
         return age;
@@ -471,7 +480,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the primary position the player played this season
+     * @return  the primary position the player played this season
      */
      public Position getPosition() {
         return position;
@@ -485,7 +494,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the jersey number worn by the player this season
+     * @return  the jersey number worn by the player this season
      */
     public Integer getJerseyNumber() {
         return jerseyNumber;
@@ -499,7 +508,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of games the player appeared in this season
+     * @return  the number of games the player appeared in this season
      */
     public Integer getGamesPlayed() {
         return gamesPlayed;
@@ -513,7 +522,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of games the player started this season
+     * @return  the number of games the player started this season
      */
     public Integer getGamesStarted() {
         return gamesStarted;
@@ -527,7 +536,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passes completed by the player this season
+     * @return  the number of passes completed by the player this season
      */
     public Integer getPassComp() {
         return passComp;
@@ -541,7 +550,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passes attempted by the player this season
+     * @return  the number of passes attempted by the player this season
      */
     public Integer getPassAtt() {
         return passAtt;
@@ -555,7 +564,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passing yards thrown by the player this season
+     * @return  the number of passing yards thrown by the player this season
      */
     public Integer getPassYds() {
         return passYds;
@@ -569,21 +578,22 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passing touchdowns thrown by the player this season
+     * @return  the number of passing touchdowns thrown by the player this season
      */
     public Integer getPassTds() {
         return passTds;
     }
 
     /**
-     * @param passTds  the number of passing touchdowns thrown by the player this season
+     * @param passTds  the number of passing touchdowns thrown by the player
+     * this season
      */
     public void setPassTds(Integer passTds) {
         this.passTds = passTds;
     }
 
     /**
-     * @return the number of interceptions thrown by the player this season
+     * @return  the number of interceptions thrown by the player this season
      */
     public Integer getPassInts() {
         return passInts;
@@ -597,7 +607,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the longest pass (yds) thrown by the player this season
+     * @return  the longest pass (yds) thrown by the player this season
      */
     public Integer getPassLong() {
         return passLong;
@@ -611,7 +621,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the player's passer rating for the season
+     * @return  the player's passer rating for the season
      */
     public Double getPasserRating() {
         return passerRating;
@@ -625,7 +635,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of times the player was sacked this season
+     * @return  the number of times the player was sacked this season
      */
     public Integer getSacked() {
         return sacked;
@@ -639,7 +649,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number yards lost when the player was sacked this season
+     * @return  the number yards lost when the player was sacked this season
      */
     public Integer getSackedYds() {
         return sackedYds;
@@ -653,7 +663,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of rushes attempted by the player this season
+     * @return  the number of rushes attempted by the player this season
      */
     public Integer getRushAtt() {
         return rushAtt;
@@ -667,7 +677,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of rushing yards gained by the player this season
+     * @return  the number of rushing yards gained by the player this season
      */
     public Integer getRushYds() {
         return rushYds;
@@ -681,7 +691,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of rushing touchdowns scored by the player this season
+     * @return  the number of rushing touchdowns scored by the player this season
      */
     public Integer getRushTds() {
         return rushTds;
@@ -695,7 +705,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the longest rush made by the player this season
+     * @return  the longest rush made by the player this season
      */
     public Integer getRushLong() {
         return rushLong;
@@ -709,7 +719,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passes thrown to the player this season
+     * @return  the number of passes thrown to the player this season
      */
     public Integer getTargets() {
         return targets;
@@ -723,7 +733,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passes caught by the player this season
+     * @return  the number of passes caught by the player this season
      */
     public Integer getReceptions() {
         return receptions;
@@ -737,7 +747,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of receiving yards gained by the player this season
+     * @return  the number of receiving yards gained by the player this season
      */
     public Integer getRecYds() {
         return recYds;
@@ -751,7 +761,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of receiving touchdowns scored by the player this season
+     * @return  the number of receiving touchdowns scored by the player this season
      */
     public Integer getRecTds() {
         return recTds;
@@ -765,7 +775,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the longest reception (yds) made by the player this season
+     * @return  the longest reception (yds) made by the player this season
      */
     public Integer getRecLong() {
         return recLong;
@@ -779,7 +789,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of times the player has fumbled this season
+     * @return  the number of times the player has fumbled this season
      */
     public Integer getFumbles() {
         return fumbles;
@@ -793,7 +803,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of passes intercepted by the player this season
+     * @return  the number of passes intercepted by the player this season
      */
     public Integer getInterceptions() {
         return interceptions;
@@ -807,7 +817,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of interception return yards gained by the player this season
+     * @return  the number of interception return yards gained by the player this season
      */
     public Integer getIntYds() {
         return intYds;
@@ -822,38 +832,39 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of touchdowns scored by the player on interception returns
-     *         this season
+     * @return  the number of touchdowns scored by the player on interception returns
+     *          this season
      */
     public Integer getIntTds() {
         return intTds;
     }
 
     /**
-     * @param intTds  the number of touchdowns scored by the player on interception returns
-     *                this season
+     * @param intTds  the number of touchdowns scored by the player on
+     *                interception returns this season
      */
     public void setIntTds(Integer intTds) {
         this.intTds = intTds;
     }
 
     /**
-     * @return the longest return (yds) of an interception made by the player this season
+     * @return  the longest return (yds) of an interception made by the player
+     *          this season
      */
     public Integer getIntLong() {
         return intLong;
     }
 
     /**
-     * @param intLong  the longest return (yds) of an interception made by the player
-     *                 this season
+     * @param intLong  the longest return (yds) of an interception made by the
+     *                 player this season
      */
     public void setIntLong(Integer intLong) {
         this.intLong = intLong;
     }
 
     /**
-     * @return the number of passes defended by the player this season
+     * @return  the number of passes defended by the player this season
      */
     public Integer getPassDef() {
         return passDef;
@@ -867,7 +878,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of fumbles forced by the player this season
+     * @return  the number of fumbles forced by the player this season
      */
     public Integer getFumForced() {
         return fumForced;
@@ -881,7 +892,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of fumbles recovered by the player this season
+     * @return  the number of fumbles recovered by the player this season
      */
     public Integer getFumRec() {
         return fumRec;
@@ -895,7 +906,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of fumble return yards gained by the player this season
+     * @return  the number of fumble return yards gained by the player this season
      */
     public Integer getFumRecYds() {
         return fumRecYds;
@@ -910,8 +921,8 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of touchdowns scored by the player on fumble returns
-     *         this season
+     * @return  the number of touchdowns scored by the player on fumble returns
+     *          this season
      */
     public Integer getFumRecTds() {
         return fumRecTds;
@@ -926,7 +937,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of quarterback sacks made by the player this season
+     * @return  the number of quarterback sacks made by the player this season
      */
     public Double getSacks() {
         return sacks;
@@ -940,7 +951,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of solo tackles made by the player this season
+     * @return  the number of solo tackles made by the player this season
      */
     public Integer getTackles() {
         return tackles;
@@ -954,7 +965,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of tackle assists made by the player this season
+     * @return  the number of tackle assists made by the player this season
      */
     public Integer getAssists() {
         return assists;
@@ -968,7 +979,7 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of safeties made by the player this season
+     * @return  the number of safeties made by the player this season
      */
     public Integer getSafeties() {
         return safeties;
@@ -982,209 +993,214 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the number of 17-19 yard field goals attempted by the player this season
+     * @return  the number of 17-19 yard field goals attempted by the player
+     *          this season
      */
     public Integer getFgaTeens() {
         return fgaTeens;
     }
 
     /**
-     * @param fgaTeens  the number of 17-19 yard field goals attempted by the player
-     *                  this season
+     * @param fgaTeens  the number of 17-19 yard field goals attempted by the
+     *                  player this season
      */
     public void setFgaTeens(Integer fgaTeens) {
         this.fgaTeens = fgaTeens;
     }
 
     /**
-     * @return the number of successful 17-19 yard field goal attempts made by the
-     *         player this season
+     * @return  the number of successful 17-19 yard field goal attempts made by
+     *          the player this season
      */
     public Integer getFgmTeens() {
         return fgmTeens;
     }
 
     /**
-     * @param fgmTeens  the number of successful 17-19 yard field goal attempts made
-     *                  by the player this season
+     * @param fgmTeens  the number of successful 17-19 yard field goal attempts
+     *                  made by the player this season
      */
     public void setFgmTeens(Integer fgmTeens) {
         this.fgmTeens = fgmTeens;
     }
 
     /**
-     * @return the number of 20-29 yard field goals attempted by the player this season
+     * @return  the number of 20-29 yard field goals attempted by the player
+     *          this season
      */
     public Integer getFgaTwenties() {
         return fgaTwenties;
     }
 
     /**
-     * @param fgaTwenties  the number of 20-29 yard field goals attempted by the player
-     *                     this season
+     * @param fgaTwenties  the number of 20-29 yard field goals attempted by
+     *                     the player this season
      */
     public void setFgaTwenties(Integer fgaTwenties) {
         this.fgaTwenties = fgaTwenties;
     }
 
     /**
-     * @return the number of successful 20-29 yard field goal attempts made by the player
-     *         this season
+     * @return  the number of successful 20-29 yard field goal attempts made
+     *          by the player this season
      */
     public Integer getFgmTwenties() {
         return fgmTwenties;
     }
 
     /**
-     * @param fgmTwenties  the number of successful 20-29 yard field goal attempts made by
-     *                     the player this season
+     * @param fgmTwenties  the number of successful 20-29 yard field goal
+     *                     attempts made by the player this season
      */
     public void setFgmTwenties(Integer fgmTwenties) {
         this.fgmTwenties = fgmTwenties;
     }
 
     /**
-     * @return the number of 30-39 yard field goals attempted by the player this season
+     * @return  the number of 30-39 yard field goals attempted by the
+     *          player this season
      */
     public Integer getFgaThirties() {
         return fgaThirties;
     }
 
     /**
-     * @param fgaThirties  the number of 30-39 yard field goals attempted by the player
-     *                     this season
+     * @param fgaThirties  the number of 30-39 yard field goals attempted by
+     *                     the player this season
      */
     public void setFgaThirties(Integer fgaThirties) {
         this.fgaThirties = fgaThirties;
     }
 
     /**
-     * @return the number of successful 30-39 yard field goal attempts made by the player
-     *         this season
+     * @return  the number of successful 30-39 yard field goal attempts made
+     *          by the player this season
      */
     public Integer getFgmThirties() {
         return fgmThirties;
     }
 
     /**
-     * @param fgmThirties  the number of successful 30-39 yard field goal attempts made by
-     *                     the player this season
+     * @param fgmThirties  the number of successful 30-39 yard field goal
+     *                     attempts made by the player this season
      */
     public void setFgmThirties(Integer fgmThirties) {
         this.fgmThirties = fgmThirties;
     }
 
     /**
-     * @return the number of 40-49 yard field goals attempted by the player this season
+     * @return  the number of 40-49 yard field goals attempted by the player
+     *          this season
      */
     public Integer getFgaFourties() {
         return fgaFourties;
     }
 
     /**
-     * @param fgaFourties  the number of 40-49 yard field goals attempted by the player
-     *                     this season
+     * @param fgaFourties  the number of 40-49 yard field goals attempted by
+     *                     the player this season
      */
     public void setFgaFourties(Integer fgaFourties) {
         this.fgaFourties = fgaFourties;
     }
 
     /**
-     * @return the number of successful 40-49 yard field goal attempts made by the player
-     *         this season
+     * @return  the number of successful 40-49 yard field goal attempts made
+     *          by the player this season
      */
     public Integer getFgmFourties() {
         return fgmFourties;
     }
 
     /**
-     * @param fgmFourties  the number of successful 40-49 yard field goal attempts made by
-     *                     the player this season
+     * @param fgmFourties  the number of successful 40-49 yard field goal
+     *                     attempts made by the player this season
      */
     public void setFgmFourties(Integer fgmFourties) {
         this.fgmFourties = fgmFourties;
     }
 
     /**
-     * @return the number of 50+ yard field goals attempted by the player this season
+     * @return  the number of 50+ yard field goals attempted by the player
+     *          this season
      */
     public Integer getFgaFiftyPlus() {
         return fgaFiftyPlus;
     }
 
     /**
-     * @param fgaFiftyPlus  the number of 50+ yard field goals attempted by the player
-     *                      this season
+     * @param fgaFiftyPlus  the number of 50+ yard field goals attempted by
+     *                      the player this season
      */
     public void setFgaFiftyPlus(Integer fgaFiftyPlus) {
         this.fgaFiftyPlus = fgaFiftyPlus;
     }
 
     /**
-     * @return the number of successful 50+ yard field goal attempts made by the player
-     *         this season
+     * @return  the number of successful 50+ yard field goal attempts made by
+     *          the player this season
      */
     public Integer getFgmFiftyPlus() {
         return fgmFiftyPlus;
     }
 
     /**
-     * @param fgmFiftyPlus  the number of successful 50+ yard field goal attempts made
-     *                      by the player this season
+     * @param fgmFiftyPlus  the number of successful 50+ yard field goal
+     *                      attempts made by the player this season
      */
     public void setFgmFiftyPlus(Integer fgmFiftyPlus) {
         this.fgmFiftyPlus = fgmFiftyPlus;
     }
 
     /**
-     * @return the total number of field goals attempted by the player this season
+     * @return  the total number of field goals attempted by the player this season
      */
     public Integer getFgaTotal() {
         return fgaTotal;
     }
 
     /**
-     * @param fgaTotal  the total number of field goals attempted by the player this
-     *                  season
+     * @param fgaTotal  the total number of field goals attempted by the player
+     *                  this season
      */
     public void setFgaTotal(Integer fgaTotal) {
         this.fgaTotal = fgaTotal;
     }
 
     /**
-     * @return the total number of successful field goal attempts made by the player
-     *         this season
+     * @return  the total number of successful field goal attempts made by the
+     *          player this season
      */
     public Integer getFgmTotal() {
         return fgmTotal;
     }
 
     /**
-     * @param fgmTotal  the total number of successful field goal attempts made by the
-     *                  player this season
+     * @param fgmTotal  the total number of successful field goal attempts made
+     *                  by the player this season
      */
     public void setFgmTotal(Integer fgmTotal) {
         this.fgmTotal = fgmTotal;
     }
 
     /**
-     * @return the longest successful field goal (yds) attempt made by the player
-     *         this season
+     * @return  the longest successful field goal (yds) attempt made by the
+     *          player this season
      */
     public Integer getFgLong() {
         return fgLong;
     }
 
     /**
-     * @param fgLong  the longest successful field goal (yds) attempt made by the
-     *                player this season
+     * @param fgLong  the longest successful field goal (yds) attempt made by
+     *                the player this season
      */
     public void setFgLong(Integer fgLong) {
         this.fgLong = fgLong;
     }
 
     /**
-     * @return the total number of extra points attempted by the player this season
+     * @return  the total number of extra points attempted by the player this season
      */
     public Integer getXpa() {
         return xpa;
@@ -1198,16 +1214,16 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the total number of successful extra point attempts made by the player
-     *         this season
+     * @return  the total number of successful extra point attempts made by
+     *          the player this season
      */
     public Integer getXpm() {
         return xpm;
     }
 
     /**
-     * @param xpm  the total number of successful extra point attempts made by the player
-     *             this season
+     * @param xpm  the total number of successful extra point attempts made by
+     *             the player this season
      */
     public void setXpm(Integer xpm) {
         this.xpm = xpm;
@@ -1263,7 +1279,8 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @param puntBlocked  the number of the player's punts that were blocked this season
+     * @param puntBlocked  the number of the player's punts that were blocked
+     *                     this season
      */
     public void setPuntBlocked(Integer puntBlocked) {
         this.puntBlocked = puntBlocked;
@@ -1291,21 +1308,24 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @param puntRetYds  the number of punt return yards gained by the player this season
+     * @param puntRetYds  the number of punt return yards gained by the player
+     *                    this season
      */
     public void setPuntRetYds(Integer puntRetYds) {
         this.puntRetYds = puntRetYds;
     }
 
     /**
-     * @return the number of punts returned for touchdowns by the player this season
+     * @return  the number of punts returned for touchdowns by the player
+     *          this season
      */
     public Integer getPuntRetTds() {
         return puntRetTds;
     }
 
     /**
-     * @param puntRetTds  the number of punts returned for touchdowns by the player this season
+     * @param puntRetTds  the number of punts returned for touchdowns by the
+     *                    player this season
      */
     public void setPuntRetTds(Integer puntRetTds) {
         this.puntRetTds = puntRetTds;
@@ -1319,7 +1339,8 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @param puntRetLong  the longest punt return (yds) made by the player this season
+     * @param puntRetLong  the longest punt return (yds) made by the player
+     *                     this season
      */
     public void setPuntRetLong(Integer puntRetLong) {
         this.puntRetLong = puntRetLong;
@@ -1347,22 +1368,24 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @param kickRetYds  the number of kickoff return yards gained by the player this season
+     * @param kickRetYds  the number of kickoff return yards gained by the
+     *                    player this season
      */
     public void setKickRetYds(Integer kickRetYds) {
         this.kickRetYds = kickRetYds;
     }
 
     /**
-     * @return the number of kickoffs returned for touchdowns by the player this season
+     * @return  the number of kickoffs returned for touchdowns by the player
+     *          this season
      */
     public Integer getKickRetTds() {
         return kickRetTds;
     }
 
     /**
-     * @param kickRetTds  the number of kickoffs returned for touchdowns by the player
-     *                    this season
+     * @param kickRetTds  the number of kickoffs returned for touchdowns by
+     *                    the player this season
      */
     public void setKickRetTds(Integer kickRetTds) {
         this.kickRetTds = kickRetTds;
@@ -1376,14 +1399,16 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @param kickRetLong  the longest kick return (yds) made by the player this season
+     * @param kickRetLong  the longest kick return (yds) made by the player
+     *                     this season
      */
     public void setKickRetLong(Integer kickRetLong) {
         this.kickRetLong = kickRetLong;
     }
 
     /**
-     * @return the total number of touchdowns scored via other means by the player this season
+     * @return  the total number of touchdowns scored via other means by the
+     *          player this season
      */
     public Integer getOtherTds() {
         return otherTds;
@@ -1412,73 +1437,80 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * @return the total number of two point conversions scored by the player this season
+     * @return  the total number of two point conversions scored by the player
+     *          this season
      */
     public Integer getTwoPointConv() {
         return twoPointConv;
     }
 
     /**
-     * @param twoPointConv  the total number of two point conversions scored by the player
-     *                      this season
+     * @param twoPointConv  the total number of two point conversions scored
+     *                      by the player this season
      */
     public void setTwoPointConv(Integer twoPointConv) {
         this.twoPointConv = twoPointConv;
     }
 
     /**
-     * @return a Boolean indicating if the player made the probowl this season
+     * @return  a Boolean indicating if the player made the probowl this season
      */
     public Boolean getProbowl() {
         return probowl;
     }
 
     /**
-     * @param probowl  a Boolean indicating if the player made the probowl this season
+     * @param probowl  a Boolean indicating if the player made the probowl
+     *                 this season
      */
     public void setProbowl(Boolean probowl) {
         this.probowl = probowl;
     }
 
     /**
-     * @return a Boolean indicating if the player was selected as an all-pro this season
+     * @return  a Boolean indicating if the player was selected as an all-pro
+     *          this season
      */
     public Boolean getAllPro() {
         return allPro;
     }
 
     /**
-     * @param allPro  a Boolean indicating if the player was selected as an all-pro this season
+     * @param allPro  a Boolean indicating if the player was selected as an
+     *                all-pro this season
      */
     public void setAllPro(Boolean allPro) {
         this.allPro = allPro;
     }
 
     /**
-     * @return a metric calculated from the player's statistics this season which
-     *         approximates the amount of value the player has produced this season
+     * @return  a metric calculated from the player's statistics this season
+     *          which approximates the amount of value the player has produced
+     *          this season
      */
     public Integer getAvgValue() {
         return avgValue;
     }
 
     /**
-     * @param avgValue  a metric calculated from the player's statistics this season
-     *                  which approximates the amount of value the player has produced
-     *                  this season
+     * @param avgValue  a metric calculated from the player's statistics this
+     *                  season which approximates the amount of value the player
+     *                  has produced this season
      */
     public void setAvgValue(Integer avgValue) {
         this.avgValue = avgValue;
     }
 
     /**
-     * Compares this playerSeason to the argument. The result is <code>true</code>
-     * if and only if the argument is a non-null instance of {@link PlayerSeason} that
-     * has equivalent values for the playerId, season, and franchiseId attributes.
+     * Determines if this playerSeason is equal to the argument.
+     * <p>
+     * The result is <code>true</code> if and only if the argument is a non-null
+     * instance of {@link PlayerSeason} that has equivalent values for the
+     * playerId, season, and franchiseId attributes.
      *
      * @param obj  The object to compare this PlayerSeason against.
-     * @return <code>true</code> if the argument is equal to this PlayerSeason object,
-     *         <code>false</code> otherwise.
+     * @return     <code>true</code> if the argument is equal to this PlayerSeason
+     *             object, <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object obj) {
@@ -1490,6 +1522,7 @@ public class PlayerSeason implements Serializable {
         }
 
         PlayerSeason arg = (PlayerSeason) obj;
+
         return this.playerId.equals(arg.getPlayerId()) &&
                this.franchiseId.equals(arg.getFranchiseId()) &&
                this.season.equals(arg.getSeason()) &&
@@ -1497,19 +1530,21 @@ public class PlayerSeason implements Serializable {
     }
 
     /**
-     * Uses {@link Objects#hash(Object...)} to calculate a hash code for this object
-     * based on the playerId, season, and franchiseId fields.
+     * Uses {@link Objects#hash(Object...)} to calculate a hash code for this
+     * object based on the playerId, season, and franchiseId fields.
      *
      * @return A hash code for this object.
      * @see #equals
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.playerId, this.franchiseId, this.season, this.seasonType);
+        return  Objects.hash(this.playerId, this.franchiseId, this.season,
+                this.seasonType);
     }
 
     /**
      * Generates a <code>String</code> representation of this {@link PlayerSeason}.
+     * <p>
      * Given the use of reflection, consider removing or re-implementing for
      * production grade code.
      */

@@ -36,42 +36,44 @@ public class DraftPick implements Serializable {
 
     @Id
     @Column(name="player_id")
-    protected String playerId;
+    private String playerId;
 
     @Id
     @Column(name="league")
-    protected String league;
+    private String league;
 
     @Column(name="franchise_id")
-    protected String franchiseId;
+    private String franchiseId;
 
     @Column(name="draft_year")
-    protected Integer year;
+    private Integer year;
 
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumns({
-        @JoinColumn(name="franchise_id", referencedColumnName="franchise_id", insertable=false, updatable=false),
-        @JoinColumn(name="draft_year", referencedColumnName="season", insertable=false, updatable=false)
+        @JoinColumn(name="franchise_id", referencedColumnName="franchise_id",
+                insertable=false, updatable=false),
+        @JoinColumn(name="draft_year", referencedColumnName="season",
+                insertable=false, updatable=false)
         })
-    protected Team team;
+    private Team team;
 
     @Column(name="round")
-    protected Integer round;
+    private Integer round;
 
     @Column(name="slot")
-    protected Integer slot;
+    private Integer slot;
 
     @Column(name="supplemental")
-    protected Boolean supplemental;
+    private Boolean supplemental;
 
     /**
      * A no-argument {@link DraftPick} constructor required by Spring
      */
     DraftPick() {}
 
-    public DraftPick(String playerId, String league, String franchiseId, Integer year, Integer round,
-            Integer slot, Boolean supplemental) {
+    public DraftPick(String playerId, String league, String franchiseId,
+            Integer year, Integer round, Integer slot, Boolean supplemental) {
         this.playerId = playerId;
         this.league = league;
         this.franchiseId = franchiseId;
@@ -82,7 +84,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the unique identifier of the drafted player
+     * @return  the unique identifier of the drafted player
      */
     @JsonIgnore
     public String getPlayerId() {
@@ -98,7 +100,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the id of the team that drafted the player
+     * @return  the id of the team that drafted the player
      */
     public String getFranchiseId() {
         return franchiseId;
@@ -112,7 +114,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the year the player was drafted
+     * @return  the year the player was drafted
      */
     public Integer getYear() {
         return year;
@@ -126,7 +128,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the league that operated the draft event
+     * @return  the league that operated the draft event
      */
     public String getLeague() {
         return league;
@@ -140,7 +142,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the team that drafted the player
+     * @return  the team that drafted the player
      */
     public Team getTeam() {
         return team;
@@ -154,7 +156,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the round in which the player was drafted
+     * @return  the round in which the player was drafted
      */
     public Integer getRound() {
         return round;
@@ -168,7 +170,7 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return the draft slot at which the player was selected
+     * @return  the draft slot at which the player was selected
      */
     public Integer getSlot() {
         return slot;
@@ -182,8 +184,8 @@ public class DraftPick implements Serializable {
     }
 
     /**
-     * @return <code>true</code> if the player was drafted in a supplemental draft,
-     *         <code>false</code> otherwise
+     * @return  <code>true</code> if the player was drafted in a supplemental
+     *          draft, <code>false</code> otherwise
      */
     public Boolean isSupplemental() {
         return supplemental;
@@ -199,12 +201,12 @@ public class DraftPick implements Serializable {
 
     /**
      * Compares this draft pick to the argument. The result is <code>true</code>
-     * if and only if the argument is a non-null instance of {@link DraftPick} that
-     * has equivalent values for the playerId and league.
+     * if and only if the argument is a non-null instance of {@link DraftPick}
+     * that has equivalent values for the playerId and league.
      *
      * @param obj  The object to compare this team against.
-     * @return     <code>true</code> if the argument is equal to this DraftPick object,
-     *             <code>false</code> otherwise.
+     * @return     <code>true</code> if the argument is equal to this DraftPick
+     *             object, <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object obj) {
@@ -215,16 +217,17 @@ public class DraftPick implements Serializable {
             return false;
         }
         DraftPick arg = (DraftPick) obj;
+
         return this.playerId.equals(arg.getPlayerId()) &&
                this.league.equals(arg.getLeague());
     }
 
     /**
-     * Uses {@link Objects#hash(Object...)} to calculate a hash code for this object
-     * based on the playerId and league fields.
+     * Uses {@link Objects#hash(Object...)} to calculate a hash code for this
+     * object based on the playerId and league fields.
      *
-     * @return the hash code for this object.
-     * @see    #equals
+     * @return  the hash code for this object.
+     * @see     #equals
      */
     @Override
     public int hashCode() {
@@ -233,6 +236,7 @@ public class DraftPick implements Serializable {
 
     /**
      * Generates a <code>String</code> representation of this {@link DraftPick}.
+     * <p>
      * Given the use of reflection, consider removing or re-implementing for
      * production grade code.
      */

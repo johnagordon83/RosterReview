@@ -52,16 +52,16 @@ public class PfrDataUpdaterTest {
 
     private static final String PFR_PLAYER_URL = "https://www.pro-football-reference.com/players/";
 
-    private static Logger log = LoggerFactory.getLogger(PfrDataUpdaterTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PfrDataUpdaterTest.class);
 
     @BeforeAll
     public static void setUp() throws Exception {
-        log.info("Testing starting.");
+        LOG.info("Testing starting.");
     }
 
     @AfterAll
     public static void tearDown() throws Exception {
-        log.info("Testing complete.");
+        LOG.info("Testing complete.");
     }
 
     @Test
