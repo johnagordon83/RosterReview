@@ -8,7 +8,7 @@
     <properties>
         <java.version>1.11</java.version>
         <spring.version>5.2.11.RELEASE</spring.version>
-        <log4j.version>2.14.0</log4j.version>
+        <log4j.version>2.15.0</log4j.version>
         <jackson.version>2.11.3</jackson.version>
         <htmlunit.version>2.45.0</htmlunit.version>
     </properties>
